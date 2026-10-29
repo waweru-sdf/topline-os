@@ -1,0 +1,9 @@
+[Unit]
+Description=Topline: mark overdue stores past due / suspended (daily 06:15)
+
+[Timer]
+OnCalendar=*-*-* 06:15:00 Africa/Nairobi
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,20 @@
+[Unit]
+Description=Topline API (Flask on gunicorn)
+After=network.target postgresql.service
+Wants=postgresql.service
+
+[Service]
+User=topline
+Group=topline
+WorkingDirectory=/opt/topline/app/backend
+Environment=WEB_CONCURRENCY=__WORKERS__
+ExecStart=/opt/topline/app/backend/.venv/bin/gunicorn wsgi:app --bind 127.0.0.1:8000 --worker-class gthread --threads 4 --timeout 60 --graceful-timeout 20 --access-logfile - --forwarded-allow-ips 127.0.0.1
+Restart=always
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,57 @@
+# Topline web server: the main site, the admin and every shop subdomain, all with HTTPS.
+# setup.sh copies this to /etc/caddy/Caddyfile with __DOMAIN__ and __EMAIL__ filled in.
+# After editing:  sudo systemctl reload caddy
+
+{
+	email __EMAIL__
+	# Shop subdomains get their certificate the first time someone opens them,
+	# but only if the API confirms that shop exists.
+	on_demand_tls {
+		ask http://127.0.0.1:8000/api/tls/check
+	}
+}
+
+(topline) {
+	encode zstd gzip
+	request_body {
+		max_size 8MB
+	}
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+	handle /api/* {
+		reverse_proxy 127.0.0.1:8000
+	}
+	handle {
+		root * /opt/topline/app/dist
+		@assets path /assets/*
+		header @assets Cache-Control "public, max-age=31536000, immutable"
+		@pages not path /assets/*
+		header @pages Cache-Control "no-cache"
+		try_files {path} /index.html
+		file_server
+	}
+}
+
+__DOMAIN__ {
+	import topline
+}
+
+www.__DOMAIN__ {
+	redir https://__DOMAIN__{uri} permanent
+}
+
+# Every shop: mjengo.__DOMAIN__, mwamba.__DOMAIN__ ...
+https:// {
+	tls {
+		on_demand
+	}
+	import topline
+}
+
+http:// {
+	redir https://{host}{uri} permanent
+}

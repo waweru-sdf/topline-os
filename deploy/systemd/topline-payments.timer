@@ -1,0 +1,9 @@
+[Unit]
+Description=Topline: settle abandoned M-PESA prompts and release stock (every 5 minutes)
+
+[Timer]
+OnCalendar=*:0/5
+Persistent=false
+
+[Install]
+WantedBy=timers.target
