@@ -1,0 +1,2278 @@
+[
+  {
+    "request": "GET /api/health",
+    "body": null,
+    "auth": false,
+    "status": 200,
+    "response": {
+      "ok": true,
+      "payments": "simulation",
+      "sms": "simulation"
+    },
+    "note": ""
+  },
+  {
+    "request": "GET /api/ping",
+    "body": null,
+    "auth": false,
+    "status": 200,
+    "response": {
+      "ok": true
+    },
+    "note": ""
+  },
+  {
+    "request": "GET /api/plans",
+    "body": null,
+    "auth": false,
+    "status": 200,
+    "response": [
+      {
+        "blurb": "One shop, your own store link, and a till for the counter.",
+        "features": [
+          "Online store at yourshop.toplinehub.co.ke",
+          "Counter sales in bags, lengths and kg",
+          "... 3 more"
+        ],
+        "id": "starter",
+        "limits": {
+          "branches": 1,
+          "products": 150,
+          "staff": 2
+        },
+        "name": "Starter",
+        "popular": false,
+        "priceMonthly": 1500,
+        "priceYearly": 15000
+      },
+      {
+        "blurb": "For busy shops that sell on credit and give quotations.",
+        "features": [
+          "Everything in Starter",
+          "Customer credit and statements",
+          "... 4 more"
+        ],
+        "id": "business",
+        "limits": {
+          "branches": 2,
+          "products": 1500,
+          "staff": 8
+        },
+        "name": "Business",
+        "popular": true,
+        "priceMonthly": 3500,
+        "priceYearly": 35000
+      },
+      "... 1 more"
+    ],
+    "note": ""
+  },
+  {
+    "request": "GET /api/site",
+    "body": null,
+    "auth": false,
+    "status": 200,
+    "response": {
+      "announcement": "",
+      "featureImageStock": "aisle",
+      "featureImageStore": "storefront",
+      "featureImageTill": "toolWall",
+      "heroImage": "heroShelves",
+      "heroText": "Customers browse your cement, steel and mabati and pay by M-PESA. You run the counter, stock and credit from the same place.",
+      "heroTitle": "Your hardware shop, online, with its own link.",
+      "signupImage": "ownerPhone",
+      "supportEmail": "hello@toplinehub.co.ke",
+      "supportPhone": "0700 000 000",
+      "supportWhatsapp": "254700000000"
+    },
+    "note": ""
+  },
+  {
+    "request": "GET /api/stores/check-slug?slug=Baraka Hardware",
+    "body": null,
+    "auth": false,
+    "status": 200,
+    "response": {
+      "available": true,
+      "reason": null,
+      "slug": "baraka-hardware"
+    },
+    "note": ""
+  },
+  {
+    "request": "POST /api/auth/login",
+    "body": {
+      "login": "0712 345 678",
+      "password": "topline123"
+    },
+    "auth": false,
+    "status": 200,
+    "response": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1X0pSdGtGNllzWnljXyIsInJvbGUiOiJ2ZW5kb3IiLCJwdiI6MSwiaWF0IjoxNzkzNDY0MDI4LCJleHAiOjE3OTM3MjMyMjh9.Z5AHBl9dq0xkObPLfqlIvrQQHkVb-3hAMcjbcw2XQBc",
+      "user": {
+        "email": "peter@mjengo.example.com",
+        "id": "u_JRtkF6YsZyc_",
+        "mustChangePassword": false,
+        "name": "Peter Kamau",
+        "phone": "254712345678",
+        "role": "vendor",
+        "storeId": "st_7dJNd5ZG0TL8",
+        "storeRole": "owner"
+      }
+    },
+    "note": "login = phone (any Kenyan format) or email"
+  },
+  {
+    "request": "POST /api/auth/login",
+    "body": {
+      "login": "0712 345 678",
+      "password": "wrong"
+    },
+    "auth": false,
+    "status": 401,
+    "response": {
+      "field": "password",
+      "message": "Wrong phone/email or password."
+    },
+    "note": "same message for unknown accounts; 5 failures lock for 15 min (429)"
+  },
+  {
+    "request": "GET /api/auth/me",
+    "body": null,
+    "auth": true,
+    "status": 200,
+    "response": {
+      "user": {
+        "email": "peter@mjengo.example.com",
+        "id": "u_JRtkF6YsZyc_",
+        "mustChangePassword": false,
+        "name": "Peter Kamau",
+        "phone": "254712345678",
+        "role": "vendor",
+        "storeId": "st_7dJNd5ZG0TL8",
+        "storeRole": "owner"
+      }
+    },
+    "note": ""
+  },
+  {
+    "request": "GET /api/storefront/mjengo",
+    "body": null,
+    "auth": false,
+    "status": 200,
+    "response": {
+      "categories": [
+        {
+          "id": "cement",
+          "image": "cement",
+          "name": "Cement & binding"
+        },
+        {
+          "id": "steel",
+          "image": "rebar",
+          "name": "Steel & rebar"
+        },
+        "... 6 more"
+      ],
+      "products": [
+        {
+          "altUnits": [],
+          "categoryId": "cement",
+          "description": "General purpose cement for blockwork, plastering and mortar.",
+          "gallery": [],
+          "id": "prd_roYzLx0ehgHe",
+          "image": "cement",
+          "name": "Bamburi Tembo cement 32.5R",
+          "published": true,
+          "reorderAt": 80,
+          "sellPrice": 780,
+          "size": "50 kg",
+          "slug": "bamburi-tembo-cement-32-5r",
+          "specs": [
+            {
+              "label": "Class",
+              "value": "32.5R"
+            },
+            {
+              "label": "Use",
+              "value": "Blockwork, plastering, mortar"
+            }
+          ],
+          "stock": 420,
+          "unit": "bag (50 kg)",
+          "vatClass": "standard"
+        },
+        {
+          "altUnits": [],
+          "categoryId": "cement",
+          "description": "Fast-setting cement for structural concrete.",
+          "gallery": [],
+          "id": "prd_bnGyc7ewqDCc",
+          "image": "cementStack",
+          "name": "Savannah cement 42.5R",
+          "published": true,
+          "reorderAt": 60,
+          "sellPrice": 800,
+          "size": "50 kg",
+          "slug": "savannah-cement-42-5r",
+          "specs": [
+            {
+              "label": "Class",
+              "value": "42.5R, rapid hardening"
+            }
+          ],
+          "stock": 300,
+          "unit": "bag (50 kg)",
+          "vatClass": "standard"
+        },
+        "... 18 more"
+      ],
+      "store": {
+        "accent": "#F5A623",
+        "address": "Namanga Road, opposite Total petrol station",
+        "county": "Kajiado",
+        "cover": "heroShelves",
+        "delivery": {
+          "enabled": true,
+          "freeOver": 50000,
+          "mode": "zones",
+          "note": "Same-day delivery for orders placed before 2 pm.",
+          "zones": [
+            {
+              "fee": 300,
+              "id": "z1",
+              "name": "Kitengela town"
+            },
+            {
+              "fee": 600,
+              "id": "z2",
+              "name": "EPZ / Athi River"
+            },
+            "... 1 more"
+          ]
+        },
+        "hours": "Mon–Sat 7:00–18:30, Sun 9:00–14:00",
+        "id": "st_7dJNd5ZG0TL8",
+        "logo": "",
+        "name": "Mjengo Hardware",
+        "owner": {
+          "name": "Peter Kamau"
+        },
+        "payments": {
+          "acceptsDirect": true,
+          "account": "",
+          "method": "till",
+          "mpesaTill": "5123456",
+          "name": "Mjengo Hardware",
+          "number": "5123456"
+        },
+        "phone": "0712 345 678",
+        "slug": "mjengo",
+        "status": "active",
+        "tagline": "Building materials for Kitengela and beyond",
+        "town": "Kitengela",
+        "whatsapp": "254712345678"
+      }
+    },
+    "note": ""
+  },
+  {
+    "request": "GET /api/storefront/mjengo/products/d12-deformed-bar-y12",
+    "body": null,
+    "auth": false,
+    "status": 200,
+    "response": {
+      "category": {
+        "id": "steel",
+        "image": "rebar",
+        "name": "Steel & rebar"
+      },
+      "product": {
+        "altUnits": [],
+        "categoryId": "steel",
+        "description": "High-yield 12 mm ribbed bar for columns, beams and footings.",
+        "gallery": [],
+        "id": "prd_ysfyeGHNbbNu",
+        "image": "rebar",
+        "name": "D12 deformed bar (Y12)",
+        "published": true,
+        "reorderAt": 50,
+        "sellPrice": 1540,
+        "size": "12 mm × 12 m",
+        "slug": "d12-deformed-bar-y12",
+        "specs": [
+          {
+            "label": "Grade",
+            "value": "Y12, high tensile"
+          },
+          {
+            "label": "Weight",
+            "value": "10.7 kg per length"
+          }
+        ],
+        "stock": 210,
+        "unit": "length (12 m)",
+        "vatClass": "standard"
+      },
+      "store": {
+        "accent": "#F5A623",
+        "address": "Namanga Road, opposite Total petrol station",
+        "county": "Kajiado",
+        "cover": "heroShelves",
+        "delivery": {
+          "enabled": true,
+          "freeOver": 50000,
+          "mode": "zones",
+          "note": "Same-day delivery for orders placed before 2 pm.",
+          "zones": [
+            {
+              "fee": 300,
+              "id": "z1",
+              "name": "Kitengela town"
+            },
+            {
+              "fee": 600,
+              "id": "z2",
+              "name": "EPZ / Athi River"
+            },
+            "... 1 more"
+          ]
+        },
+        "hours": "Mon–Sat 7:00–18:30, Sun 9:00–14:00",
+        "id": "st_7dJNd5ZG0TL8",
+        "logo": "",
+        "name": "Mjengo Hardware",
+        "owner": {
+          "name": "Peter Kamau"
+        },
+        "payments": {
+          "acceptsDirect": true,
+          "account": "",
+          "method": "till",
+          "mpesaTill": "5123456",
+          "name": "Mjengo Hardware",
+          "number": "5123456"
+        },
+        "phone": "0712 345 678",
+        "slug": "mjengo",
+        "status": "active",
+        "tagline": "Building materials for Kitengela and beyond",
+        "town": "Kitengela",
+        "whatsapp": "254712345678"
+      }
+    },
+    "note": ""
+  },
+  {
+    "request": "POST /api/storefront/mjengo/orders",
+    "body": {
+      "customer": {
+        "name": "Daniel K",
+        "phone": "0711 222 333"
+      },
+      "items": [
+        {
+          "productId": "prd_JlSWOYWw_xzo",
+          "qty": 2
+        }
+      ],
+      "delivery": {
+        "type": "delivery",
+        "zoneId": "z2",
+        "address": "EPZ gate B"
+      },
+      "paymentMode": "prompt"
+    },
+    "auth": false,
+    "status": 201,
+    "response": {
+      "channel": "online",
+      "createdAt": "2026-10-31T16:27:08.826Z",
+      "customerId": null,
+      "customerName": "Daniel K",
+      "customerPhone": "254711222333",
+      "delivery": {
+        "address": "EPZ gate B",
+        "notes": null,
+        "type": "delivery",
+        "zone": "EPZ / Athi River"
+      },
+      "deliveryFee": 600,
+      "id": "S-243",
+      "items": [
+        {
+          "name": "Claw hammer, 16 oz",
+          "price": 650,
+          "productId": "prd_JlSWOYWw_xzo",
+          "qty": 2,
+          "unit": "piece"
+        }
+      ],
+      "method": "mpesa",
+      "mpesaRef": null,
+      "paidAt": null,
+      "payment": {
+        "amount": 1900,
+        "failureReason": null,
+        "mpesaRef": null,
+        "payee": "MJENGO HARDWARE",
+        "phone": "254711222333",
+        "reference": "ORD_B44DE8D7ABF3BD22",
+        "simulated": true,
+        "status": "pending"
+      },
+      "paymentMode": "prompt",
+      "staff": null,
+      "status": "awaiting_payment",
+      "storeId": "st_7dJNd5ZG0TL8",
+      "subtotal": 1300,
+      "total": 1900
+    },
+    "note": "reserves stock atomically; 409 if not enough"
+  },
+  {
+    "request": "GET /api/storefront/mjengo/orders/S-243/payment",
+    "body": null,
+    "auth": false,
+    "status": 200,
+    "response": {
+      "failureReason": null,
+      "mpesaRef": "T2A799E450",
+      "order": {
+        "channel": "online",
+        "createdAt": "2026-10-31T16:27:08.826Z",
+        "customerId": null,
+        "customerName": "Daniel K",
+        "customerPhone": "254711222333",
+        "delivery": {
+          "address": "EPZ gate B",
+          "notes": null,
+          "type": "delivery",
+          "zone": "EPZ / Athi River"
+        },
+        "deliveryFee": 600,
+        "id": "S-243",
+        "items": [
+          {
+            "name": "Claw hammer, 16 oz",
+            "price": 650,
+            "productId": "prd_JlSWOYWw_xzo",
+            "qty": 2,
+            "unit": "piece"
+          }
+        ],
+        "method": "mpesa",
+        "mpesaRef": "T2A799E450",
+        "paidAt": "2026-10-31T16:27:08.846Z",
+        "paymentMode": "prompt",
+        "staff": null,
+        "status": "new",
+        "storeId": "st_7dJNd5ZG0TL8",
+        "subtotal": 1300,
+        "total": 1900
+      },
+      "payment": {
+        "amount": 1900,
+        "failureReason": null,
+        "mpesaRef": "T2A799E450",
+        "payee": "MJENGO HARDWARE",
+        "phone": "254711222333",
+        "reference": "ORD_B44DE8D7ABF3BD22",
+        "simulated": true,
+        "status": "paid"
+      },
+      "status": "paid"
+    },
+    "note": "polled every ~2.5 s by checkout"
+  },
+  {
+    "request": "POST /api/storefront/mjengo/orders",
+    "body": {
+      "customer": {
+        "name": "Kevin",
+        "phone": "0766 888 999"
+      },
+      "items": [
+        {
+          "productId": "prd_JlSWOYWw_xzo",
+          "qty": 999
+        }
+      ]
+    },
+    "auth": false,
+    "status": 409,
+    "response": {
+      "field": "qty",
+      "message": "Only 16 left of Claw hammer, 16 oz. Lower the quantity and try again."
+    },
+    "note": "not enough stock"
+  },
+  {
+    "request": "POST /api/storefront/mjengo/orders",
+    "body": {
+      "customer": {
+        "name": "Kevin",
+        "phone": "0766 888 999"
+      },
+      "items": [
+        {
+          "productId": "prd_JlSWOYWw_xzo",
+          "qty": 1
+        }
+      ],
+      "paymentMode": "direct",
+      "mpesaCode": "TJK4H2PQ9X"
+    },
+    "auth": false,
+    "status": 201,
+    "response": {
+      "channel": "online",
+      "createdAt": "2026-10-31T16:27:08.861Z",
+      "customerId": null,
+      "customerName": "Kevin",
+      "customerPhone": "254766888999",
+      "delivery": {
+        "address": null,
+        "notes": null,
+        "type": "pickup",
+        "zone": null
+      },
+      "deliveryFee": 0,
+      "id": "S-244",
+      "items": [
+        {
+          "name": "Claw hammer, 16 oz",
+          "price": 650,
+          "productId": "prd_JlSWOYWw_xzo",
+          "qty": 1,
+          "unit": "piece"
+        }
+      ],
+      "method": "mpesa",
+      "mpesaRef": "TJK4H2PQ9X",
+      "paidAt": null,
+      "payment": null,
+      "paymentMode": "direct",
+      "staff": null,
+      "status": "awaiting_confirmation",
+      "storeId": "st_7dJNd5ZG0TL8",
+      "subtotal": 650,
+      "total": 650
+    },
+    "note": "customer paid the shop directly"
+  },
+  {
+    "request": "POST /api/storefront/mjengo/quotes",
+    "body": {
+      "name": "Site manager",
+      "phone": "0711 000 111",
+      "items": "200 bags cement",
+      "site": "Isinya"
+    },
+    "auth": false,
+    "status": 201,
+    "response": {
+      "ok": true,
+      "reference": "Q-53863"
+    },
+    "note": ""
+  },
+  {
+    "request": "POST /api/billing/subscription/pay",
+    "body": {
+      "phone": "0722 111 222",
+      "planId": "business",
+      "period": "monthly",
+      "signup": true
+    },
+    "auth": false,
+    "status": 202,
+    "response": {
+      "amount": 3500,
+      "failureReason": null,
+      "mpesaRef": null,
+      "payee": "TOPLINE",
+      "phone": "254722111222",
+      "reference": "SUB_6C5770E172AE3E45",
+      "simulated": true,
+      "status": "pending"
+    },
+    "note": ""
+  },
+  {
+    "request": "GET /api/billing/payments/SUB_6C5770E172AE3E45",
+    "body": null,
+    "auth": false,
+    "status": 200,
+    "response": {
+      "amount": 3500,
+      "failureReason": null,
+      "mpesaRef": "T8F8484E32",
+      "payee": "TOPLINE",
+      "phone": "254722111222",
+      "reference": "SUB_6C5770E172AE3E45",
+      "simulated": true,
+      "status": "paid"
+    },
+    "note": ""
+  },
+  {
+    "request": "POST /api/simulator/payments/SUB_3157C454992160C5",
+    "body": {
+      "action": "approve",
+      "pin": "1234"
+    },
+    "auth": false,
+    "status": 200,
+    "response": {
+      "amount": 1500,
+      "failureReason": "The M-PESA payment failed: not enough balance.",
+      "mpesaRef": null,
+      "payee": "TOPLINE",
+      "phone": "254722111999",
+      "reference": "SUB_3157C454992160C5",
+      "simulated": true,
+      "status": "failed"
+    },
+    "note": "simulation only"
+  },
+  {
+    "request": "POST /api/stores",
+    "body": {
+      "owner": {
+        "name": "Grace Akinyi",
+        "phone": "0722 111 222",
+        "email": "grace@example.com",
+        "password": "shop-pass-1"
+      },
+      "business": {
+        "name": "Baraka Hardware",
+        "county": "Kajiado",
+        "town": "Kitengela",
+        "payments": {
+          "method": "till",
+          "number": "5566778"
+        }
+      },
+      "planId": "business",
+      "slug": "baraka-hardware",
+      "billing": {
+        "period": "monthly",
+        "paymentReference": "SUB_6C5770E172AE3E45"
+      }
+    },
+    "auth": false,
+    "status": 201,
+    "response": {
+      "store": {
+        "accent": "#F5A623",
+        "address": "",
+        "billing": {
+          "period": "monthly"
+        },
+        "county": "Kajiado",
+        "cover": "aisle",
+        "createdAt": "2026-10-31T16:27:09.013Z",
+        "customDomain": null,
+        "delivery": {
+          "enabled": false,
+          "freeOver": null,
+          "mode": "zones",
+          "note": "",
+          "zones": []
+        },
+        "hours": "Mon–Sat 8:00–18:00",
+        "id": "st_M9zFy8vPC3cH",
+        "logo": "",
+        "name": "Baraka Hardware",
+        "nextBillingAt": "2026-11-30T16:27:09.014Z",
+        "owner": {
+          "name": "Grace Akinyi",
+          "phone": "0722 111 222"
+        },
+        "payments": {
+          "acceptsDirect": true,
+          "account": "",
+          "canReceive": true,
+          "method": "till",
+          "mpesaTill": "5566778",
+          "name": "Baraka Hardware",
+          "number": "5566778"
+        },
+        "phone": "0722 111 222",
+        "planId": "business",
+        "slug": "baraka-hardware",
+        "status": "active",
+        "tagline": "",
+        "town": "Kitengela",
+        "whatsapp": "254722111222"
+      },
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1X0FOMVQ4SGlLZF9uOCIsInJvbGUiOiJ2ZW5kb3IiLCJwdiI6MSwiaWF0IjoxNzkzNDY0MDI5LCJleHAiOjE3OTM3MjMyMjl9.Uv_SAHS3ikoJj3sSLmXRRCPqUekbI2d2ubHKsGUMzdc",
+      "user": {
+        "email": "grace@example.com",
+        "id": "u_AN1T8HiKd_n8",
+        "mustChangePassword": false,
+        "name": "Grace Akinyi",
+        "phone": "254722111222",
+        "role": "vendor",
+        "storeId": "st_M9zFy8vPC3cH",
+        "storeRole": "owner"
+      }
+    },
+    "note": "sign-up: needs a paid, unclaimed plan payment"
+  },
+  {
+    "request": "GET /api/vendor/stores",
+    "body": null,
+    "auth": true,
+    "status": 200,
+    "response": [
+      {
+        "accent": "#F5A623",
+        "address": "Namanga Road, opposite Total petrol station",
+        "billing": {
+          "period": "monthly"
+        },
+        "county": "Kajiado",
+        "cover": "heroShelves",
+        "createdAt": "2026-08-16T16:27:07.820Z",
+        "customDomain": null,
+        "delivery": {
+          "enabled": true,
+          "freeOver": 50000,
+          "mode": "zones",
+          "note": "Same-day delivery for orders placed before 2 pm.",
+          "zones": [
+            {
+              "fee": 300,
+              "id": "z1",
+              "name": "Kitengela town"
+            },
+            {
+              "fee": 600,
+              "id": "z2",
+              "name": "EPZ / Athi River"
+            },
+            "... 1 more"
+          ]
+        },
+        "hours": "Mon–Sat 7:00–18:30, Sun 9:00–14:00",
+        "id": "st_7dJNd5ZG0TL8",
+        "logo": "",
+        "myRole": "owner",
+        "name": "Mjengo Hardware",
+        "nextBillingAt": "2026-11-16T16:27:07.820Z",
+        "owner": {
+          "name": "Peter Kamau",
+          "phone": "0712 345 678"
+        },
+        "payments": {
+          "acceptsDirect": true,
+          "account": "",
+          "canReceive": true,
+          "method": "till",
+          "mpesaTill": "5123456",
+          "name": "Mjengo Hardware",
+          "number": "5123456"
+        },
+        "phone": "0712 345 678",
+        "planId": "business",
+        "slug": "mjengo",
+        "status": "active",
+        "tagline": "Building materials for Kitengela and beyond",
+        "town": "Kitengela",
+        "whatsapp": "254712345678"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "request": "GET /api/vendor/stores/st_7dJNd5ZG0TL8",
+    "body": null,
+    "auth": true,
+    "status": 200,
+    "response": {
+      "accent": "#F5A623",
+      "address": "Namanga Road, opposite Total petrol station",
+      "billing": {
+        "period": "monthly"
+      },
+      "county": "Kajiado",
+      "cover": "heroShelves",
+      "createdAt": "2026-08-16T16:27:07.820Z",
+      "customDomain": null,
+      "delivery": {
+        "enabled": true,
+        "freeOver": 50000,
+        "mode": "zones",
+        "note": "Same-day delivery for orders placed before 2 pm.",
+        "zones": [
+          {
+            "fee": 300,
+            "id": "z1",
+            "name": "Kitengela town"
+          },
+          {
+            "fee": 600,
+            "id": "z2",
+            "name": "EPZ / Athi River"
+          },
+          "... 1 more"
+        ]
+      },
+      "hours": "Mon–Sat 7:00–18:30, Sun 9:00–14:00",
+      "id": "st_7dJNd5ZG0TL8",
+      "logo": "",
+      "myRole": "owner",
+      "name": "Mjengo Hardware",
+      "nextBillingAt": "2026-11-16T16:27:07.820Z",
+      "owner": {
+        "name": "Peter Kamau",
+        "phone": "0712 345 678"
+      },
+      "payments": {
+        "acceptsDirect": true,
+        "account": "",
+        "canReceive": true,
+        "method": "till",
+        "mpesaTill": "5123456",
+        "name": "Mjengo Hardware",
+        "number": "5123456"
+      },
+      "permissions": [
+        "manage_billing",
+        "manage_customers",
+        "... 8 more"
+      ],
+      "phone": "0712 345 678",
+      "planId": "business",
+      "slug": "mjengo",
+      "status": "active",
+      "tagline": "Building materials for Kitengela and beyond",
+      "town": "Kitengela",
+      "whatsapp": "254712345678"
+    },
+    "note": ""
+  },
+  {
+    "request": "PATCH /api/vendor/stores/st_7dJNd5ZG0TL8",
+    "body": {
+      "tagline": "Building materials for Kitengela",
+      "payments": {
+        "method": "paybill",
+        "number": "247247",
+        "account": "MJENGO"
+      }
+    },
+    "auth": true,
+    "status": 200,
+    "response": {
+      "accent": "#F5A623",
+      "address": "Namanga Road, opposite Total petrol station",
+      "billing": {
+        "period": "monthly"
+      },
+      "county": "Kajiado",
+      "cover": "heroShelves",
+      "createdAt": "2026-08-16T16:27:07.820Z",
+      "customDomain": null,
+      "delivery": {
+        "enabled": true,
+        "freeOver": 50000,
+        "mode": "zones",
+        "note": "Same-day delivery for orders placed before 2 pm.",
+        "zones": [
+          {
+            "fee": 300,
+            "id": "z1",
+            "name": "Kitengela town"
+          },
+          {
+            "fee": 600,
+            "id": "z2",
+            "name": "EPZ / Athi River"
+          },
+          "... 1 more"
+        ]
+      },
+      "hours": "Mon–Sat 7:00–18:30, Sun 9:00–14:00",
+      "id": "st_7dJNd5ZG0TL8",
+      "logo": "",
+      "name": "Mjengo Hardware",
+      "nextBillingAt": "2026-11-16T16:27:07.820Z",
+      "owner": {
+        "name": "Peter Kamau",
+        "phone": "0712 345 678"
+      },
+      "payments": {
+        "acceptsDirect": true,
+        "account": "MJENGO",
+        "canReceive": true,
+        "method": "paybill",
+        "mpesaTill": "",
+        "name": "Mjengo Hardware",
+        "number": "247247"
+      },
+      "phone": "0712 345 678",
+      "planId": "business",
+      "slug": "mjengo",
+      "status": "active",
+      "tagline": "Building materials for Kitengela",
+      "town": "Kitengela",
+      "whatsapp": "254712345678"
+    },
+    "note": ""
+  },
+  {
+    "request": "GET /api/vendor/stores/st_7dJNd5ZG0TL8/dashboard",
+    "body": null,
+    "auth": true,
+    "status": 200,
+    "response": {
+      "byDay": [
+        {
+          "count": 3,
+          "date": "2026-10-18",
+          "profit": 6502,
+          "revenue": 43010
+        },
+        {
+          "count": 4,
+          "date": "2026-10-19",
+          "profit": 24988,
+          "revenue": 154690
+        },
+        "... 12 more"
+      ],
+      "lowStock": [
+        {
+          "altUnits": [],
+          "buyPrice": 735,
+          "categoryId": "cement",
+          "description": "Higher strength cement for slabs, columns and beams.",
+          "gallery": [],
+          "id": "prd_ENhhCLDLa9ap",
+          "image": "cementStack",
+          "name": "Simba cement 42.5N",
+          "published": true,
+          "reorderAt": 80,
+          "sellPrice": 820,
+          "size": "50 kg",
+          "slug": "simba-cement-42-5n",
+          "specs": [
+            {
+              "label": "Class",
+              "value": "42.5N"
+            },
+            {
+              "label": "Use",
+              "value": "Slabs, columns, beams"
+            }
+          ],
+          "stock": 64,
+          "unit": "bag (50 kg)",
+          "vatClass": "standard"
+        },
+        {
+          "altUnits": [],
+          "buyPrice": 950,
+          "categoryId": "steel",
+          "description": "10 mm ribbed bar for ring beams and lintels.",
+          "gallery": [],
+          "id": "prd_1H9xebWGYNhA",
+          "image": "rebarStack",
+          "name": "D10 deformed bar (Y10)",
+          "published": true,
+          "reorderAt": 40,
+          "sellPrice": 1080,
+          "size": "10 mm × 12 m",
+          "slug": "d10-deformed-bar-y10",
+          "specs": [
+            {
+              "label": "Grade",
+              "value": "Y10, high tensile"
+            },
+            {
+              "label": "Weight",
+              "value": "7.4 kg per length"
+            }
+          ],
+          "stock": 9,
+          "unit": "length (12 m)",
+          "vatClass": "standard"
+        },
+        "... 2 more"
+      ],
+      "newOrders": 9,
+      "overdueCustomers": 2,
+      "owedToYou": 291500,
+      "profit7": 125600,
+      "recent": [
+        {
+          "channel": "online",
+          "createdAt": "2026-10-31T16:27:08.826Z",
+          "customerId": null,
+          "customerName": "Daniel K",
+          "customerPhone": "254711222333",
+          "delivery": {
+            "address": "EPZ gate B",
+            "notes": null,
+            "type": "delivery",
+            "zone": "EPZ / Athi River"
+          },
+          "deliveryFee": 600,
+          "id": "S-243",
+          "items": [
+            {
+              "cost": 470,
+              "name": "Claw hammer, 16 oz",
+              "price": 650,
+              "productId": "prd_JlSWOYWw_xzo",
+              "qty": 2,
+              "unit": "piece"
+            }
+          ],
+          "method": "mpesa",
+          "mpesaRef": "T2A799E450",
+          "paidAt": "2026-10-31T16:27:08.846Z",
+          "paymentMode": "prompt",
+          "staff": null,
+          "status": "new",
+          "storeId": "st_7dJNd5ZG0TL8",
+          "subtotal": 1300,
+          "total": 1900
+        },
+        {
+          "channel": "pos",
+          "createdAt": "2026-10-31T13:27:07.820Z",
+          "customerId": null,
+          "customerName": null,
+          "customerPhone": null,
+          "delivery": null,
+          "deliveryFee": 0,
+          "id": "S-59",
+          "items": [
+            {
+              "cost": 715,
+              "name": "Savannah cement 42.5R",
+              "price": 800,
+              "productId": "prd_bnGyc7ewqDCc",
+              "qty": 5,
+              "unit": "bag (50 kg)"
+            },
+            {
+              "cost": 8200,
+              "name": "Cordless drill 18 V",
+              "price": 9800,
+              "productId": "prd_fGx0NZYMI6yu",
+              "qty": 2,
+              "unit": "piece"
+            },
+            "... 1 more"
+          ],
+          "method": "mpesa",
+          "mpesaRef": null,
+          "paidAt": "2026-10-31T13:27:07.820Z",
+          "paymentMode": null,
+          "staff": "Esther W.",
+          "status": "completed",
+          "storeId": "st_7dJNd5ZG0TL8",
+          "subtotal": 26300,
+          "total": 26300
+        },
+        "... 4 more"
+      ],
+      "revenue7": 760255,
+      "revenuePrev7": 509660,
+      "sales7": 31,
+      "topProducts": [
+        {
+          "name": "Cordless drill 18 V",
+          "revenue": 607600
+        },
+        {
+          "name": "Vinyl silk emulsion, white",
+          "revenue": 103400
+        },
+        "... 3 more"
+      ]
+    },
+    "note": ""
+  },
+  {
+    "request": "GET /api/vendor/stores/st_7dJNd5ZG0TL8/products",
+    "body": null,
+    "auth": true,
+    "status": 200,
+    "response": {
+      "categories": [
+        {
+          "id": "cement",
+          "image": "cement",
+          "name": "Cement & binding"
+        },
+        {
+          "id": "steel",
+          "image": "rebar",
+          "name": "Steel & rebar"
+        },
+        "... 6 more"
+      ],
+      "products": [
+        {
+          "altUnits": [],
+          "buyPrice": 260,
+          "categoryId": "tools",
+          "description": "Carbon steel blade, wooden handle.",
+          "gallery": [],
+          "id": "prd_ceSVaDLTgRni",
+          "image": "toolsTable",
+          "name": "Mason trowel",
+          "published": true,
+          "reorderAt": 5,
+          "sellPrice": 380,
+          "size": "",
+          "slug": "mason-trowel",
+          "specs": [],
+          "stock": 0,
+          "unit": "piece",
+          "vatClass": "standard"
+        },
+        {
+          "altUnits": [],
+          "buyPrice": 8200,
+          "categoryId": "tools",
+          "description": "With two batteries and charger.",
+          "gallery": [],
+          "id": "prd_fGx0NZYMI6yu",
+          "image": "drill",
+          "name": "Cordless drill 18 V",
+          "published": true,
+          "reorderAt": 3,
+          "sellPrice": 9800,
+          "size": "18 V",
+          "slug": "cordless-drill-18-v",
+          "specs": [
+            {
+              "label": "Battery",
+              "value": "2 × 2.0 Ah"
+            },
+            {
+              "label": "Chuck",
+              "value": "13 mm"
+            }
+          ],
+          "stock": 4,
+          "unit": "piece",
+          "vatClass": "standard"
+        },
+        "... 18 more"
+      ]
+    },
+    "note": ""
+  },
+  {
+    "request": "POST /api/vendor/stores/st_7dJNd5ZG0TL8/products",
+    "body": {
+      "name": "Deformed bar Y20",
+      "categoryId": "steel",
+      "unit": "length (12 m)",
+      "sellPrice": 2650,
+      "buyPrice": 2300,
+      "stock": 80,
+      "size": "20 mm × 12 m",
+      "specs": [
+        {
+          "label": "Grade",
+          "value": "Y20"
+        }
+      ],
+      "image": "rebar",
+      "gallery": [],
+      "description": "Heavy bar.",
+      "published": true
+    },
+    "auth": true,
+    "status": 201,
+    "response": {
+      "altUnits": [],
+      "buyPrice": 2300,
+      "categoryId": "steel",
+      "description": "Heavy bar.",
+      "gallery": [],
+      "id": "prd_I2E51bb7xEHg",
+      "image": "rebar",
+      "name": "Deformed bar Y20",
+      "published": true,
+      "reorderAt": 10,
+      "sellPrice": 2650,
+      "size": "20 mm × 12 m",
+      "slug": "deformed-bar-y20",
+      "specs": [
+        {
+          "label": "Grade",
+          "value": "Y20"
+        }
+      ],
+      "stock": 80,
+      "unit": "length (12 m)",
+      "vatClass": "standard"
+    },
+    "note": ""
+  },
+  {
+    "request": "PUT /api/vendor/stores/st_7dJNd5ZG0TL8/products/prd_I2E51bb7xEHg",
+    "body": {
+      "altUnits": [],
+      "buyPrice": 2300,
+      "categoryId": "steel",
+      "description": "Heavy bar.",
+      "gallery": [],
+      "id": "prd_I2E51bb7xEHg",
+      "image": "rebar",
+      "name": "Deformed bar Y20",
+      "published": true,
+      "reorderAt": 10,
+      "sellPrice": 2700,
+      "size": "20 mm × 12 m",
+      "slug": "deformed-bar-y20",
+      "specs": [
+        {
+          "label": "Grade",
+          "value": "Y20"
+        }
+      ],
+      "stock": 80,
+      "unit": "length (12 m)",
+      "vatClass": "standard"
+    },
+    "auth": true,
+    "status": 200,
+    "response": {
+      "altUnits": [],
+      "buyPrice": 2300,
+      "categoryId": "steel",
+      "description": "Heavy bar.",
+      "gallery": [],
+      "id": "prd_I2E51bb7xEHg",
+      "image": "rebar",
+      "name": "Deformed bar Y20",
+      "published": true,
+      "reorderAt": 10,
+      "sellPrice": 2700,
+      "size": "20 mm × 12 m",
+      "slug": "deformed-bar-y20",
+      "specs": [
+        {
+          "label": "Grade",
+          "value": "Y20"
+        }
+      ],
+      "stock": 80,
+      "unit": "length (12 m)",
+      "vatClass": "standard"
+    },
+    "note": ""
+  },
+  {
+    "request": "POST /api/vendor/stores/st_7dJNd5ZG0TL8/products/prd_I2E51bb7xEHg/stock",
+    "body": {
+      "delta": -5
+    },
+    "auth": true,
+    "status": 200,
+    "response": {
+      "altUnits": [],
+      "buyPrice": 2300,
+      "categoryId": "steel",
+      "description": "Heavy bar.",
+      "gallery": [],
+      "id": "prd_I2E51bb7xEHg",
+      "image": "rebar",
+      "name": "Deformed bar Y20",
+      "published": true,
+      "reorderAt": 10,
+      "sellPrice": 2700,
+      "size": "20 mm × 12 m",
+      "slug": "deformed-bar-y20",
+      "specs": [
+        {
+          "label": "Grade",
+          "value": "Y20"
+        }
+      ],
+      "stock": 75,
+      "unit": "length (12 m)",
+      "vatClass": "standard"
+    },
+    "note": ""
+  },
+  {
+    "request": "DELETE /api/vendor/stores/st_7dJNd5ZG0TL8/products/prd_I2E51bb7xEHg",
+    "body": null,
+    "auth": true,
+    "status": 204,
+    "response": null,
+    "note": ""
+  },
+  {
+    "request": "GET /api/vendor/stores/st_7dJNd5ZG0TL8/sales?channel=online",
+    "body": null,
+    "auth": true,
+    "status": 200,
+    "response": [
+      {
+        "channel": "online",
+        "createdAt": "2026-10-31T16:27:08.861Z",
+        "customerId": null,
+        "customerName": "Kevin",
+        "customerPhone": "254766888999",
+        "delivery": {
+          "address": null,
+          "notes": null,
+          "type": "pickup",
+          "zone": null
+        },
+        "deliveryFee": 0,
+        "id": "S-244",
+        "items": [
+          {
+            "cost": 470,
+            "name": "Claw hammer, 16 oz",
+            "price": 650,
+            "productId": "prd_JlSWOYWw_xzo",
+            "qty": 1,
+            "unit": "piece"
+          }
+        ],
+        "method": "mpesa",
+        "mpesaRef": "TJK4H2PQ9X",
+        "paidAt": null,
+        "paymentMode": "direct",
+        "staff": null,
+        "status": "awaiting_confirmation",
+        "storeId": "st_7dJNd5ZG0TL8",
+        "subtotal": 650,
+        "total": 650
+      },
+      {
+        "channel": "online",
+        "createdAt": "2026-10-31T16:27:08.826Z",
+        "customerId": null,
+        "customerName": "Daniel K",
+        "customerPhone": "254711222333",
+        "delivery": {
+          "address": "EPZ gate B",
+          "notes": null,
+          "type": "delivery",
+          "zone": "EPZ / Athi River"
+        },
+        "deliveryFee": 600,
+        "id": "S-243",
+        "items": [
+          {
+            "cost": 470,
+            "name": "Claw hammer, 16 oz",
+            "price": 650,
+            "productId": "prd_JlSWOYWw_xzo",
+            "qty": 2,
+            "unit": "piece"
+          }
+        ],
+        "method": "mpesa",
+        "mpesaRef": "T2A799E450",
+        "paidAt": "2026-10-31T16:27:08.846Z",
+        "paymentMode": "prompt",
+        "staff": null,
+        "status": "new",
+        "storeId": "st_7dJNd5ZG0TL8",
+        "subtotal": 1300,
+        "total": 1900
+      },
+      "... 21 more"
+    ],
+    "note": ""
+  },
+  {
+    "request": "POST /api/vendor/stores/st_7dJNd5ZG0TL8/sales",
+    "body": {
+      "items": [
+        {
+          "productId": "prd_JlSWOYWw_xzo",
+          "qty": 1
+        }
+      ],
+      "method": "cash"
+    },
+    "auth": true,
+    "status": 201,
+    "response": {
+      "channel": "pos",
+      "createdAt": "2026-10-31T16:27:09.090Z",
+      "customerId": null,
+      "customerName": null,
+      "customerPhone": null,
+      "delivery": null,
+      "deliveryFee": 0,
+      "id": "S-245",
+      "items": [
+        {
+          "cost": 470,
+          "name": "Claw hammer, 16 oz",
+          "price": 650,
+          "productId": "prd_JlSWOYWw_xzo",
+          "qty": 1,
+          "unit": "piece"
+        }
+      ],
+      "method": "cash",
+      "mpesaRef": null,
+      "paidAt": "2026-10-31T16:27:09.089Z",
+      "paymentMode": null,
+      "staff": "Peter Kamau",
+      "status": "completed",
+      "storeId": "st_7dJNd5ZG0TL8",
+      "subtotal": 650,
+      "total": 650
+    },
+    "note": ""
+  },
+  {
+    "request": "PATCH /api/vendor/stores/st_7dJNd5ZG0TL8/sales/S-244",
+    "body": {
+      "status": "new"
+    },
+    "auth": true,
+    "status": 200,
+    "response": {
+      "channel": "online",
+      "createdAt": "2026-10-31T16:27:08.861Z",
+      "customerId": null,
+      "customerName": "Kevin",
+      "customerPhone": "254766888999",
+      "delivery": {
+        "address": null,
+        "notes": null,
+        "type": "pickup",
+        "zone": null
+      },
+      "deliveryFee": 0,
+      "id": "S-244",
+      "items": [
+        {
+          "cost": 470,
+          "name": "Claw hammer, 16 oz",
+          "price": 650,
+          "productId": "prd_JlSWOYWw_xzo",
+          "qty": 1,
+          "unit": "piece"
+        }
+      ],
+      "method": "mpesa",
+      "mpesaRef": "TJK4H2PQ9X",
+      "paidAt": "2026-10-31T16:27:09.097Z",
+      "paymentMode": "direct",
+      "staff": null,
+      "status": "new",
+      "storeId": "st_7dJNd5ZG0TL8",
+      "subtotal": 650,
+      "total": 650
+    },
+    "note": "shop confirms a direct payment"
+  },
+  {
+    "request": "GET /api/vendor/stores/st_7dJNd5ZG0TL8/customers",
+    "body": null,
+    "auth": true,
+    "status": 200,
+    "response": [
+      {
+        "balance": 184500,
+        "creditLimit": 250000,
+        "dueAt": "2026-10-27T16:27:07.820Z",
+        "id": "cu_VI1cENCzzRPd",
+        "name": "Otieno Contractors",
+        "phone": "0723 441 902"
+      },
+      {
+        "balance": 58200,
+        "creditLimit": 60000,
+        "dueAt": "2026-10-20T16:27:07.820Z",
+        "id": "cu_884du_xKHKLh",
+        "name": "Mutua Welding",
+        "phone": "0716 552 804"
+      },
+      "... 3 more"
+    ],
+    "note": ""
+  },
+  {
+    "request": "GET /api/vendor/stores/st_7dJNd5ZG0TL8/customers/cu_VI1cENCzzRPd",
+    "body": null,
+    "auth": true,
+    "status": 200,
+    "response": {
+      "balance": 184500,
+      "creditLimit": 250000,
+      "dueAt": "2026-10-27T16:27:07.820Z",
+      "id": "cu_VI1cENCzzRPd",
+      "name": "Otieno Contractors",
+      "phone": "0723 441 902"
+    },
+    "note": ""
+  },
+  {
+    "request": "POST /api/vendor/stores/st_7dJNd5ZG0TL8/customers",
+    "body": {
+      "name": "Fundi Otieno",
+      "phone": "0700 123 456",
+      "creditLimit": 50000
+    },
+    "auth": true,
+    "status": 201,
+    "response": {
+      "balance": 0,
+      "creditLimit": 50000,
+      "dueAt": null,
+      "id": "cu_WpW5rBwDGmFp",
+      "name": "Fundi Otieno",
+      "phone": "0700 123 456"
+    },
+    "note": ""
+  },
+  {
+    "request": "POST /api/vendor/stores/st_7dJNd5ZG0TL8/customers/cu_VI1cENCzzRPd/payments",
+    "body": {
+      "amount": 1000
+    },
+    "auth": true,
+    "status": 200,
+    "response": {
+      "balance": 183500,
+      "creditLimit": 250000,
+      "dueAt": "2026-10-27T16:27:07.820Z",
+      "id": "cu_VI1cENCzzRPd",
+      "name": "Otieno Contractors",
+      "phone": "0723 441 902"
+    },
+    "note": ""
+  },
+  {
+    "request": "GET /api/vendor/stores/st_7dJNd5ZG0TL8/quotes",
+    "body": null,
+    "auth": true,
+    "status": 200,
+    "response": [
+      {
+        "createdAt": "2026-10-31T16:27:08.868Z",
+        "id": "q_pn6mO842q578",
+        "items": "200 bags cement",
+        "name": "Site manager",
+        "phone": "254711000111",
+        "reference": "Q-53863",
+        "site": "Isinya",
+        "status": "new"
+      }
+    ],
+    "note": ""
+  },
+  {
+    "request": "PATCH /api/vendor/stores/st_7dJNd5ZG0TL8/quotes/q_pn6mO842q578",
+    "body": {
+      "status": "replied"
+    },
+    "auth": true,
+    "status": 200,
+    "response": {
+      "createdAt": "2026-10-31T16:27:08.868Z",
+      "id": "q_pn6mO842q578",
+      "items": "200 bags cement",
+      "name": "Site manager",
+      "phone": "254711000111",
+      "reference": "Q-53863",
+      "site": "Isinya",
+      "status": "replied"
+    },
+    "note": ""
+  },
+  {
+    "request": "GET /api/vendor/stores/st_7dJNd5ZG0TL8/payouts",
+    "body": null,
+    "auth": true,
+    "status": 200,
+    "response": [
+      {
+        "amount": 1900,
+        "commission": 0,
+        "createdAt": "2026-10-31T16:27:08.849Z",
+        "destination": "Till 5123456",
+        "failureReason": null,
+        "gross": 1900,
+        "id": 86,
+        "method": "till",
+        "orderId": "S-243",
+        "paidAt": "2026-10-31T16:27:08.848Z",
+        "providerRef": "TRF_E03D7FA5",
+        "reference": "PO_188F5C8E0C3276B1",
+        "status": "paid"
+      },
+      {
+        "amount": 17840,
+        "commission": 0,
+        "createdAt": "2026-10-29T15:27:07.820Z",
+        "destination": "Till 5123456",
+        "failureReason": null,
+        "gross": 17840,
+        "id": 20,
+        "method": "till",
+        "orderId": "S-58",
+        "paidAt": "2026-10-29T15:27:07.820Z",
+        "providerRef": "TRF_SEED58",
+        "reference": "PO_SEED_58",
+        "status": "paid"
+      },
+      "... 20 more"
+    ],
+    "note": ""
+  },
+  {
+    "request": "GET /api/vendor/stores/st_7dJNd5ZG0TL8/activity",
+    "body": null,
+    "auth": true,
+    "status": 200,
+    "response": [
+      {
+        "actor": "Peter Kamau",
+        "createdAt": "2026-10-31T16:27:09.097Z",
+        "data": {
+          "after": "new",
+          "before": "awaiting_confirmation",
+          "order": "S-244"
+        },
+        "id": 264,
+        "kind": "order_status",
+        "storeId": "st_7dJNd5ZG0TL8",
+        "storeName": null,
+        "summary": "S-244: awaiting confirmation → new"
+      },
+      {
+        "actor": "Peter Kamau",
+        "createdAt": "2026-10-31T16:27:09.091Z",
+        "data": {
+          "method": "cash",
+          "sale": "S-245",
+          "total": 650
+        },
+        "id": 263,
+        "kind": "counter_sale",
+        "storeId": "st_7dJNd5ZG0TL8",
+        "storeName": null,
+        "summary": "Counter sale S-245: 1 × Claw hammer, 16 oz — KSh 650 (cash)"
+      },
+      "... 48 more"
+    ],
+    "note": ""
+  },
+  {
+    "request": "POST /api/uploads",
+    "body": "(multipart: file, storeId)",
+    "auth": true,
+    "status": 201,
+    "response": {
+      "id": "b0c2f3cd66298b68ffe61182.png",
+      "url": "http://localhost/api/uploads/b0c2f3cd66298b68ffe61182.png"
+    },
+    "note": ""
+  },
+  {
+    "request": "POST /api/auth/password",
+    "body": {
+      "currentPassword": "topline123",
+      "newPassword": "new-pass-123"
+    },
+    "auth": true,
+    "status": 200,
+    "response": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1X0pSdGtGNllzWnljXyIsInJvbGUiOiJ2ZW5kb3IiLCJwdiI6MiwiaWF0IjoxNzkzNDY0MDI5LCJleHAiOjE3OTM3MjMyMjl9.0QRVuwE39NjvX3cOXDJL7x3Q0K4d5royjOKU0HtJ-d0",
+      "user": {
+        "email": "peter@mjengo.example.com",
+        "id": "u_JRtkF6YsZyc_",
+        "mustChangePassword": false,
+        "name": "Peter Kamau",
+        "phone": "254712345678",
+        "role": "vendor",
+        "storeId": "st_7dJNd5ZG0TL8",
+        "storeRole": "owner"
+      }
+    },
+    "note": "returns a new token; older tokens stop working"
+  },
+  {
+    "request": "GET /api/admin/overview",
+    "body": null,
+    "auth": true,
+    "status": 200,
+    "response": {
+      "customers": {
+        "creditCustomers": 6,
+        "newBuyers30": 6,
+        "onlineBuyers": 6,
+        "owedToShops": 290500,
+        "repeatBuyers": 6
+      },
+      "health": {
+        "avgMs": 25,
+        "byHour": [
+          {
+            "errors": 0,
+            "hour": "2026-10-31T16:00:00+00:00",
+            "requests": 43
+          }
+        ],
+        "clientErrors24": 2,
+        "openIncidents": 0,
+        "requests24": 43,
+        "serverErrors24": 0,
+        "slowestMs": 325
+      },
+      "money": {
+        "counterSales": 158,
+        "onlineOrders": 87,
+        "onlineValue": 2808282,
+        "payouts": {
+          "failed": {
+            "amount": 0,
+            "count": 0
+          },
+          "paid": {
+            "amount": 2807632,
+            "count": 86
+          },
+          "pending": {
+            "amount": 0,
+            "count": 0
+          }
+        },
+        "salesValue": 5836648,
+        "subscriptionRevenue": 3500
+      },
+      "stores": {
+        "byStatus": {
+          "active": 5,
+          "draft": 1,
+          "past_due": 1,
+          "suspended": 1
+        },
+        "monthlyRevenue": 25500,
+        "signupsByDay": [
+          {
+            "count": 0,
+            "date": "2026-10-02"
+          },
+          {
+            "count": 0,
+            "date": "2026-10-03"
+          },
+          "... 28 more"
+        ],
+        "total": 8
+      },
+      "traffic": {
+        "byDay": [
+          {
+            "date": "2026-10-02",
+            "site": 190,
+            "stores": 223
+          },
+          {
+            "date": "2026-10-03",
+            "site": 105,
+            "stores": 170
+          },
+          "... 28 more"
+        ],
+        "topStores": [
+          {
+            "name": "Mwamba Hardware",
+            "slug": "mwamba",
+            "storeId": "st_12I7XeOjUM6z",
+            "views": 2036
+          },
+          {
+            "name": "Baraka Builders Centre",
+            "slug": "baraka-builders",
+            "storeId": "st_m6Z7ZW-1bVa8",
+            "views": 2008
+          },
+          "... 4 more"
+        ],
+        "total30": 15340
+      }
+    },
+    "note": ""
+  },
+  {
+    "request": "GET /api/admin/stores",
+    "body": null,
+    "auth": true,
+    "status": 200,
+    "response": [
+      {
+        "accent": "#F5A623",
+        "address": "",
+        "billing": {
+          "period": "monthly"
+        },
+        "county": "Kajiado",
+        "cover": "aisle",
+        "createdAt": "2026-10-31T16:27:09.013Z",
+        "customDomain": null,
+        "delivery": {
+          "enabled": false,
+          "freeOver": null,
+          "mode": "zones",
+          "note": "",
+          "zones": []
+        },
+        "gmv30": 0,
+        "hours": "Mon–Sat 8:00–18:00",
+        "id": "st_M9zFy8vPC3cH",
+        "logo": "",
+        "name": "Baraka Hardware",
+        "nextBillingAt": "2026-11-30T16:27:09.014Z",
+        "owner": {
+          "name": "Grace Akinyi",
+          "phone": "0722 111 222"
+        },
+        "payments": {
+          "acceptsDirect": true,
+          "account": "",
+          "canReceive": true,
+          "method": "till",
+          "mpesaTill": "5566778",
+          "name": "Baraka Hardware",
+          "number": "5566778"
+        },
+        "phone": "0722 111 222",
+        "plan": {
+          "blurb": "For busy shops that sell on credit and give quotations.",
+          "features": [
+            "Everything in Starter",
+            "Customer credit and statements",
+            "... 4 more"
+          ],
+          "id": "business",
+          "limits": {
+            "branches": 2,
+            "products": 1500,
+            "staff": 8
+          },
+          "name": "Business",
+          "popular": true,
+          "priceMonthly": 3500,
+          "priceYearly": 35000
+        },
+        "planId": "business",
+        "products": 0,
+        "slug": "baraka-hardware",
+        "status": "active",
+        "tagline": "",
+        "town": "Kitengela",
+        "whatsapp": "254722111222"
+      },
+      {
+        "accent": "#1E88E5",
+        "address": "Kimathi Way",
+        "billing": {
+          "period": "monthly"
+        },
+        "county": "Nyeri",
+        "cover": "pipes",
+        "createdAt": "2026-10-29T16:27:07.820Z",
+        "customDomain": null,
+        "delivery": {
+          "enabled": false,
+          "freeOver": null,
+          "mode": "zones",
+          "note": "Same-day delivery for orders placed before 2 pm.",
+          "zones": []
+        },
+        "gmv30": 0,
+        "hours": "Mon–Sat 8:00–17:00",
+        "id": "st_OfVo2XHVNW1i",
+        "logo": "",
+        "name": "Nyeri Plumb Centre",
+        "nextBillingAt": null,
+        "owner": {
+          "name": "Mary Muthoni",
+          "phone": "0798 221 560"
+        },
+        "payments": {
+          "acceptsDirect": false,
+          "account": "",
+          "canReceive": false,
+          "method": "till",
+          "mpesaTill": "",
+          "name": "Nyeri Plumb Centre",
+          "number": ""
+        },
+        "phone": "0798 221 560",
+        "plan": {
+          "blurb": "For busy shops that sell on credit and give quotations.",
+          "features": [
+            "Everything in Starter",
+            "Customer credit and statements",
+            "... 4 more"
+          ],
+          "id": "business",
+          "limits": {
+            "branches": 2,
+            "products": 1500,
+            "staff": 8
+          },
+          "name": "Business",
+          "popular": true,
+          "priceMonthly": 3500,
+          "priceYearly": 35000
+        },
+        "planId": "business",
+        "products": 5,
+        "slug": "nyeri-plumb",
+        "status": "draft",
+        "tagline": "Pipes, tanks and fittings",
+        "town": "Nyeri",
+        "whatsapp": "254798221560"
+      },
+      "... 6 more"
+    ],
+    "note": ""
+  },
+  {
+    "request": "GET /api/admin/plans",
+    "body": null,
+    "auth": true,
+    "status": 200,
+    "response": [
+      {
+        "blurb": "One shop, your own store link, and a till for the counter.",
+        "features": [
+          "Online store at yourshop.toplinehub.co.ke",
+          "Counter sales in bags, lengths and kg",
+          "... 3 more"
+        ],
+        "id": "starter",
+        "limits": {
+          "branches": 1,
+          "products": 150,
+          "staff": 2
+        },
+        "name": "Starter",
+        "popular": false,
+        "priceMonthly": 1500,
+        "priceYearly": 15000
+      },
+      {
+        "blurb": "For busy shops that sell on credit and give quotations.",
+        "features": [
+          "Everything in Starter",
+          "Customer credit and statements",
+          "... 4 more"
+        ],
+        "id": "business",
+        "limits": {
+          "branches": 2,
+          "products": 1500,
+          "staff": 8
+        },
+        "name": "Business",
+        "popular": true,
+        "priceMonthly": 3500,
+        "priceYearly": 35000
+      },
+      "... 1 more"
+    ],
+    "note": ""
+  },
+  {
+    "request": "GET /api/admin/payments",
+    "body": null,
+    "auth": true,
+    "status": 200,
+    "response": [
+      {
+        "amount": 1500,
+        "createdAt": "2026-10-31T16:27:08.878Z",
+        "failureReason": "The M-PESA payment failed: not enough balance.",
+        "kind": "subscription",
+        "mpesaRef": null,
+        "paidAt": null,
+        "payee": "TOPLINE",
+        "phone": "254722111999",
+        "planId": "starter",
+        "provider": "simulation",
+        "reference": "SUB_3157C454992160C5",
+        "status": "failed",
+        "storeId": null,
+        "storeName": null
+      },
+      {
+        "amount": 3500,
+        "createdAt": "2026-10-31T16:27:08.872Z",
+        "failureReason": null,
+        "kind": "subscription",
+        "mpesaRef": "T8F8484E32",
+        "paidAt": "2026-10-31T16:27:08.875Z",
+        "payee": "TOPLINE",
+        "phone": "254722111222",
+        "planId": "business",
+        "provider": "simulation",
+        "reference": "SUB_6C5770E172AE3E45",
+        "status": "paid",
+        "storeId": null,
+        "storeName": null
+      },
+      "... 1 more"
+    ],
+    "note": ""
+  },
+  {
+    "request": "GET /api/admin/payouts",
+    "body": null,
+    "auth": true,
+    "status": 200,
+    "response": [
+      {
+        "amount": 1900,
+        "commission": 0,
+        "createdAt": "2026-10-31T16:27:08.849Z",
+        "destination": "Till 5123456",
+        "failureReason": null,
+        "gross": 1900,
+        "id": 86,
+        "method": "till",
+        "orderId": "S-243",
+        "paidAt": "2026-10-31T16:27:08.848Z",
+        "providerRef": "TRF_E03D7FA5",
+        "reference": "PO_188F5C8E0C3276B1",
+        "status": "paid",
+        "storeName": "Mjengo Hardware"
+      },
+      {
+        "amount": 47830,
+        "commission": 0,
+        "createdAt": "2026-10-31T15:27:07.820Z",
+        "destination": "Till 4455667",
+        "failureReason": null,
+        "gross": 47830,
+        "id": 75,
+        "method": "till",
+        "orderId": "S-209",
+        "paidAt": "2026-10-31T15:27:07.820Z",
+        "providerRef": "TRF_SEED209",
+        "reference": "PO_SEED_209",
+        "status": "paid",
+        "storeName": "Rift Timber Yard"
+      },
+      "... 84 more"
+    ],
+    "note": ""
+  },
+  {
+    "request": "GET /api/admin/incidents?show=all",
+    "body": null,
+    "auth": true,
+    "status": 200,
+    "response": [],
+    "note": ""
+  },
+  {
+    "request": "GET /api/admin/activity?limit=3",
+    "body": null,
+    "auth": true,
+    "status": 200,
+    "response": [
+      {
+        "actor": "Peter Kamau",
+        "createdAt": "2026-10-31T16:27:09.472Z",
+        "data": {},
+        "id": 265,
+        "kind": "password_changed",
+        "storeId": "st_7dJNd5ZG0TL8",
+        "storeName": "Mjengo Hardware",
+        "summary": "Peter Kamau changed their password"
+      },
+      {
+        "actor": "Peter Kamau",
+        "createdAt": "2026-10-31T16:27:09.097Z",
+        "data": {
+          "after": "new",
+          "before": "awaiting_confirmation",
+          "order": "S-244"
+        },
+        "id": 264,
+        "kind": "order_status",
+        "storeId": "st_7dJNd5ZG0TL8",
+        "storeName": "Mjengo Hardware",
+        "summary": "S-244: awaiting confirmation → new"
+      },
+      "... 1 more"
+    ],
+    "note": ""
+  },
+  {
+    "request": "PATCH /api/admin/stores/st_qtysBvPVFYpE",
+    "body": {
+      "status": "active"
+    },
+    "auth": true,
+    "status": 200,
+    "response": {
+      "accent": "#0B3A6E",
+      "address": "Uganda Road industrial area",
+      "billing": {
+        "period": "monthly"
+      },
+      "county": "Uasin Gishu",
+      "cover": "timber",
+      "createdAt": "2026-06-03T16:27:07.820Z",
+      "customDomain": null,
+      "delivery": {
+        "enabled": true,
+        "freeOver": null,
+        "mode": "quote",
+        "note": "Delivery cost agreed by phone after you order (lorry or pickup depending on size).",
+        "zones": []
+      },
+      "hours": "Mon–Sat 7:00–17:00",
+      "id": "st_qtysBvPVFYpE",
+      "logo": "",
+      "name": "Rift Timber Yard",
+      "nextBillingAt": "2026-10-02T16:27:07.820Z",
+      "owner": {
+        "name": "Kiprono Rotich",
+        "phone": "0720 664 018"
+      },
+      "payments": {
+        "acceptsDirect": true,
+        "account": "",
+        "canReceive": true,
+        "method": "till",
+        "mpesaTill": "4455667",
+        "name": "Rift Timber Yard",
+        "number": "4455667"
+      },
+      "phone": "0720 664 018",
+      "planId": "starter",
+      "slug": "rift-timber",
+      "status": "active",
+      "tagline": "Timber and boards, cut to size",
+      "town": "Eldoret",
+      "whatsapp": "254720664018"
+    },
+    "note": ""
+  },
+  {
+    "request": "POST /api/admin/stores/st_7dJNd5ZG0TL8/reset-password",
+    "body": null,
+    "auth": true,
+    "status": 200,
+    "response": {
+      "owner": "Peter Kamau",
+      "temporaryPassword": "tg2QfucJCE"
+    },
+    "note": "owner must change it at next login"
+  },
+  {
+    "request": "PUT /api/admin/site",
+    "body": {
+      "announcement": "First month free"
+    },
+    "auth": true,
+    "status": 200,
+    "response": {
+      "announcement": "First month free",
+      "featureImageStock": "aisle",
+      "featureImageStore": "storefront",
+      "featureImageTill": "toolWall",
+      "heroImage": "heroShelves",
+      "heroText": "Customers browse your cement, steel and mabati and pay by M-PESA. You run the counter, stock and credit from the same place.",
+      "heroTitle": "Your hardware shop, online, with its own link.",
+      "signupImage": "ownerPhone",
+      "supportEmail": "hello@toplinehub.co.ke",
+      "supportPhone": "0700 000 000",
+      "supportWhatsapp": "254700000000"
+    },
+    "note": ""
+  },
+  {
+    "request": "POST /api/admin/payouts/1/retry",
+    "body": null,
+    "auth": true,
+    "status": 200,
+    "response": {
+      "amount": 10270,
+      "commission": 0,
+      "createdAt": "2026-10-21T15:27:07.820Z",
+      "destination": "Paybill 247247, account MJENGO",
+      "failureReason": null,
+      "gross": 10270,
+      "id": 1,
+      "method": "paybill",
+      "orderId": "S-1",
+      "paidAt": "2026-10-31T16:27:09.680Z",
+      "providerRef": "TRF_A6789183",
+      "reference": "PO_SEED_1",
+      "status": "paid"
+    },
+    "note": ""
+  },
+  {
+    "request": "PATCH /api/admin/incidents/1",
+    "body": {
+      "resolved": true
+    },
+    "auth": true,
+    "status": 200,
+    "response": {
+      "id": 1,
+      "resolved": true
+    },
+    "note": ""
+  },
+  {
+    "request": "POST /api/telemetry/error",
+    "body": {
+      "message": "TypeError: x is undefined",
+      "stack": "...",
+      "path": "/s/mjengo"
+    },
+    "auth": false,
+    "status": 200,
+    "response": {
+      "ok": true
+    },
+    "note": ""
+  },
+  {
+    "request": "GET /api/cron/run?key=k",
+    "body": null,
+    "auth": false,
+    "status": 200,
+    "response": {
+      "billingSweep": 1,
+      "paymentsSettled": 0
+    },
+    "note": "Hostinger cron every 5–10 min"
+  },
+  {
+    "request": "GET /api/vendor/stores/st_7dJNd5ZG0TL8",
+    "body": null,
+    "auth": true,
+    "status": 401,
+    "response": {
+      "field": null,
+      "message": "Your session has ended. Log in again."
+    },
+    "note": "any expired/invalid token"
+  }
+]

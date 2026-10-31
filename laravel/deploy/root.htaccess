@@ -1,0 +1,17 @@
+# Goes in public_html as .htaccess (GitHub Actions puts it there in the "hostinger" branch).
+# The whole Laravel app sits in public_html; this sends every request into its public/ folder,
+# so the code, .env and storage can never be opened from a browser.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # "/admin/" → "/admin" (done here, so the redirect never shows the internal /public folder)
+    RewriteCond %{REQUEST_URI} ^(.+)/$
+    RewriteRule ^ %1 [L,R=301]
+
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>

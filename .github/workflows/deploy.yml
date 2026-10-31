@@ -1,0 +1,132 @@
+# Every push to main: run the tests, build the site, and publish it to the "hostinger" branch.
+# Hostinger (hPanel → Advanced → Git) pulls the "hostinger" branch into public_html.
+# The "hostinger" branch is generated: never edit it by hand.
+name: Test and deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, pdo_sqlite, fileinfo
+          coverage: none
+
+      - name: Install PHP packages
+        working-directory: laravel
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Backend tests
+        working-directory: laravel
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          vendor/bin/phpunit
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Website lint and build
+        run: |
+          npm ci
+          npm run lint
+          npm run build:laravel
+
+  deploy:
+    needs: test
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      # Optional second route: upload straight to Hostinger over SSH (see README, "Deploying").
+      # Leave these secrets unset to use only the "hostinger" branch.
+      SSH_KEY: ${{ secrets.HOSTINGER_SSH_KEY }}
+      SSH_HOST: ${{ secrets.HOSTINGER_SSH_HOST }}
+      SSH_PORT: ${{ secrets.HOSTINGER_SSH_PORT }}
+      SSH_USER: ${{ secrets.HOSTINGER_SSH_USER }}
+      SSH_PATH: ${{ secrets.HOSTINGER_SSH_PATH }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Build the website into laravel/public
+        run: |
+          npm ci
+          npm run build:laravel
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+
+      - name: Install PHP packages (no dev tools)
+        working-directory: laravel
+        run: composer install --no-dev --optimize-autoloader --no-interaction --no-progress --prefer-dist
+
+      - name: Assemble what goes on the server
+        run: |
+          mkdir build
+          rsync -a laravel/ build/ \
+            --exclude /tests --exclude /phpunit.xml --exclude /.env --exclude '/.phpunit*' \
+            --exclude '/database/*.sqlite' --exclude '/storage/logs/*.log' \
+            --exclude '/bootstrap/cache/*.php' --exclude /deploy \
+            --exclude /composer.json --exclude /composer.lock
+          cp laravel/deploy/root.htaccess build/.htaccess
+          # Unlike in the source, vendor/ IS published; .env and runtime files never are.
+          printf '.env\n.env.backup\n/database/*.sqlite\n' > build/.gitignore
+          echo "${GITHUB_SHA::12}" > build/DEPLOYED_VERSION
+
+      - name: Publish to the hostinger branch
+        env:
+          REPO: https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git clone --quiet --depth 1 --branch hostinger "$REPO" out; then
+            echo "Updating the hostinger branch"
+          else
+            mkdir out && cd out && git init --quiet -b hostinger && git remote add origin "$REPO" && cd ..
+          fi
+          rsync -a --checksum --delete --exclude .git build/ out/
+          cd out
+          # --force: some packages in vendor/ ship their own .gitignore; everything in build/ must be published
+          git add -A --force
+          if git diff --cached --quiet; then
+            echo "Nothing changed"
+            exit 0
+          fi
+          git commit --quiet -m "Deploy ${GITHUB_SHA::12}"
+          git push --quiet origin hostinger
+
+      - name: Upload to Hostinger over SSH (only when the HOSTINGER_SSH_* secrets are set)
+        if: env.SSH_KEY != ''
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/hostinger && chmod 600 ~/.ssh/hostinger
+          SSH="ssh -i $HOME/.ssh/hostinger -p ${SSH_PORT:-65002} -o StrictHostKeyChecking=accept-new"
+          # .env, photos, logs and caches live only on the server: never overwritten or deleted.
+          rsync -az --delete -e "$SSH" \
+            --exclude /.git --exclude /.env --exclude /storage/app/uploads/ --exclude /storage/logs/ \
+            --exclude /storage/framework/ --exclude /bootstrap/cache/ \
+            build/ "$SSH_USER@$SSH_HOST:$SSH_PATH/"
+          $SSH "$SSH_USER@$SSH_HOST" "cd $SSH_PATH && mkdir -p storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs bootstrap/cache && php artisan topline:deploy"
