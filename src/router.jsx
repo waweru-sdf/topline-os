@@ -40,6 +40,7 @@ const mainSiteRoutes = [
   },
   { path: 'start', lazy: () => import('@/features/onboarding/Onboarding') },
   { path: 'login', lazy: () => import('@/features/auth/Login') },
+  { path: 'change-password', lazy: () => import('@/features/auth/ChangePassword') },
   storefront('s/:slug'),
   {
     path: 'dashboard',
@@ -57,6 +58,7 @@ const mainSiteRoutes = [
       { path: 'money', lazy: () => import('@/features/vendor/Money') },
       { path: 'settings', lazy: () => import('@/features/vendor/Settings') },
       { path: 'billing', lazy: () => import('@/features/vendor/Billing') },
+      { path: 'activity', lazy: () => import('@/features/vendor/Activity') },
     ],
   },
   {
@@ -69,6 +71,7 @@ const mainSiteRoutes = [
       { path: 'payments', lazy: () => import('@/features/platform/Payments') },
       { path: 'site', lazy: () => import('@/features/platform/SiteContent') },
       { path: 'health', lazy: () => import('@/features/platform/Health') },
+      { path: 'activity', lazy: () => import('@/features/platform/Activity') },
     ],
   },
 ]

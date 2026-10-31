@@ -1,73 +1,72 @@
 # Topline OS
 
-Hardware shops sign up, pay, and get their own online store at `theirshop.toplinehub.co.ke` plus a shop admin (counter sales, stock, credit). Topline staff get an overall admin over every store.
+Hardware shops sign up, pay, and get their own online store at `toplinehub.co.ke/s/theirshop` plus a shop admin (counter sales, stock, credit, activity). Topline staff get an overall admin over every store.
+
+**Where the project is:** Topline runs on **Laravel + MySQL on Hostinger** (Business plan), with the website and the API on one domain.
+
+| Phase | What | Status |
+| --- | --- | --- |
+| 1 | Website (React): password login and sign-up, admin password reset, Activity pages, product measurements and photos | ✅ done |
+| 2 | Backend in Laravel + MySQL ([`laravel/`](laravel)), matching [docs/API-CONTRACT.md](docs/API-CONTRACT.md) | ✅ done: 83 tests, on SQLite and MySQL/MariaDB |
+| 3 | Go live: GitHub → Hostinger, deployed automatically on every push | see [Deploying](#deploying) |
 
 ```
 topline-os/
-  src/, package.json …   React frontend (this folder)
-  backend/               Flask API (see backend/README.md)
-  deploy/                server setup and update scripts (see DEPLOY.md)
+  src/, package.json …   React website
+  laravel/               the backend (Laravel 13, PHP 8.3+). The built website is copied into laravel/public.
+  docs/                  API-CONTRACT.md + api-examples.json: what the API does, with a real example per endpoint
+  .github/workflows/     tests every push, then publishes the ready-to-run site to the "hostinger" branch
 ```
 
-## Set up (first time)
+**Changing the website:** edit `src/`, then run `npm run build:laravel`. That builds it for the Hostinger setup (API at `/api`, shop links at `/s/<shop>`) and copies it into `laravel/public`.
 
-Needs Node 22.12+ and Python 3.12+. Use two terminals, both starting in `topline-os`.
+## Run it on your computer (Laravel, same as the live site)
 
-**Terminal 1: backend**
+Needs PHP 8.3+, Composer and Node 22.12+.
 
 ```bash
-cd backend
-python -m venv .venv
-.venv\Scripts\activate            # Mac/Linux: source .venv/bin/activate
-pip install -r requirements-dev.txt
-copy .env.example .env             # Mac/Linux: cp .env.example .env
-flask --app wsgi seed
-flask --app wsgi run --debug       # http://localhost:5000/api/health
+cd laravel
+composer install
+cp .env.example .env               # Windows: copy .env.example .env
 ```
 
-**Terminal 2: frontend**
+In `laravel/.env` set `APP_ENV=local`, `APP_DEBUG=true`, `APP_URL=http://localhost:8000` and, for a quick start without MySQL, `DB_CONNECTION=sqlite` (delete the other `DB_` lines). Then:
 
 ```bash
-copy .env.example .env             # Mac/Linux: cp .env.example .env
-npm install
-npm run dev                        # http://localhost:5173
+php artisan key:generate
+php artisan topline:install --demo   # tables, plans and the 7 demo shops
+php artisan serve                    # http://localhost:8000 (website + API)
+php artisan test                     # or: vendor/bin/phpunit
 ```
 
-The frontend's `.env` points at the backend (`VITE_API_URL=http://localhost:5000/api`). The backend must be running: the old built-in mock data has been removed.
-
-**Updating from an earlier version?** The database layout changed. In `backend`, with the backend stopped: `pip install -r requirements-dev.txt` then `flask --app wsgi seed --reset`.
-
-## Every day after that
-
-- **Terminal 1:** `cd backend`, activate (`.venv\Scripts\activate`), then `flask --app wsgi run --debug`
-- **Terminal 2:** `npm run dev`
+To work on the website with instant reload, also run `npm run dev` in `topline-os` with `VITE_API_URL=http://localhost:8000/api` in its `.env`.
 
 ## Logins
 
-The code is **123456**; while SMS is simulated, the login page shows it.
+Log in with the **phone number or email** and the password **topline123** (every demo account). Owners' emails are `<first name>@<shop>.example.com`, e.g. `peter@mjengo.example.com`; admins are `admin@toplinehub.co.ke` and `felix@toplinehub.co.ke`.
 
 | Who | Phone | Store | Link (dev) | Status |
 | --- | --- | --- | --- | --- |
 | Topline admin | 0700 000 000 | every store | `/admin` | |
 | Topline admin (Felix) | 0712 000 000 | every store | `/admin` | |
-| Peter Kamau | 0712 345 678 | Mjengo Hardware, Kitengela | mjengo.localhost:5173 | active. Till 5123456, delivery zones |
-| Juma Mwamba | 0733 444 555 | Mwamba Hardware | mwamba.localhost:5173 | active. Paybill 247247, acc 0733444555 |
-| Grace Wanjiru | 0722 118 404 | Baraka Builders Centre | baraka-builders.localhost:5173 | active. Pochi, delivery by quote |
-| Fatma Said | 0711 450 330 | Coast Steel Mart | coast-steel.localhost:5173 | active. Till 8899001 |
-| Ali Hassan | 0733 902 117 | Kilimani Paints & Tools | kilimani-paints.localhost:5173 | past due (grace period). Send money |
-| Kiprono Rotich | 0720 664 018 | Rift Timber Yard | rift-timber.localhost:5173 | suspended (store hidden) |
-| Mary Muthoni | 0798 221 560 | Nyeri Plumb Centre | nyeri-plumb.localhost:5173 | draft (signed up, not paid) |
+| Peter Kamau | 0712 345 678 | Mjengo Hardware, Kitengela | /s/mjengo | active. Till 5123456, delivery zones |
+| Juma Mwamba | 0733 444 555 | Mwamba Hardware | /s/mwamba | active. Paybill 247247, acc 0733444555 |
+| Grace Wanjiru | 0722 118 404 | Baraka Builders Centre | /s/baraka-builders | active. Pochi, delivery by quote |
+| Fatma Said | 0711 450 330 | Coast Steel Mart | /s/coast-steel | active. Till 8899001 |
+| Ali Hassan | 0733 902 117 | Kilimani Paints & Tools | /s/kilimani-paints | past due (grace period). Send money |
+| Kiprono Rotich | 0720 664 018 | Rift Timber Yard | /s/rift-timber | suspended (store hidden) |
+| Mary Muthoni | 0798 221 560 | Nyeri Plumb Centre | /s/nyeri-plumb | draft (signed up, not paid) |
 
-Every store also works at `localhost:5173/s/<slug>`. Each shop has its own products, stock, sales history and page visits; Mjengo also has credit customers.
+Links are relative to `http://localhost:8000` (or `:5173` with `npm run dev`). Each shop has its own products, stock, sales history and page visits; Mjengo also has credit customers.
 
-Reset the data with `flask --app wsgi seed --reset` (in `backend`, with the backend stopped).
+Reset the demo data with `php artisan migrate:fresh && php artisan topline:install --demo` (in `laravel`).
 
 ## Other commands
 
 ```bash
-npm run build      # production frontend in dist/
+npm run build:laravel   # build the website into laravel/public (for Hostinger)
 npm run lint
-cd backend && pytest
+cd laravel && vendor/bin/phpunit   # 83 backend tests
 ```
 
 ## What's in it
@@ -76,7 +75,8 @@ cd backend && pytest
 | --- | --- | --- |
 | Landing page | `/` | Explains Topline. Type a shop name to see the store link, pricing, FAQ |
 | Sign-up | `/start` | Owner, shop, link (with availability check), plan, then M-PESA payment |
-| Log in | `/login` | Phone + one-time code |
+| Log in | `/login` | Phone or email + password. Forgot it? A Topline admin gives a temporary one, which must be changed at next login |
+| Change password | `/change-password` | From the key icon in either admin |
 | Storefront | `/s/:slug` or `slug.toplinehub.co.ke` | Catalogue with search and categories, product page, cart, M-PESA checkout, quote request |
 | Shop admin | `/dashboard` | Overview, counter till, online orders, products & stock, customers & credit, store settings, plan & billing |
 | Topline admin | `/admin` | Overview (income, customers, visits per day, top shops), stores (suspend, change plan, open any shop admin), payments in and payouts to shops, site content (headline, announcement, pictures, contacts), system health (errors, speed, alerts) |
@@ -105,17 +105,17 @@ cd backend && pytest
 - **Quote after ordering** for heavy loads (lorry, distance-based). The customer orders and pays for the goods, and the shop calls with the delivery price.
 - Pick-up from the shop is always free.
 
-**Photos.** Shop owners upload their own product photos, logo and cover from their phone or computer (JPG, PNG or WebP, up to 5 MB). Topline admins upload the main site pictures in Site content. Files are checked and saved to `backend/instance/uploads` (change with `UPLOAD_FOLDER`; use S3 or similar storage in production).
+**Photos.** Shop owners upload their own product photos, logo and cover from their phone or computer (JPG, PNG or WebP, up to 5 MB). Topline admins upload the main site pictures in Site content. Files are checked and saved in `laravel/storage/app/uploads` on the server (kept across deploys), or in MySQL with `UPLOAD_STORAGE=database`.
 
 ### Going live with Paystack
 
-The Paystack integration is fully written (`backend/app/services/payments/paystack.py`): M-PESA charges, payment checks, transfers to shops and webhooks. To switch it on:
+The Paystack integration is fully written (`laravel/app/Services/Payments/PaystackGateway.php`): M-PESA charges, payment checks, transfers to shops and webhooks. To switch it on:
 
-1. In `backend/.env`: `PAYMENTS_MODE=paystack`, `PAYSTACK_SECRET_KEY=sk_live_…`, `PAYSTACK_PUBLIC_KEY=pk_live_…`
-2. In the Paystack dashboard, set the webhook URL to `https://<your-api-host>/api/webhooks/paystack`
+1. In the site's `.env` (hPanel → File Manager → public_html): `PAYMENTS_MODE=paystack`, `PAYSTACK_SECRET_KEY=sk_live_…`, `PAYSTACK_PUBLIC_KEY=pk_live_…`
+2. In the Paystack dashboard, set the webhook URL to `https://toplinehub.co.ke/api/webhooks/paystack`
 3. Enable Transfers on the Paystack account (needed to pay shops) and keep the balance funded.
-4. Check the M-PESA recipient codes in `PAYSTACK_RECIPIENT` (top of `paystack.py`) against Paystack's current Kenya transfer docs. Till and paybill transfers use business-type recipients.
-5. Restart the backend. `GET /api/health` shows `"payments": "paystack"`.
+4. Check the M-PESA recipient codes in `RECIPIENT` (top of `PaystackGateway.php`) against Paystack's current Kenya transfer docs. Till and paybill transfers use business-type recipients.
+5. Nothing to restart: `.env` is read on every request. `GET /api/health` shows `"payments": "paystack"`.
 
 Test with `sk_test_` keys first.
 
@@ -144,7 +144,7 @@ src/
   styles/index.css             Tailwind + Topline design tokens
   lib/                         formatting (KES, phone), tenant/subdomain, Unsplash images, counties, payout methods
   services/
-    api.js                     the ONLY data entry point (HTTP to the Flask API)
+    api.js                     the ONLY data entry point (HTTP to the API: Laravel in laravel/)
     session.js                 logged-in user/token
   context/CartContext.jsx      per-store cart
   components/                  ui/ (Button, Field, Badge, Img, Dialog…), layout/AppShell, SalesChart, BarChart,
@@ -186,7 +186,7 @@ Default pictures come from Unsplash (free Unsplash License), listed in `src/lib/
 | placeOrder | `POST /storefront/:slug/orders`. Creates the order and sends the M-PESA STK push |
 | getOrderPayment | `GET /storefront/:slug/orders/:id/payment` → `{ status: pending\|paid\|failed, mpesaRef, failureReason }` |
 | requestQuote | `POST /storefront/:slug/quotes` |
-| requestOtp / verifyOtp | `POST /auth/otp`, `POST /auth/otp/verify` → `{ user, token }` |
+| login / changePassword / me | `POST /auth/login`, `POST /auth/password`, `GET /auth/me` → `{ user, token }` |
 | createStore | `POST /stores` |
 | paySubscription / getSubscriptionPayment | `POST /billing/subscription/pay` → pending payment, then `GET /billing/payments/:ref` |
 | answerSimulatedPrompt | `POST /simulator/payments/:ref` `{ action: approve\|decline, pin }` (simulation only) |
@@ -211,12 +211,45 @@ Backend rules the UI relies on:
 
 ## Deploying
 
-Two setups are ready:
+Everything runs on the Hostinger Business plan: the website, the API (Laravel) and MySQL, on one domain. Shop links are `toplinehub.co.ke/s/<shop>`.
 
-- **Now (free):** website on Hostinger, backend on Render, database on Neon, all deployed from GitHub. See **[HOSTING.md](HOSTING.md)**. Shop links are `toplinehub.co.ke/s/<shop>`.
-- **Later (one VPS):** everything on one Ubuntu server with automatic HTTPS for `<shop>.toplinehub.co.ke`. See **[DEPLOY.md](DEPLOY.md)**.
+**How it works:** you push to `main` on GitHub. GitHub Actions ([`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)) runs the tests, builds the website into Laravel, installs the PHP packages and publishes the result to the **`hostinger`** branch. Hostinger pulls that branch into `public_html`. A Cron Job then applies any database changes within a minute. Nothing to build or run on the server.
 
-Frontend build settings live in `.env.production`: `VITE_API_URL`, `VITE_ROOT_DOMAIN`, and `VITE_STORE_LINKS` (`path` or `subdomain`).
+### One-time setup
+
+1. **Push to GitHub.** Commit and push to `main`. Under the repository's **Actions** tab, wait for "Test and deploy" to go green. It creates the `hostinger` branch.
+2. **PHP.** hPanel → Websites → toplinehub.co.ke → Advanced → **PHP Configuration**: version **8.3**. Under PHP options, set `upload_max_filesize` and `post_max_size` to **16M**.
+3. **Database.** hPanel → Databases → **MySQL Databases**: create database `topline` and user `topline` with a generated password. Note the full names (`u123456789_topline`) and the password.
+4. **Empty `public_html`.** Hostinger only deploys into an empty folder. Back up the current site (hPanel → Files → Backups), then delete everything inside `public_html` in File Manager.
+5. **Connect the repository.** hPanel → Advanced → **GIT**:
+   - The repository is private, so copy the **SSH key** shown there. In GitHub → repository → Settings → **Deploy keys** → Add deploy key, paste it (leave "write access" off).
+   - Repository: `git@github.com:YOUR-USERNAME/topline-os.git`. Branch: **`hostinger`**. Directory: leave empty (that means `public_html`). Then **Create**.
+   - Turn on **Auto Deployment**, copy the webhook URL, and add it in GitHub → Settings → **Webhooks** → Add webhook (Payload URL = that URL, content type `application/json`, "Just the push event").
+6. **Cron Job.** hPanel → Advanced → **Cron Jobs** → Custom, every minute (`* * * * *`):
+
+   ```
+   /usr/bin/php /home/u123456789/domains/toplinehub.co.ke/public_html/artisan schedule:run
+   ```
+
+   Use your own `u…` number. If PHP CLI on your account is older than 8.3, use `/opt/alt/php83/usr/bin/php`.
+7. **Settings.** Within a minute the cron creates `public_html/.env` (File Manager → turn on "Show hidden files"). Edit it:
+   - `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` from step 3
+   - `FIRST_ADMIN_PHONE`, `FIRST_ADMIN_EMAIL`, `FIRST_ADMIN_PASSWORD` (at least 8 characters) for your admin login
+
+   Save. Within a minute the cron creates the tables, the three plans and your admin.
+8. **HTTPS.** hPanel → Security → **SSL**: make sure it's active, and turn on **Force HTTPS**.
+9. **Check.** `https://toplinehub.co.ke/api/health` shows `{"ok":true,...}`. Log in at `/login`, then **clear `FIRST_ADMIN_PASSWORD`** in `.env`.
+10. **Retire the old setup.** Delete the Render service and the Neon project, and in hPanel DNS delete the `api` CNAME that pointed at Render.
+
+The live site starts empty. Shops sign up at `/start`. Until Paystack is on, payments are simulated, so keep the link to yourself (see [Going live with Paystack](#going-live-with-paystack)).
+
+### After that
+
+- **Updating:** push to `main`. About 3 minutes later it's live, and database changes apply within a minute after that.
+- **`.env` and photos** stay on the server across deploys; they're never in Git.
+- **Forgotten passwords:** Topline admin → Stores → ⋯ → Reset owner's password. Add more admins from the terminal (`php artisan topline:create-admin "Name" 07XXXXXXXX`) or with the `FIRST_ADMIN_*` lines while no admin exists.
+- **Errors:** System health in the admin, and `public_html/storage/logs/` in File Manager.
+- The `hostinger` branch is generated; don't edit it by hand.
 
 ## Known gaps
 

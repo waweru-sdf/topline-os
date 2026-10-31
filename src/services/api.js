@@ -1,10 +1,10 @@
 /**
- * The only module UI code talks to for data: every call to the Flask API
- * (backend/) lives here. Set VITE_API_URL in .env; defaults to the local backend.
+ * The only module UI code talks to for data: every call to the API
+ * (Laravel in laravel/) lives here. Set VITE_API_URL in .env; defaults to the local backend.
  */
 import { clearSession, getToken } from './session'
 
-const BASE = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace(/\/$/, '')
+const BASE = (import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '')
 
 export class ApiError extends Error {
   constructor(message, status = 400, field) {
@@ -37,6 +37,10 @@ async function http(method, path, body, { form } = {}) {
       window.location.assign('/login')
     }
   }
+  // After an admin reset the server refuses everything until a new password is chosen.
+  if (res.status === 403 && data?.field === 'newPassword' && path !== '/auth/password' && !window.location.pathname.startsWith('/change-password')) {
+    window.location.assign('/change-password')
+  }
   if (!res.ok) throw new ApiError(data?.message ?? `Request failed (${res.status})`, res.status, data?.field)
   return data
 }
@@ -67,9 +71,10 @@ export const api = {
   getSubscriptionPayment: (ref) => http('GET', `/billing/payments/${ref}`),
   answerSimulatedPrompt: (ref, action, pin) => http('POST', `/simulator/payments/${ref}`, { action, pin }),
 
-  // auth & onboarding
-  requestOtp: (phone) => http('POST', '/auth/otp', { phone }),
-  verifyOtp: (phone, code) => http('POST', '/auth/otp/verify', { phone, code }),
+  // auth & onboarding (log in with phone or email + password)
+  login: (login, password) => http('POST', '/auth/login', { login, password }),
+  changePassword: (currentPassword, newPassword) => http('POST', '/auth/password', { currentPassword, newPassword }),
+  me: () => http('GET', '/auth/me'),
   createStore: (body) => http('POST', '/stores', body),
 
   // photos
@@ -95,11 +100,14 @@ export const api = {
   saveCustomer: (id, body) => http('POST', `${v(id)}/customers`, body),
   recordCustomerPayment: (id, cid, amount) => http('POST', `${v(id)}/customers/${cid}/payments`, { amount }),
   listPayouts: (id) => http('GET', `${v(id)}/payouts`),
+  listStoreActivity: (id, params) => http('GET', `${v(id)}/activity${q(params)}`),
 
   // Topline admin
   getOverview: () => http('GET', '/admin/overview'),
   listAllStores: () => http('GET', '/admin/stores'),
   setStoreStatus: (id, status) => http('PATCH', `/admin/stores/${id}`, { status }),
+  resetOwnerPassword: (id) => http('POST', `/admin/stores/${id}/reset-password`),
+  listActivity: (params) => http('GET', `/admin/activity${q(params)}`),
   listPayments: () => http('GET', '/admin/payments'),
   listAllPayouts: (params) => http('GET', `/admin/payouts${q(params)}`),
   retryPayout: (id) => http('POST', `/admin/payouts/${id}/retry`),

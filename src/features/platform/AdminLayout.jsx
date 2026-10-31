@@ -1,5 +1,5 @@
 import { useLoaderData } from 'react-router'
-import { Activity, CreditCard, Image, LayoutDashboard, LogOut, Store } from 'lucide-react'
+import { Activity, CreditCard, History, Image, KeyRound, LayoutDashboard, LogOut, Store } from 'lucide-react'
 import { api } from '@/services/api'
 import { clearSession } from '@/services/session'
 import { AppShell } from '@/components/layout/AppShell'
@@ -16,6 +16,7 @@ function AdminLayout() {
   const nav = [
     { to: '/admin', label: 'Overview', icon: LayoutDashboard, end: true },
     { to: '/admin/stores', label: 'Stores', icon: Store },
+    { to: '/admin/activity', label: 'Activity', icon: History },
     { to: '/admin/payments', label: 'Payments', icon: CreditCard },
     { to: '/admin/site', label: 'Site content', icon: Image },
     { to: '/admin/health', label: 'System health', icon: Activity, badge: openIncidents || null },
@@ -31,6 +32,10 @@ function AdminLayout() {
         </div>
       }
       footer={
+        <>
+        <a href="/change-password" className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-mist hover:bg-white/10 hover:text-white">
+          <KeyRound className="size-5" /> Change password
+        </a>
         <button
           type="button"
           onClick={() => { clearSession(); window.location.assign('/login') }}
@@ -38,6 +43,7 @@ function AdminLayout() {
         >
           <LogOut className="size-5" /> Log out
         </button>
+        </>
       }
     />
   )

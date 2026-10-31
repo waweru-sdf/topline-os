@@ -25,6 +25,9 @@ function ProductPage() {
   const { add, items } = useCart()
   const [qty, setQty] = useState(1)
   const [quoteOpen, setQuoteOpen] = useState(false)
+  const photos = [product.image, ...(product.gallery ?? [])].filter(Boolean)
+  const [shown, setShown] = useState(0)
+  const photo = photos[shown] ?? product.image
   const inCart = items.find((i) => i.productId === product.id)?.qty ?? 0
   const stock = stockLabel(product)
   const soldOut = product.stock <= 0
@@ -37,11 +40,31 @@ function ProductPage() {
       </Link>
 
       <div className="mt-5 grid gap-8 md:grid-cols-2 md:gap-12">
-        <Img name={product.image} alt={product.name} w={900} h={700} priority sizes="(min-width: 768px) 560px, 100vw" className="aspect-[9/7] w-full rounded-card" />
+        <div>
+          <Img key={photo} name={photo} alt={product.name} w={900} h={700} priority sizes="(min-width: 768px) 560px, 100vw" className="aspect-[9/7] w-full rounded-card" />
+          {photos.length > 1 && (
+            <div className="mt-3 flex gap-2" role="tablist" aria-label="Photos">
+              {photos.map((p, i) => (
+                <button
+                  key={p + i}
+                  type="button"
+                  role="tab"
+                  aria-selected={shown === i}
+                  aria-label={`Photo ${i + 1}`}
+                  onClick={() => setShown(i)}
+                  className={`size-16 overflow-hidden rounded-lg ring-2 ring-offset-2 ${shown === i ? 'ring-navy' : 'ring-transparent hover:ring-line'}`}
+                >
+                  <Img name={p} alt="" w={128} h={128} className="size-full" />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
 
         <div>
           {category && <p className="text-sm text-muted">{category.name}</p>}
           <h1 className="mt-1 text-3xl font-bold tracking-tight text-ink">{product.name}</h1>
+          {product.size && <p className="mt-2 inline-block rounded-md bg-concrete px-2.5 py-1 text-sm font-medium text-ink">Size: {product.size}</p>}
           <p className="mt-4">
             <span className="text-3xl font-bold text-navy tabular">{formatKES(product.sellPrice)}</span>
             <span className="text-muted"> per {product.unit}</span>
@@ -53,6 +76,16 @@ function ProductPage() {
           ))}
           <p className={`mt-3 text-sm font-medium ${stock.tone}`}>{stock.text}</p>
           {product.description && <p className="mt-5 leading-relaxed text-muted">{product.description}</p>}
+          {product.specs?.length > 0 && (
+            <dl className="mt-5 divide-y divide-line rounded-lg ring-1 ring-line">
+              {product.specs.map((spec) => (
+                <div key={spec.label} className="flex justify-between gap-4 px-4 py-2.5 text-sm">
+                  <dt className="text-muted">{spec.label}</dt>
+                  <dd className="text-right font-medium">{spec.value}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
 
           <div className="mt-7 flex flex-wrap items-center gap-3">
             <div className="flex h-12 items-center rounded-lg border border-line bg-white">

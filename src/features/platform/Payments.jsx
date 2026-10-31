@@ -34,7 +34,7 @@ function Payments() {
       <title>Payments — Topline admin</title>
       <PageHeader title="Payments">
         {mode === 'simulation'
-          ? 'Payments are simulated: no real money moves. Add Paystack keys in backend/.env to go live.'
+          ? 'Payments are simulated: no real money moves. Add Paystack keys in the site’s .env to go live.'
           : 'Live Paystack payments.'}
       </PageHeader>
 

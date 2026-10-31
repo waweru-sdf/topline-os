@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/Button'
 import { Field } from '@/components/ui/Field'
 import { Img } from '@/components/ui/Img'
 import { Logo } from '@/components/ui/Logo'
+import { PasswordField } from '@/components/ui/PasswordField'
 
 export async function loader({ request }) {
   const url = new URL(request.url)
@@ -35,6 +36,9 @@ function Onboarding() {
   const [form, setForm] = useState({
     ownerName: '',
     ownerPhone: '',
+    ownerEmail: '',
+    ownerPassword: '',
+    ownerPassword2: '',
     shopName: initial.shopName,
     tagline: '',
     county: '',
@@ -49,6 +53,14 @@ function Onboarding() {
     billing: initial.billing,
   })
   const update = (patch) => setForm((f) => ({ ...f, ...patch }))
+  // A plan payment that went through, kept if opening the store then fails (e.g. email already used),
+  // so the owner fixes the detail and tries again without paying twice.
+  const [paid, setPaid] = useState(null)
+  const [serverErrors, setServerErrors] = useState({})
+  function detailsProblem(field, message) {
+    setServerErrors({ [field]: message })
+    setStep(field === 'slug' ? 2 : field.startsWith('owner') ? 0 : 1)
+  }
 
   return (
     <div className="grid min-h-dvh lg:grid-cols-[minmax(0,1fr)_28rem] xl:grid-cols-[minmax(0,1fr)_34rem]">
@@ -61,10 +73,12 @@ function Onboarding() {
 
         <div className="mx-auto w-full max-w-xl flex-1 py-10">
           <Progress step={step} />
-          {step === 0 && <OwnerStep form={form} update={update} onNext={() => setStep(1)} />}
+          {step === 0 && <OwnerStep form={form} update={update} serverErrors={serverErrors} onNext={() => { setServerErrors({}); setStep(1) }} />}
           {step === 1 && <ShopStep form={form} update={update} onBack={() => setStep(0)} onNext={() => setStep(2)} />}
           {step === 2 && <LinkStep form={form} update={update} onBack={() => setStep(1)} onNext={() => setStep(3)} />}
-          {step === 3 && <PayStep form={form} update={update} plans={plans} onBack={() => setStep(2)} />}
+          {step === 3 && (
+            <PayStep form={form} update={update} plans={plans} onBack={() => setStep(2)} paid={paid} setPaid={setPaid} onDetailsProblem={detailsProblem} />
+          )}
         </div>
       </div>
 
@@ -116,22 +130,30 @@ function StepNav({ onBack, nextLabel = 'Continue', disabled, pending }) {
   )
 }
 
-function OwnerStep({ form, update, onNext }) {
-  const [errors, setErrors] = useState({})
+const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+function OwnerStep({ form, update, onNext, serverErrors }) {
+  const [errors, setErrors] = useState(serverErrors)
   function submit(e) {
     e.preventDefault()
     const next = {}
     if (!form.ownerName.trim()) next.ownerName = 'Enter your name.'
     if (!normalizePhone(form.ownerPhone)) next.ownerPhone = 'Enter a mobile number like 0712 345 678.'
+    if (form.ownerEmail.trim() && !EMAIL.test(form.ownerEmail.trim())) next.ownerEmail = 'Enter a valid email address, or leave it empty.'
+    if (form.ownerPassword.length < 8) next.ownerPassword = 'Use at least 8 characters.'
+    else if (form.ownerPassword !== form.ownerPassword2) next.ownerPassword2 = 'The two passwords don’t match.'
     setErrors(next)
     if (!Object.keys(next).length) onNext()
   }
   return (
     <form onSubmit={submit} noValidate>
-      <StepHeader title="Let’s open your store">First, who owns the shop? We use your number to log you in and send M-PESA prompts.</StepHeader>
+      <StepHeader title="Let’s open your store">First, who owns the shop? You’ll log in with your phone number (or email) and this password.</StepHeader>
       <div className="space-y-5">
         <Field label="Your full name" value={form.ownerName} onChange={(e) => update({ ownerName: e.target.value })} autoComplete="name" error={errors.ownerName} />
         <Field label="Mobile number" type="tel" inputMode="tel" placeholder="0712 345 678" value={form.ownerPhone} onChange={(e) => update({ ownerPhone: e.target.value })} autoComplete="tel" error={errors.ownerPhone} />
+        <Field label="Email (optional)" type="email" placeholder="you@example.com" value={form.ownerEmail} onChange={(e) => update({ ownerEmail: e.target.value })} autoComplete="email" error={errors.ownerEmail} hint="You can log in with it too." />
+        <PasswordField label="Choose a password" value={form.ownerPassword} onChange={(e) => update({ ownerPassword: e.target.value })} autoComplete="new-password" error={errors.ownerPassword} hint="At least 8 characters. Don’t use your M-PESA PIN." />
+        <PasswordField label="Type the password again" value={form.ownerPassword2} onChange={(e) => update({ ownerPassword2: e.target.value })} autoComplete="new-password" error={errors.ownerPassword2} />
       </div>
       <StepNav />
     </form>
@@ -235,7 +257,7 @@ function LinkStep({ form, update, onBack, onNext }) {
   )
 }
 
-function PayStep({ form, update, plans, onBack }) {
+function PayStep({ form, update, plans, onBack, paid, setPaid, onDetailsProblem }) {
   const navigate = useNavigate()
   const plan = plans.find((p) => p.id === form.planId) ?? plans[0]
   const amount = form.billing === 'yearly' ? plan.priceYearly : plan.priceMonthly
@@ -256,22 +278,29 @@ function PayStep({ form, update, plans, onBack }) {
   }, null)
 
   // Step 2: once M-PESA confirms, open the store with that payment.
-  async function openStore(paid) {
+  const [opening, setOpening] = useState(false)
+  async function openStore(confirmed) {
+    const receipt = { reference: confirmed.reference ?? payment?.reference, mpesaRef: confirmed.mpesaRef }
+    setPaid(receipt)
+    setOpening(true)
     try {
       const result = await api.createStore({
-        owner: { name: form.ownerName, phone: form.ownerPhone },
+        owner: { name: form.ownerName, phone: form.ownerPhone, email: form.ownerEmail.trim(), password: form.ownerPassword },
         business: {
           name: form.shopName, tagline: form.tagline, county: form.county, town: form.town, address: form.address, whatsapp: form.whatsapp,
           payments: { method: form.payoutMethod, number: form.payoutNumber, account: form.payoutAccount },
         },
         planId: plan.id,
         slug: form.slug,
-        billing: { period: form.billing, paymentReference: payment.reference, lastRef: paid.mpesaRef },
+        billing: { period: form.billing, paymentReference: receipt.reference, lastRef: receipt.mpesaRef },
       })
       setSession({ user: result.user, token: result.token })
-      setDone({ store: result.store, ref: paid.mpesaRef })
+      setPaid(null)
+      setDone({ store: result.store, ref: receipt.mpesaRef })
     } catch (err) {
       setPayment(null)
+      setOpening(false)
+      if (err.field && (err.field.startsWith('owner') || err.field === 'slug')) return onDetailsProblem(err.field, err.message)
       setError(err.message)
     }
   }
@@ -286,6 +315,19 @@ function PayStep({ form, update, plans, onBack }) {
         <div className="mt-8 flex flex-wrap gap-3">
           <Button variant="navy" onClick={() => navigate('/dashboard/products/new')}>Add your first product</Button>
           <Button variant="outline" to={`/s/${done.store.slug}`}>View your store</Button>
+        </div>
+      </div>
+    )
+  }
+
+  if (paid && !payment) {
+    return (
+      <div>
+        <StepHeader title="Payment received">Your plan payment went through{paid.mpesaRef ? ` (M-PESA ref ${paid.mpesaRef})` : ''}. You won’t be charged again.</StepHeader>
+        {error && <p className="mb-4 rounded-lg bg-bad-tint px-4 py-3 text-sm text-bad" role="alert">{error}</p>}
+        <div className="flex items-center justify-between gap-3">
+          <Button variant="ghost" onClick={onBack} disabled={opening}><ArrowLeft className="size-4" /> Back</Button>
+          <Button variant="navy" pending={opening} onClick={() => openStore(paid)}>Open my store</Button>
         </div>
       </div>
     )

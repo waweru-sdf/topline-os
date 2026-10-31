@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { useFetcher, useLoaderData, useNavigate } from 'react-router'
-import { ExternalLink, LayoutDashboard, Search } from 'lucide-react'
+import { Link, useFetcher, useLoaderData, useNavigate } from 'react-router'
+import { Activity, Copy, ExternalLink, KeyRound, LayoutDashboard, MoreHorizontal, Search } from 'lucide-react'
+import { Dialog } from '@/components/ui/Dialog'
 import { api } from '@/services/api'
 import { formatDate, formatKES } from '@/lib/format'
 import { storeHost } from '@/lib/tenant'
@@ -18,7 +19,12 @@ export async function loader() {
 export async function action({ request }) {
   requirePlatformAdmin()
   const fd = await request.formData()
-  return api.setStoreStatus(fd.get('storeId'), fd.get('status'))
+  try {
+    if (fd.get('intent') === 'reset-password') return { reset: await api.resetOwnerPassword(fd.get('storeId')) }
+    return { store: await api.setStoreStatus(fd.get('storeId'), fd.get('status')) }
+  } catch (e) {
+    return { error: e.message }
+  }
 }
 
 const STATUS_FILTERS = [
@@ -69,7 +75,7 @@ function Stores() {
       </div>
 
       <div className="mt-4 overflow-x-auto rounded-card bg-white ring-1 ring-line">
-        <table className="w-full min-w-[56rem] text-sm">
+        <table className="w-full min-w-[64rem] text-sm">
           <thead className="text-left text-muted">
             <tr className="border-b border-line">
               <th className="px-4 py-3 font-medium">Store</th>
@@ -100,6 +106,8 @@ function StoreRow({ store }) {
     navigate('/dashboard')
   }
   const status = fetcher.formData?.get('status') ?? store.status
+  const reset = fetcher.data?.reset
+  const [showReset, setShowReset] = useState(false)
   return (
     <tr>
       <td className="px-4 py-3">
@@ -119,10 +127,31 @@ function StoreRow({ store }) {
       <td className="px-3 py-3 text-right font-medium tabular">{formatKES(store.gmv30)}</td>
       <td className="px-4 py-3 text-right">
         <fetcher.Form method="post" className="flex items-center justify-end gap-1">
-          <button type="button" onClick={openShopAdmin} className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-medium text-navy hover:bg-concrete">
+          <button type="button" onClick={openShopAdmin} className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-medium whitespace-nowrap text-navy hover:bg-concrete">
             <LayoutDashboard className="size-4" /> Open shop admin
           </button>
           <input type="hidden" name="storeId" value={store.id} />
+          <details className="relative">
+            <summary className="flex cursor-pointer list-none items-center rounded-lg p-1.5 text-muted hover:bg-concrete hover:text-ink" aria-label={`More for ${store.name}`}>
+              <MoreHorizontal className="size-5" />
+            </summary>
+            <div className="absolute right-0 z-10 mt-1 w-56 rounded-lg bg-white p-1 text-left shadow-lift ring-1 ring-line">
+              <Link to={`/admin/activity?storeId=${store.id}`} className="flex items-center gap-2 rounded-md px-3 py-2 hover:bg-concrete">
+                <Activity className="size-4 text-steel" /> See activity
+              </Link>
+              <button
+                name="intent"
+                value="reset-password"
+                className="flex w-full items-center gap-2 rounded-md px-3 py-2 hover:bg-concrete"
+                onClick={(e) => {
+                  if (!window.confirm(`Give ${store.owner?.name ?? 'the owner'} a temporary password? Their current password stops working.`)) e.preventDefault()
+                  else setShowReset(true)
+                }}
+              >
+                <KeyRound className="size-4 text-steel" /> Reset owner’s password
+              </button>
+            </div>
+          </details>
           {status === 'suspended' ? (
             <button name="status" value="active" className="rounded-lg px-3 py-1.5 font-medium text-navy hover:bg-concrete">Reactivate</button>
           ) : status === 'draft' ? null : (
@@ -136,8 +165,47 @@ function StoreRow({ store }) {
             </button>
           )}
         </fetcher.Form>
+        {fetcher.data?.error && <p className="mt-1 text-xs text-bad" role="alert">{fetcher.data.error}</p>}
+        <Dialog open={showReset && Boolean(reset)} onClose={() => setShowReset(false)} title="Temporary password">
+          {reset && <TempPassword reset={reset} store={store} />}
+        </Dialog>
       </td>
     </tr>
+  )
+}
+
+function TempPassword({ reset, store }) {
+  const [copied, setCopied] = useState(false)
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(reset.temporaryPassword)
+      setCopied(true)
+    } catch {
+      setCopied(false)
+    }
+  }
+  const message = `Hi ${reset.owner}, your temporary Topline password is ${reset.temporaryPassword}. Log in and you'll be asked to choose a new one.`
+  return (
+    <div className="text-left">
+      <p className="text-sm text-muted">Give this to {reset.owner} ({store.name}). It’s shown only once.</p>
+      <div className="mt-4 flex items-center justify-between gap-3 rounded-lg bg-concrete px-4 py-3">
+        <code className="text-xl font-bold tracking-wider text-navy">{reset.temporaryPassword}</code>
+        <button type="button" onClick={copy} className="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium text-navy hover:bg-white">
+          <Copy className="size-4" /> {copied ? 'Copied' : 'Copy'}
+        </button>
+      </div>
+      <p className="mt-3 text-sm text-muted">When they log in with it, they must choose their own password before anything else.</p>
+      {store.owner?.phone && (
+        <a
+          href={`https://wa.me/${store.owner.phone.replace(/\D/g, '').replace(/^0/, '254')}?text=${encodeURIComponent(message)}`}
+          target="_blank"
+          rel="noreferrer"
+          className="mt-4 inline-flex items-center gap-2 rounded-lg bg-good px-4 py-2.5 text-sm font-medium text-white hover:opacity-90"
+        >
+          Send it on WhatsApp
+        </a>
+      )}
+    </div>
   )
 }
 

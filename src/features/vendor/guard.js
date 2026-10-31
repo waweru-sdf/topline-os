@@ -7,6 +7,7 @@ import { getActingStoreId, getUser } from '@/services/session'
  */
 export function requireStoreId() {
   const user = getUser()
+  if (user?.mustChangePassword) throw redirect('/change-password')
   if (user?.role === 'vendor') return user.storeId
   // Topline admins work inside whichever store they opened from the admin.
   if (user?.role === 'platform_admin' && getActingStoreId()) return getActingStoreId()
@@ -16,5 +17,6 @@ export function requireStoreId() {
 export function requirePlatformAdmin() {
   const user = getUser()
   if (!user || user.role !== 'platform_admin') throw redirect('/login')
+  if (user.mustChangePassword) throw redirect('/change-password')
   return user
 }

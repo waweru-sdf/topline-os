@@ -15,7 +15,7 @@ export default defineConfig({
     // so subdomain storefront routing can be tested locally.
     host: true,
     allowedHosts: ['.localhost'],
-    // The Flask API lives in ./backend; don't watch its files or virtualenv.
-    watch: { ignored: ['**/backend/**'] },
+    // The Laravel app (and its vendor folder) lives in ./laravel; don't watch it.
+    watch: { ignored: ['**/laravel/**'] },
   },
 })

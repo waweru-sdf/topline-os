@@ -1,13 +1,8 @@
 node_modules
 dist
+dist-laravel
 .env
 .env.local
+.env.production.local
 *.log
 .DS_Store
-
-# Backend (see backend/.gitignore too)
-backend/.venv
-backend/instance
-backend/.env
-__pycache__
-.env.production.local

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, useRouteLoaderData } from 'react-router'
-import { ArrowLeft, Check, Copy, CreditCard, ExternalLink, LayoutDashboard, LogOut, Package, Receipt, Settings, ShoppingBag, Users, Wallet } from 'lucide-react'
+import { ArrowLeft, Check, Copy, CreditCard, ExternalLink, History, KeyRound, LayoutDashboard, LogOut, Package, Receipt, Settings, ShoppingBag, Users, Wallet } from 'lucide-react'
 import { api } from '@/services/api'
 import { clearSession, getUser, setActingStore } from '@/services/session'
 import { storeHost, storeUrl } from '@/lib/tenant'
@@ -24,22 +24,28 @@ const NAV = [
   { to: '/dashboard/products', label: 'Products & stock', icon: Package },
   { to: '/dashboard/customers', label: 'Customers & credit', icon: Users },
   { to: '/dashboard/money', label: 'Money received', icon: Wallet },
+  { to: '/dashboard/activity', label: 'Activity', icon: History, ownerOnly: true },
   { to: '/dashboard/settings', label: 'Store settings', icon: Settings },
   { to: '/dashboard/billing', label: 'Plan & billing', icon: CreditCard },
 ]
 
 function VendorLayout() {
   const { user, store } = useVendor()
+  // Cashiers don't see the shop's activity (it shows sales totals and settings changes).
+  const nav = NAV.filter((item) => !item.ownerOnly || user.role === 'platform_admin' || user.storeRole !== 'cashier')
 
   return (
     <AppShell
-      nav={NAV}
+      nav={nav}
       homeTo="/dashboard"
       top={<StoreBar store={store} asAdmin={user.role === 'platform_admin'} />}
       footer={
         <div className="flex items-center gap-3 px-2">
           <span className="flex size-9 items-center justify-center rounded-full bg-white/15 text-sm font-bold text-white">{user.name[0]}</span>
           <span className="min-w-0 flex-1 truncate text-sm text-white">{user.name}</span>
+          <a href="/change-password" className="rounded-md p-2 text-mist hover:bg-white/10 hover:text-white" aria-label="Change password" title="Change password">
+            <KeyRound className="size-4" />
+          </a>
           <button
             type="button"
             onClick={() => { clearSession(); window.location.assign('/login') }}

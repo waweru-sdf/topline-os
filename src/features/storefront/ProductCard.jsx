@@ -32,6 +32,7 @@ export function ProductCard({ product, base }) {
         <h3 className="leading-snug font-medium">
           <Link to={`${base}/p/${product.slug}`} className="hover:text-navy hover:underline">{product.name}</Link>
         </h3>
+        {product.size && <p className="mt-1 text-xs text-muted">{product.size}</p>}
         <p className="mt-2">
           <span className="text-lg font-bold tabular">{formatKES(product.sellPrice)}</span>
           <span className="text-sm text-muted"> / {product.unit}</span>
