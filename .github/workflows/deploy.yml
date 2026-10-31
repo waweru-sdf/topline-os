@@ -81,7 +81,8 @@ jobs:
           rsync -a laravel/ build/ \
             --exclude /tests --exclude /phpunit.xml --exclude /.env --exclude '/.phpunit*' \
             --exclude '/database/*.sqlite' --exclude '/storage/logs/*.log' \
-            --exclude '/bootstrap/cache/*.php' --exclude /deploy
+            --exclude '/bootstrap/cache/*.php' --exclude /deploy \
+            --exclude /composer.json --exclude /composer.lock
           cp laravel/deploy/root.htaccess build/.htaccess
           # Unlike in the source, vendor/ IS published; .env and runtime files never are.
           printf '.env\n.env.backup\n/database/*.sqlite\n' > build/.gitignore
