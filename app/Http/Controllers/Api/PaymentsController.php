@@ -79,7 +79,7 @@ class PaymentsController extends ApiController
         $settled = PaymentRecords::sweepPending();
         $now = Carbon::now(config('topline.timezone'));
         $today = $now->toDateString();
-        $billing = 'already ran today';
+        $billing = 0; // stores changed; the daily check runs once, after 06:00 Kenyan time
         $last = DB::table('site_settings')->where('key', '_cron.billingSweepDate')->value('value');
         if ($now->hour >= 6 && json_decode((string) $last, true) !== $today) {
             $billing = Billing::sweep();

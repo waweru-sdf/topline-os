@@ -14,7 +14,7 @@ use Illuminate\Http\Exceptions\PostTooLargeException;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
-return Application::configure(basePath: dirname(__DIR__))
+$app = Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
         api: __DIR__.'/../routes/api.php',
@@ -66,3 +66,9 @@ return Application::configure(basePath: dirname(__DIR__))
             return $error('Something went wrong on our side. Try again in a moment.', 500);
         });
     })->create();
+
+// The server copy has no composer.json (Hostinger would try to run Composer, which shared
+// hosting can't). Laravel only read it to learn the app's namespace, so set it here.
+(fn () => $this->namespace = 'App\\')->call($app);
+
+return $app;
