@@ -1,5 +1,5 @@
-import { Link, NavLink, Outlet, data, useNavigation } from 'react-router'
-import { Clock, MapPin, MessageCircle, Phone, ShoppingCart, Store } from 'lucide-react'
+import { Link, NavLink, Outlet, data, useNavigate, useNavigation } from 'react-router'
+import { Clock, LayoutDashboard, MapPin, MessageCircle, Phone, ShoppingCart, Store } from 'lucide-react'
 import { api } from '@/services/api'
 import { getTenantSlugFromHost, storeHost } from '@/lib/tenant'
 import { CartProvider, useCart } from '@/context/CartContext'
@@ -7,6 +7,7 @@ import { NavProgress } from '@/components/PageLoader'
 import { Logo } from '@/components/ui/Logo'
 import { Img } from '@/components/ui/Img'
 import { useStore } from './useStore'
+import { getUser, setActingStore } from '@/services/session'
 
 export async function loader({ params }) {
   const slug = params.slug ?? getTenantSlugFromHost()
@@ -66,6 +67,7 @@ function StoreHeader() {
           </span>
         </Link>
         <div className="ml-auto flex items-center gap-1 sm:gap-2">
+          <ManageShopLink store={store} />
           {store.whatsapp && (
             <a
               href={`https://wa.me/${store.whatsapp}`}
@@ -90,6 +92,23 @@ function StoreHeader() {
         </div>
       </div>
     </header>
+  )
+}
+
+/** Only the shop's own owner/staff (or a Topline admin) see a way back to the shop admin. */
+function ManageShopLink({ store }) {
+  const navigate = useNavigate()
+  const user = getUser()
+  const mine = user?.role === 'vendor' && user.storeId === store.id
+  if (!mine && user?.role !== 'platform_admin') return null
+  function open() {
+    if (!mine) setActingStore(store.id)
+    navigate('/dashboard')
+  }
+  return (
+    <button type="button" onClick={open} className="flex items-center gap-2 rounded-lg bg-amber px-3 py-2 text-sm font-medium text-navy-deep hover:opacity-90">
+      <LayoutDashboard className="size-4" /> <span className="hidden sm:inline">Manage shop</span>
+    </button>
   )
 }
 

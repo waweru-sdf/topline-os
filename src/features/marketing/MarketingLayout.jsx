@@ -5,9 +5,11 @@ import { Menu, X } from 'lucide-react'
 import { Logo } from '@/components/ui/Logo'
 import { Button } from '@/components/ui/Button'
 import { NavProgress } from '@/components/PageLoader'
+import { AccountLink } from '@/components/AccountLink'
 
 const NAV = [
   { href: '#features', label: 'What you get' },
+  { href: '#coming-soon', label: 'Coming soon' },
   { href: '#how', label: 'How to start' },
   { href: '#pricing', label: 'Pricing' },
   { href: '#faq', label: 'Questions' },
@@ -42,7 +44,7 @@ function MarketingLayout() {
             ))}
           </nav>
           <div className="hidden items-center gap-2 md:flex">
-            <Button to="/login" variant="ghost">Log in</Button>
+            <AccountLink />
             <Button to="/start">Open your store</Button>
           </div>
           <button
@@ -68,7 +70,7 @@ function MarketingLayout() {
               ))}
             </ul>
             <div className="mt-3 grid grid-cols-2 gap-2">
-              <Button to="/login" variant="outline">Log in</Button>
+              <AccountLink variant="outline" />
               <Button to="/start">Open your store</Button>
             </div>
           </nav>

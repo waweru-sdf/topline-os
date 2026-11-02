@@ -1,6 +1,6 @@
 import { useActionState, useEffect, useState } from 'react'
 import { Link, useLoaderData, useNavigate } from 'react-router'
-import { ArrowLeft, Check, CircleCheck, Link2, LoaderCircle, Smartphone, X } from 'lucide-react'
+import { ArrowLeft, Check, CircleCheck, ExternalLink, LayoutDashboard, Link2, LoaderCircle, Smartphone, X } from 'lucide-react'
 import { PaymentPrompt } from '@/components/PaymentPrompt'
 import { PAYOUT_METHODS, payoutMethod } from '@/lib/payments'
 import { api } from '@/services/api'
@@ -312,9 +312,15 @@ function PayStep({ form, update, plans, onBack, paid, setPaid, onDetailsProblem 
         <h1 className="mt-4 text-3xl font-bold tracking-tight text-navy">Your store is live</h1>
         <p className="mt-2 text-muted">Payment received (M-PESA ref {done.ref}). Customers can now visit:</p>
         <p className="mt-4 rounded-lg bg-concrete px-4 py-3 font-medium break-all text-navy">{storeHost(done.store.slug)}</p>
-        <div className="mt-8 flex flex-wrap gap-3">
-          <Button variant="navy" onClick={() => navigate('/dashboard/products/new')}>Add your first product</Button>
-          <Button variant="outline" to={`/s/${done.store.slug}`}>View your store</Button>
+        <p className="mt-6 text-sm text-muted">You’re logged in. Your shop admin is where you add stock, see orders and get paid.</p>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <Button variant="navy" size="lg" onClick={() => navigate('/dashboard')}>
+            <LayoutDashboard className="size-5" /> Go to my shop admin
+          </Button>
+          <Button variant="outline" size="lg" onClick={() => navigate('/dashboard/products/new')}>Add your first product</Button>
+          <a href={`/s/${done.store.slug}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 self-center px-2 font-medium text-navy hover:underline">
+            View your store <ExternalLink className="size-4" />
+          </a>
         </div>
       </div>
     )

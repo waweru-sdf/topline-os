@@ -264,6 +264,7 @@ On the website's dashboard ("Connected with GitHub"), set **Branch: `hostinger`*
 - **`.env` and photos** stay on the server across deploys; they're never in Git.
 - **Forgotten passwords:** Topline admin → Stores → ⋯ → Reset owner's password. Add more admins from the terminal (`php artisan topline:create-admin "Name" 07XXXXXXXX`) or with the `FIRST_ADMIN_*` lines while no admin exists.
 - **Errors:** System health in the admin, and `public_html/storage/logs/` in File Manager.
+- **Start over with an empty platform** (deletes every shop, owner, product, sale and payment; keeps Topline admins, plans and site content): on the server, in `public_html`, run `php artisan topline:clear-data` and type `CLEAR`.
 - The `hostinger` branch is generated; don't edit it by hand.
 
 ## Known gaps
