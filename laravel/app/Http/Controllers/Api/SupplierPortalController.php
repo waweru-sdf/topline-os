@@ -6,7 +6,6 @@ use App\Http\Presenters\SupplierJson;
 use App\Models\Supplier;
 use App\Models\SupplierOrder;
 use App\Models\SupplierProduct;
-use App\Services\Access;
 use App\Services\Suppliers;
 use App\Support\ApiError;
 use Illuminate\Http\Request;
@@ -33,34 +32,34 @@ class SupplierPortalController extends ApiController
         return $this->json(SupplierJson::own($s, Suppliers::connectedCounts()[$s->id] ?? 0, [
             'newOrders' => (clone $orders)->where('status', 'new')->count(),
             'totalOrders' => (clone $orders)->count(),
-            'paymentOptionChoices' => SupplierJson::paymentOptions(array_keys(Suppliers::PAYMENT_OPTIONS)),
+            'productCount' => $s->products()->count(),
         ]));
     }
 
     public function updateProfile(Request $request)
     {
-        $s = Suppliers::submitProfile($this->supplier($request), $this->body($request), Access::currentUser());
+        $s = Suppliers::updateProfile($this->supplier($request), $this->body($request));
 
         return $this->json(SupplierJson::own($s, Suppliers::connectedCounts()[$s->id] ?? 0));
     }
 
     public function products(Request $request)
     {
-        return $this->json($this->supplier($request)->products()->get()->map(fn ($p) => SupplierJson::productOwn($p))->values());
+        return $this->json($this->supplier($request)->products()->get()->map(fn ($p) => SupplierJson::productForShop($p))->values());
     }
 
     public function createProduct(Request $request)
     {
-        $p = Suppliers::saveProduct($this->supplier($request), null, $this->body($request), Access::currentUser());
+        $p = Suppliers::saveProduct($this->supplier($request), null, $this->body($request));
 
-        return $this->json(SupplierJson::productOwn($p), 201);
+        return $this->json(SupplierJson::productForShop($p), 201);
     }
 
     public function updateProduct(Request $request, string $productId)
     {
-        $p = Suppliers::saveProduct($this->supplier($request), $this->product($request, $productId), $this->body($request), Access::currentUser());
+        $p = Suppliers::saveProduct($this->supplier($request), $this->product($request, $productId), $this->body($request));
 
-        return $this->json(SupplierJson::productOwn($p));
+        return $this->json(SupplierJson::productForShop($p));
     }
 
     public function deleteProduct(Request $request, string $productId)

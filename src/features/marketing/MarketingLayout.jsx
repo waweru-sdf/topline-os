@@ -107,8 +107,9 @@ function Footer({ site }) {
         <div>
           <h2 className="text-sm font-bold text-white">Topline</h2>
           <ul className="mt-3 space-y-2 text-sm">
-            <li><a href="#features" className="hover:text-amber">What you get</a></li>
-            <li><a href="#pricing" className="hover:text-amber">Pricing</a></li>
+            <li><a href="/#features" className="hover:text-amber">What you get</a></li>
+            <li><a href="/#pricing" className="hover:text-amber">Pricing</a></li>
+            <li><Link to="/suppliers/join" className="hover:text-amber">Sell to shops as a supplier</Link></li>
             <li><Link to="/s/mjengo" className="hover:text-amber">See a demo store</Link></li>
             <li><Link to="/login" className="hover:text-amber">Log in</Link></li>
           </ul>

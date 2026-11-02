@@ -1,5 +1,5 @@
 import { useRouteLoaderData } from 'react-router'
-import { ClipboardList, KeyRound, LogOut, Package, Store } from 'lucide-react'
+import { ClipboardList, KeyRound, LogOut, Store } from 'lucide-react'
 import { api } from '@/services/api'
 import { clearSession, getUser } from '@/services/session'
 import { AppShell } from '@/components/layout/AppShell'
@@ -15,7 +15,6 @@ export async function loader() {
 export const useSupplier = () => useRouteLoaderData('supplier')
 
 const STATUS = {
-  pending: ['Waiting for approval', 'amber'],
   approved: ['Listed on Topline', 'good'],
   hidden: ['Hidden by Topline', 'bad'],
 }
@@ -25,8 +24,7 @@ function SupplierLayout() {
   const [label, tone] = STATUS[me.status] ?? [me.status, 'neutral']
   const nav = [
     { to: '/supplier', label: 'Orders', icon: ClipboardList, end: true, badge: me.newOrders || null },
-    { to: '/supplier/products', label: 'Products & prices', icon: Package },
-    { to: '/supplier/profile', label: 'Company profile', icon: Store },
+    { to: '/supplier/profile', label: 'Profile & products', icon: Store },
   ]
   return (
     <AppShell
@@ -34,7 +32,7 @@ function SupplierLayout() {
       homeTo="/supplier"
       top={
         <div className="flex min-w-0 flex-1 items-center gap-3">
-          <p className="truncate font-bold">{me.live.name}</p>
+          <p className="truncate font-bold">{me.profile.name}</p>
           <Badge tone={tone}>{label}</Badge>
           <p className="ml-auto hidden text-sm text-muted sm:block">Supplier account</p>
         </div>

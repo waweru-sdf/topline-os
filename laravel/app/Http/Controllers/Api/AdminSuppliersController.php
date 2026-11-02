@@ -6,7 +6,6 @@ use App\Http\Presenters\SupplierJson;
 use App\Models\Supplier;
 use App\Models\SupplierOrder;
 use App\Models\SupplierProduct;
-use App\Models\User;
 use App\Services\Access;
 use App\Services\Passwords;
 use App\Services\Suppliers;
@@ -15,7 +14,7 @@ use App\Support\Phone;
 use App\Support\Text;
 use Illuminate\Http\Request;
 
-/** /api/admin/suppliers...: Topline admins add suppliers, review their profiles and products, and see orders. */
+/** /api/admin/suppliers...: Topline admins approve or reject supplier sign-ups, hide suppliers, and see orders. */
 class AdminSuppliersController extends ApiController
 {
     private function find(string $supplierId): Supplier
@@ -23,42 +22,38 @@ class AdminSuppliersController extends ApiController
         return Supplier::find($supplierId) ?? throw ApiError::notFound('That supplier doesn’t exist.');
     }
 
+    private static function login(Supplier $s): ?array
+    {
+        return $s->user ? ['name' => $s->user->name, 'phone' => Phone::display($s->user->phone), 'email' => $s->user->email,
+            'lastLoginAt' => Text::iso($s->user->last_login_at)] : null;
+    }
+
     private function detail(Supplier $s): array
     {
         $orders = SupplierOrder::with('store')->where('supplier_id', $s->id)->orderByDesc('created_at')->limit(100)->get();
 
         return SupplierJson::own($s, Suppliers::connectedCounts()[$s->id] ?? 0, [
-            'login' => $s->user ? ['name' => $s->user->name, 'phone' => Phone::display($s->user->phone), 'email' => $s->user->email,
-                'lastLoginAt' => Text::iso($s->user->last_login_at), 'mustChangePassword' => (bool) $s->user->must_change_password] : null,
-            'products' => $s->products()->get()->map(fn ($p) => SupplierJson::productOwn($p))->values(),
+            'login' => self::login($s),
+            'products' => $s->products()->get()->map(fn ($p) => SupplierJson::productForShop($p))->values(),
             'orders' => $orders->map(fn ($o) => SupplierJson::order($o, 'admin'))->values(),
-            'paymentOptionChoices' => SupplierJson::paymentOptions(array_keys(Suppliers::PAYMENT_OPTIONS)),
         ]);
     }
 
     public function index()
     {
         $counts = Suppliers::connectedCounts();
-        $products = SupplierProduct::selectRaw("supplier_id, COUNT(*) as total, SUM(CASE WHEN status = 'pending' OR draft IS NOT NULL THEN 1 ELSE 0 END) as waiting")
-            ->groupBy('supplier_id')->get()->keyBy('supplier_id');
+        $products = SupplierProduct::selectRaw('supplier_id, COUNT(*) as n')->groupBy('supplier_id')->pluck('n', 'supplier_id');
         $orders = SupplierOrder::selectRaw('supplier_id, COUNT(*) as n')->groupBy('supplier_id')->pluck('n', 'supplier_id');
 
         return $this->json([
-            'pendingReviews' => Suppliers::pendingReviews(),
-            'suppliers' => Supplier::orderBy('name')->get()->map(fn (Supplier $s) => [
+            'pendingSignUps' => Suppliers::pendingSignUps(),
+            'suppliers' => Supplier::with('user')->orderByDesc('created_at')->get()->map(fn (Supplier $s) => [
                 'id' => $s->id, 'slug' => $s->slug, 'name' => $s->name, 'logo' => $s->logo ?: null, 'status' => $s->status,
-                'location' => $s->location, 'reviewStatus' => $s->review_status ?: null,
-                'products' => (int) ($products[$s->id]->total ?? 0), 'productsWaiting' => (int) ($products[$s->id]->waiting ?? 0),
-                'orders' => (int) ($orders[$s->id] ?? 0), 'connectedShops' => $counts[$s->id] ?? 0,
+                'description' => $s->description, 'categories' => $s->categories, 'location' => $s->location, 'login' => self::login($s),
+                'products' => (int) ($products[$s->id] ?? 0), 'orders' => (int) ($orders[$s->id] ?? 0),
+                'connectedShops' => $counts[$s->id] ?? 0, 'createdAt' => Text::iso($s->created_at),
             ])->values(),
         ]);
-    }
-
-    public function create(Request $request)
-    {
-        [$supplier, $temp] = Suppliers::create($this->body($request), Access::currentUser());
-
-        return $this->json(['supplier' => $this->detail($supplier), 'temporaryPassword' => $temp, 'login' => Phone::display($supplier->user->phone)], 201);
     }
 
     public function show(string $supplierId)
@@ -66,35 +61,21 @@ class AdminSuppliersController extends ApiController
         return $this->json($this->detail($this->find($supplierId)));
     }
 
+    /** {listed: bool}: hide an approved supplier from the home page and shops, or list them again. */
     public function update(Request $request, string $supplierId)
     {
-        $s = $this->find($supplierId);
-        $data = $this->body($request);
-        if (array_key_exists('listed', $data)) {
-            Suppliers::setListed($s, (bool) $data['listed'], Access::currentUser());
-        }
-        if (array_key_exists('profile', $data)) {
-            Suppliers::adminUpdateProfile($s, is_array($data['profile']) ? $data['profile'] : [], Access::currentUser());
-        }
-
-        return $this->json($this->detail($s->refresh()));
-    }
-
-    public function review(Request $request, string $supplierId)
-    {
-        $data = $this->body($request);
-        $s = Suppliers::reviewProfile($this->find($supplierId), (string) ($data['action'] ?? ''), (string) ($data['note'] ?? ''), Access::currentUser());
+        $s = Suppliers::setListed($this->find($supplierId), (bool) ($this->body($request)['listed'] ?? true), Access::currentUser());
 
         return $this->json($this->detail($s));
     }
 
-    public function reviewProduct(Request $request, string $productId)
+    /** {action: approve|reject, note}: decide on a sign-up. */
+    public function review(Request $request, string $supplierId)
     {
         $data = $this->body($request);
-        $p = SupplierProduct::find($productId) ?? throw ApiError::notFound('That product doesn’t exist.');
-        $p = Suppliers::reviewProduct($p, (string) ($data['action'] ?? ''), (string) ($data['note'] ?? ''), Access::currentUser());
+        $s = Suppliers::review($this->find($supplierId), (string) ($data['action'] ?? ''), (string) ($data['note'] ?? ''), Access::currentUser());
 
-        return $this->json(SupplierJson::productOwn($p));
+        return $this->json($this->detail($s));
     }
 
     public function resetPassword(string $supplierId)

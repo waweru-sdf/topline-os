@@ -1,4 +1,4 @@
-import { useFetcher, useLoaderData } from 'react-router'
+import { Navigate, useFetcher, useLoaderData } from 'react-router'
 import { ClipboardList, MapPin, MessageCircle, Phone } from 'lucide-react'
 import { api } from '@/services/api'
 import { formatDate, formatKES, formatTime, normalizePhone } from '@/lib/format'
@@ -32,16 +32,16 @@ const NEXT = {
 function Orders() {
   const { orders } = useLoaderData()
   const { me } = useSupplier()
+  // Just approved, nothing listed yet: start on the profile.
+  if (me.productCount === 0 && me.totalOrders === 0) return <Navigate to="/supplier/profile" replace />
   return (
     <>
       <title>Orders — Topline supplier</title>
       <PageHeader title="Orders from hardware shops">
         Call or WhatsApp each shop to agree prices, delivery and payment. Money is paid to you directly, outside Topline.
       </PageHeader>
-      {me.status !== 'approved' && (
-        <p className="mb-4 rounded-lg bg-amber-tint px-4 py-3 text-sm text-[#7a4f00]">
-          Shops can’t see you yet. Complete your company profile and add products; Topline lists you once they’re approved.
-        </p>
+      {me.status === 'hidden' && (
+        <p className="mb-4 rounded-lg bg-bad-tint px-4 py-3 text-sm text-bad">Topline has hidden your profile, so shops can’t send new orders. Contact Topline to find out why.</p>
       )}
       {orders.length === 0 ? (
         <EmptyState icon={ClipboardList} title="No orders yet">When a hardware shop orders from you, it shows up here and you get an SMS.</EmptyState>

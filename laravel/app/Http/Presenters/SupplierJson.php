@@ -15,8 +15,8 @@ use App\Support\Text;
  * JSON for suppliers, supplier orders, credit requests and expenses.
  * Each audience gets only what it should see:
  *  - publicCard: the landing page (no phone, email, prices or payment details)
- *  - forShop:    logged-in shop staff (approved data only, never drafts)
- *  - own:        the supplier and Topline admins (includes drafts and review notes)
+ *  - forShop:    logged-in shop staff (adds contacts, payment details and products)
+ *  - own:        the supplier and Topline admins (adds status and the rejection reason)
  */
 class SupplierJson
 {
@@ -77,24 +77,6 @@ class SupplierJson
         ];
     }
 
-    private static function profileFields(array $f): array
-    {
-        return [
-            'name' => $f['name'] ?? '',
-            'logo' => ($f['logo'] ?? '') ?: null,
-            'description' => $f['description'] ?? '',
-            'categories' => self::categories($f['categories'] ?? ''),
-            'location' => $f['location'] ?? '',
-            'phone' => Phone::display($f['phone'] ?? ''),
-            'email' => ($f['email'] ?? '') ?: null,
-            'website' => ($f['website'] ?? '') ?: null,
-            'minOrder' => $f['min_order'] ?? '',
-            'deliveryInfo' => $f['delivery_info'] ?? '',
-            'paymentOptions' => self::paymentOptions($f['payment_options'] ?? []),
-            'paymentInstructions' => $f['payment_instructions'] ?? '',
-        ];
-    }
-
     /** For the supplier themselves and for Topline admins. */
     public static function own(Supplier $s, int $connected = 0, array $extra = []): array
     {
@@ -102,31 +84,25 @@ class SupplierJson
             'id' => $s->id,
             'slug' => $s->slug,
             'status' => $s->status,
-            'live' => self::profileFields($s->only(['name', 'logo', 'description', 'categories', 'location', 'phone', 'email',
-                'website', 'min_order', 'delivery_info', 'payment_options', 'payment_instructions'])),
-            'draft' => $s->draft ? self::profileFields($s->draft) : null,
-            'reviewStatus' => $s->review_status ?: null,
-            'reviewNote' => $s->review_note ?: null,
+            'profile' => [
+                'name' => $s->name,
+                'logo' => $s->logo ?: null,
+                'description' => $s->description,
+                'categories' => self::categories($s->categories),
+                'location' => $s->location,
+                'phone' => Phone::display($s->phone),
+                'email' => $s->email ?: null,
+                'website' => $s->website ?: null,
+                'minOrder' => $s->min_order,
+                'deliveryInfo' => $s->delivery_info,
+                'paymentOptions' => self::paymentOptions($s->payment_options),
+                'paymentInstructions' => $s->payment_instructions ?? '',
+            ],
+            'rejectionReason' => $s->status === Supplier::REJECTED ? ($s->review_note ?: null) : null,
             'approvedAt' => Text::iso($s->approved_at),
             'createdAt' => Text::iso($s->created_at),
             'connectedShops' => $connected,
             ...$extra,
-        ];
-    }
-
-    public static function productOwn(SupplierProduct $p): array
-    {
-        $draft = $p->draft;
-
-        return [
-            ...self::productForShop($p),
-            'status' => $p->status,
-            'reviewNote' => $p->review_note ?: null,
-            'pendingChange' => $draft ? [
-                'name' => $draft['name'], 'description' => $draft['description'], 'unit' => $draft['unit'], 'price' => $draft['price'],
-                'minQty' => $draft['min_qty'], 'inStock' => $draft['in_stock'], 'image' => ($draft['image'] ?? '') ?: null,
-            ] : null,
-            'createdAt' => Text::iso($p->created_at),
         ];
     }
 

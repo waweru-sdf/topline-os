@@ -1,13 +1,32 @@
 import { useState } from 'react'
-import { useRevalidator } from 'react-router'
-import { CircleCheck, Clock, TriangleAlert } from 'lucide-react'
+import { useLoaderData, useRevalidator } from 'react-router'
+import { CircleCheck, EyeOff, PartyPopper } from 'lucide-react'
 import { PageHeader } from '@/components/layout/AppShell'
 import { Button } from '@/components/ui/Button'
 import { Field } from '@/components/ui/Field'
 import { PhotoUpload } from '@/components/PhotoUpload'
 import { api } from '@/services/api'
+import { SUPPLIER_PAYMENT_OPTIONS } from '@/lib/labels'
 import { cn } from '@/lib/cn'
+import { requireSupplier } from '@/features/vendor/guard'
 import { useSupplier } from './SupplierLayout'
+import { ProductList } from './ProductList'
+
+export async function loader() {
+  requireSupplier()
+  return { products: await api.listOwnProducts() }
+}
+
+/** Removing a product (the edit dialog saves directly). */
+export async function action({ request }) {
+  const fd = await request.formData()
+  try {
+    await api.deleteOwnProduct(fd.get('id'))
+    return { ok: true }
+  } catch (e) {
+    return { error: e.message }
+  }
+}
 
 function toForm(p) {
   return {
@@ -19,8 +38,9 @@ function toForm(p) {
 
 function Profile() {
   const { me } = useSupplier()
+  const { products } = useLoaderData()
   const revalidator = useRevalidator()
-  const [form, setForm] = useState(() => toForm(me.draft ?? me.live))
+  const [form, setForm] = useState(() => toForm(me.profile))
   const [error, setError] = useState(null)
   const [saved, setSaved] = useState(false)
   const [busy, setBusy] = useState(false)
@@ -45,14 +65,21 @@ function Profile() {
 
   return (
     <>
-      <title>Company profile — Topline supplier</title>
-      <PageHeader title="Company profile">This is what hardware shops see. Your logo, name, description and number of shops you work with also appear on Topline’s home page.</PageHeader>
+      <title>Profile — Topline supplier</title>
+      <PageHeader title="Profile & products">What hardware shops see. Your logo, name and description also appear on Topline’s home page. Changes show straight away.</PageHeader>
 
-      <ReviewBanner me={me} saved={saved} />
+      {me.status === 'hidden' && (
+        <p className="mb-4 flex gap-2 rounded-lg bg-bad-tint px-4 py-3 text-sm text-bad"><EyeOff className="size-5 shrink-0" />Topline has hidden your profile from shops for now. Contact Topline to find out why.</p>
+      )}
+      {me.status === 'approved' && me.productCount === 0 && (
+        <p className="mb-4 flex gap-2 rounded-lg bg-amber-tint px-4 py-3 text-sm text-[#7a4f00]">
+          <PartyPopper className="size-5 shrink-0" />You’re approved and listed. Add your logo and products with prices below, so shops know what to order.
+        </p>
+      )}
 
-      <form onSubmit={save} noValidate className="grid gap-6 rounded-card bg-white p-6 ring-1 ring-line lg:grid-cols-[16rem_1fr]">
+      <form onSubmit={save} noValidate className="grid gap-6 rounded-card bg-white p-6 ring-1 ring-line lg:grid-cols-[16rem_minmax(0,1fr)]">
         <div>
-          <PhotoUpload label="Logo" value={form.logo} onChange={(url) => update({ logo: url })} aspect="aspect-square" />
+          <PhotoUpload label="Logo (optional)" value={form.logo} onChange={(url) => update({ logo: url })} aspect="aspect-square" />
           {err('logo') && <p className="mt-1 text-sm text-bad">{err('logo')}</p>}
         </div>
         <div className="space-y-4">
@@ -71,10 +98,10 @@ function Profile() {
           <fieldset>
             <legend className="text-sm font-medium">How shops can pay you</legend>
             <div className="mt-1.5 grid gap-2 sm:grid-cols-2">
-              {me.paymentOptionChoices.map((o) => (
-                <label key={o.id} className={cn('flex cursor-pointer items-center gap-2.5 rounded-lg border px-3 py-2.5 text-sm', form.paymentOptions.includes(o.id) ? 'border-navy bg-mist/40' : 'border-line')}>
-                  <input type="checkbox" checked={form.paymentOptions.includes(o.id)} onChange={() => toggle(o.id)} className="size-4 accent-navy" />
-                  {o.label}
+              {SUPPLIER_PAYMENT_OPTIONS.map(([id, label]) => (
+                <label key={id} className={cn('flex cursor-pointer items-center gap-2.5 rounded-lg border px-3 py-2.5 text-sm', form.paymentOptions.includes(id) ? 'border-navy bg-mist/40' : 'border-line')}>
+                  <input type="checkbox" checked={form.paymentOptions.includes(id)} onChange={() => toggle(id)} className="size-4 accent-navy" />
+                  {label}
                 </label>
               ))}
             </div>
@@ -83,37 +110,16 @@ function Profile() {
           <Field as="textarea" label="Payment details for shops (optional)" value={form.paymentInstructions} onChange={(e) => update({ paymentInstructions: e.target.value })} error={err('paymentInstructions')} maxLength={1000}
             hint="Shown only to logged-in shops when they order, e.g. your Paybill, or that you send an invoice first." />
           {error && !error.field && <p className="text-sm text-bad" role="alert">{error.message}</p>}
-          <div className="flex items-center gap-3">
-            <Button type="submit" variant="navy" pending={busy}>Send for approval</Button>
-            {saved && <span className="flex items-center gap-1.5 text-sm text-good"><CircleCheck className="size-4" />Sent. Topline will review it.</span>}
+          <div className="flex flex-wrap items-center gap-3">
+            <Button type="submit" variant="navy" pending={busy}>Save profile</Button>
+            {saved && <span className="flex items-center gap-1.5 text-sm text-good" role="status"><CircleCheck className="size-4" />Saved. Shops see it now.</span>}
           </div>
         </div>
       </form>
+
+      <ProductList products={products} />
     </>
   )
-}
-
-function ReviewBanner({ me, saved }) {
-  if (saved) return null
-  if (me.reviewStatus === 'rejected') {
-    return (
-      <p className="mb-4 flex gap-2 rounded-lg bg-bad-tint px-4 py-3 text-sm text-bad">
-        <TriangleAlert className="size-5 shrink-0" />Topline asked for changes{me.reviewNote ? `: “${me.reviewNote}”` : '.'} Update the profile and send it again.
-      </p>
-    )
-  }
-  if (me.reviewStatus === 'pending') {
-    return (
-      <p className="mb-4 flex gap-2 rounded-lg bg-amber-tint px-4 py-3 text-sm text-[#7a4f00]">
-        <Clock className="size-5 shrink-0" />
-        {me.approvedAt ? 'Your latest changes are waiting for approval. Shops see the approved version until then.' : 'Your profile is waiting for approval. Shops will see you once Topline approves it.'}
-      </p>
-    )
-  }
-  if (!me.approvedAt) {
-    return <p className="mb-4 rounded-lg bg-concrete px-4 py-3 text-sm">Fill in your profile and send it for approval. Topline checks every supplier before shops can see them.</p>
-  }
-  return null
 }
 
 export { Profile as Component }

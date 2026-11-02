@@ -7,7 +7,7 @@ use App\Models\SupplierProduct;
 use Illuminate\Http\UploadedFile;
 use Tests\TestCase;
 
-/** Connect to suppliers: landing profiles, approvals, the supplier portal and orders from shops. */
+/** Connect to suppliers: sign-up and approval, landing profiles, the supplier portal and orders from shops. */
 class SuppliersTest extends TestCase
 {
     private const CEMENT_LOGIN = '0700 111 222';
@@ -39,83 +39,76 @@ class SuppliersTest extends TestCase
         $cement = collect($list)->firstWhere('slug', 'rift-valley-cement');
         $this->assertSame(3, $cement['connectedShops']);
         $this->assertSame(['Cement', 'Ready-mix'], $cement['categories']);
-        foreach (['phone', 'email', 'paymentInstructions', 'paymentOptions', 'products', 'draft'] as $private) {
+        foreach (['phone', 'email', 'paymentInstructions', 'paymentOptions', 'products', 'status'] as $private) {
             $this->assertArrayNotHasKey($private, $cement);
         }
     }
 
-    public function test_admin_adds_a_supplier_who_must_choose_a_password_and_complete_the_profile(): void
+    public function test_supplier_signs_up_and_logs_in_only_after_approval(): void
     {
-        $admin = $this->admin();
-        $this->postJson('/api/admin/suppliers', ['name' => 'Lake Basin Paints', 'contactName' => 'Achieng', 'phone' => '0712 345 678'], $admin['headers'])
-            ->assertStatus(422)->assertJson(['field' => 'phone']); // already a shop owner's login
-        $res = $this->postJson('/api/admin/suppliers', ['name' => 'Lake Basin Paints', 'contactName' => 'Achieng', 'phone' => '0711 000 999'], $admin['headers']);
-        $res->assertStatus(201)->assertJson(['supplier' => ['status' => 'pending', 'slug' => 'lake-basin-paints']]);
-        $temp = $res->json('temporaryPassword');
-        $this->assertSame(10, strlen($temp));
+        $signUp = [...$this->profile(), 'contactName' => 'Achieng Otieno', 'password' => 'paints-2026'];
+        $this->postJson('/api/supplier-signups', [...$signUp, 'phone' => '0712 345 678'])->assertStatus(422)->assertJson(['field' => 'phone']); // a shop owner's login
+        $this->postJson('/api/supplier-signups', [...$signUp, 'paymentOptions' => []])->assertStatus(422)->assertJson(['field' => 'paymentOptions']);
+        $this->postJson('/api/supplier-signups', [...$signUp, 'website' => 'javascript:alert(1)'])->assertStatus(422)->assertJson(['field' => 'website']);
+        $this->postJson('/api/supplier-signups', [...$signUp, 'password' => '1111'])->assertStatus(422)->assertJson(['field' => 'password']);
+        $this->postJson('/api/supplier-signups', [...$signUp, 'role' => 'platform_admin', 'status' => 'approved'])
+            ->assertStatus(201)->assertExactJson(['name' => 'Lake Basin Paints', 'phone' => '0711 000 999']);
 
-        $login = $this->login('0711 000 999', $temp);
-        $this->assertSame('supplier', $login['user']['role']);
-        $this->getJson('/api/supplier/me', $login['headers'])->assertStatus(403)->assertJson(['field' => 'newPassword']);
-        $changed = $this->postJson('/api/auth/password', ['newPassword' => 'paints-2026'], $login['headers'])->assertOk();
-        $h = $this->auth($changed->json('token'));
-
-        $this->putJson('/api/supplier/profile', $this->profile(['paymentOptions' => []]), $h)->assertStatus(422)->assertJson(['field' => 'paymentOptions']);
-        $this->putJson('/api/supplier/profile', $this->profile(['website' => 'javascript:alert(1)']), $h)->assertStatus(422)->assertJson(['field' => 'website']);
-        $this->putJson('/api/supplier/profile', $this->profile(['logo' => 'javascript:alert(1)']), $h)->assertStatus(422)->assertJson(['field' => 'logo']);
-        $me = $this->putJson('/api/supplier/profile', $this->profile(), $h)->assertOk()->json();
-        // Not approved yet: edits go straight into the profile, which waits for review.
-        $this->assertSame(['reviewStatus' => 'pending', 'draft' => null], ['reviewStatus' => $me['reviewStatus'], 'draft' => $me['draft']]);
-        $this->assertSame(['Paint', 'Primers'], $me['live']['categories']);
-        $this->assertSame('sales@lakebasin.example.com', $me['live']['email']);
+        $supplier = Supplier::where('slug', 'lake-basin-paints')->firstOrFail();
+        $this->assertSame(['pending', 'supplier'], [$supplier->status, $supplier->user->role]); // extra fields are ignored
+        $this->assertSame('Paint, Primers', $supplier->categories);
         $this->assertNotContains('Lake Basin Paints', array_column($this->getJson('/api/suppliers')->json(), 'name'));
+        $this->postJson('/api/auth/login', ['login' => '0711 000 999', 'password' => 'paints-2026'])
+            ->assertStatus(403)->assertJson(['message' => 'Your supplier sign-up is waiting for Topline’s approval. We’ll send you an SMS once it’s approved.']);
 
-        $id = $res->json('supplier.id');
-        $this->postJson("/api/admin/suppliers/{$id}/review", ['action' => 'approve'], $admin['headers'])->assertOk()->assertJson(['status' => 'approved']);
-        $this->assertContains('Lake Basin Paints', array_column($this->getJson('/api/suppliers')->json(), 'name'));
+        $admin = $this->admin();
+        $this->getJson('/api/admin/suppliers', $admin['headers'])->assertJson(['pendingSignUps' => 2]); // + BuildPro from the demo data
+        $this->postJson("/api/admin/suppliers/{$supplier->id}/review", ['action' => 'reject', 'note' => 'Send your KEBS permit.'], $admin['headers'])
+            ->assertOk()->assertJson(['status' => 'rejected', 'rejectionReason' => 'Send your KEBS permit.']);
+        $this->postJson('/api/auth/login', ['login' => 'sales@lakebasin.example.com', 'password' => 'paints-2026'])
+            ->assertStatus(403)->assertJson(['message' => 'Your supplier sign-up wasn’t approved: Send your KEBS permit. Contact Topline for help.']);
+        $token = $supplier->user->createToken('test')->plainTextToken; // even with a token, the portal stays shut
+        $this->getJson('/api/supplier/me', $this->auth($token))->assertStatus(403);
+
+        $this->postJson("/api/admin/suppliers/{$supplier->id}/review", ['action' => 'approve'], $admin['headers'])->assertOk()->assertJson(['status' => 'approved']);
+        $this->postJson("/api/admin/suppliers/{$supplier->id}/review", ['action' => 'reject'], $admin['headers'])->assertStatus(422);
+        $card = collect($this->getJson('/api/suppliers')->json())->firstWhere('slug', 'lake-basin-paints');
+        $this->assertSame(['Emulsion and gloss paints made in Kisumu.', 0], [$card['description'], $card['connectedShops']]);
+
+        $me = $this->getJson('/api/supplier/me', $this->login('0711 000 999', 'paints-2026')['headers'])->assertOk()->json();
+        $this->assertSame([0, 0, null], [$me['productCount'], $me['totalOrders'], $me['rejectionReason']]);
     }
 
-    public function test_changes_to_an_approved_profile_wait_for_approval(): void
+    public function test_sign_ups_are_limited_per_device(): void
     {
-        $s = $this->supplierLogin();
-        $admin = $this->admin();
-        $cement = $this->cement();
-        $me = $this->putJson('/api/supplier/profile', $this->profile(['name' => 'Rift Valley Cement Co.', 'description' => 'NEW description']), $s['headers'])->json();
-        $this->assertSame('NEW description', $me['draft']['description']);
-        $this->assertNotSame('NEW description', $me['live']['description']);
-        $public = collect($this->getJson('/api/suppliers')->json())->firstWhere('slug', 'rift-valley-cement');
-        $this->assertNotSame('NEW description', $public['description']); // shops still see the approved one
-
-        $this->postJson("/api/admin/suppliers/{$cement->id}/review", ['action' => 'reject', 'note' => 'Add your KEBS number.'], $admin['headers'])
-            ->assertOk()->assertJson(['reviewStatus' => 'rejected', 'reviewNote' => 'Add your KEBS number.']);
-        $this->putJson('/api/supplier/profile', $this->profile(['name' => 'Rift Valley Cement Co.', 'description' => 'KEBS 1234']), $s['headers']);
-        $this->postJson("/api/admin/suppliers/{$cement->id}/review", ['action' => 'approve'], $admin['headers'])->assertOk()->assertJson(['draft' => null]);
-        $public = collect($this->getJson('/api/suppliers')->json())->firstWhere('slug', 'rift-valley-cement');
-        $this->assertSame('KEBS 1234', $public['description']);
+        foreach (['0711 000 001', '0711 000 002', '0711 000 003'] as $i => $phone) {
+            $this->postJson('/api/supplier-signups', [...$this->profile(['phone' => $phone, 'email' => '']), 'contactName' => 'A', 'password' => 'paints-2026'])->assertStatus(201);
+        }
+        $this->postJson('/api/supplier-signups', [...$this->profile(['phone' => '0711 000 004', 'email' => '']), 'contactName' => 'A', 'password' => 'paints-2026'])->assertStatus(429);
+        $this->assertSame(3, Supplier::where('name', 'Lake Basin Paints')->count());
+        $this->assertSame(['lake-basin-paints', 'lake-basin-paints-2', 'lake-basin-paints-3'], Supplier::where('name', 'Lake Basin Paints')->orderBy('slug')->pluck('slug')->all());
     }
 
-    public function test_products_need_approval_and_shops_see_only_approved_versions(): void
+    public function test_approved_supplier_edits_go_live_at_once(): void
     {
         $s = $this->supplierLogin();
-        $admin = $this->admin();
         $owner = $this->owner();
         $base = "/api/vendor/stores/{$owner['storeId']}/suppliers/rift-valley-cement";
+        $this->getJson('/api/suppliers')->assertOk(); // fills the home page cache
+
+        $this->putJson('/api/supplier/profile', $this->profile(['logo' => 'javascript:alert(1)']), $s['headers'])->assertStatus(422)->assertJson(['field' => 'logo']);
+        $me = $this->putJson('/api/supplier/profile', $this->profile(['name' => 'Rift Valley Cement Co.', 'description' => 'Now with KEBS 1234']), $s['headers'])->assertOk()->json();
+        $this->assertSame(['Now with KEBS 1234', 'sales@lakebasin.example.com'], [$me['profile']['description'], $me['profile']['email']]);
+        $card = collect($this->getJson('/api/suppliers')->json())->firstWhere('slug', 'rift-valley-cement');
+        $this->assertSame('Now with KEBS 1234', $card['description']); // the cache was refreshed
 
         $new = $this->postJson('/api/supplier/products', ['name' => 'Waterproof cement', 'unit' => 'bag', 'price' => 950, 'minQty' => 50], $s['headers'])
-            ->assertStatus(201)->assertJson(['status' => 'pending'])->json();
-        $this->assertNotContains('Waterproof cement', array_column($this->getJson($base, $owner['headers'])->json('products'), 'name'));
-        $this->postJson("/api/admin/supplier-products/{$new['id']}/review", ['action' => 'approve'], $admin['headers'])->assertOk();
+            ->assertStatus(201)->json();
         $this->assertContains('Waterproof cement', array_column($this->getJson($base, $owner['headers'])->json('products'), 'name'));
-
-        $edit = $this->putJson("/api/supplier/products/{$new['id']}", ['name' => 'Waterproof cement', 'unit' => 'bag', 'price' => 990, 'minQty' => 50], $s['headers'])->json();
-        $this->assertSame([950, 990], [$edit['price'], $edit['pendingChange']['price']]);
+        $this->putJson("/api/supplier/products/{$new['id']}", ['name' => 'Waterproof cement', 'unit' => 'bag', 'price' => 990, 'minQty' => 50, 'inStock' => false], $s['headers'])->assertOk();
         $shopView = collect($this->getJson($base, $owner['headers'])->json('products'))->firstWhere('id', $new['id']);
-        $this->assertSame(950, $shopView['price']);
-        $this->assertArrayNotHasKey('pendingChange', $shopView);
-        $this->postJson("/api/admin/supplier-products/{$new['id']}/review", ['action' => 'reject', 'note' => 'Too high'], $admin['headers'])
-            ->assertJson(['price' => 950, 'pendingChange' => null, 'reviewNote' => 'Change not approved: Too high']);
-
-        $this->getJson('/api/admin/suppliers', $admin['headers'])->assertOk()->assertJson(['pendingReviews' => 3]); // BuildPro profile + its product + Y12 price
+        $this->assertSame([990, false], [$shopView['price'], $shopView['inStock']]);
+        $this->assertSame(4, $this->getJson('/api/supplier/me', $s['headers'])->json('productCount'));
     }
 
     public function test_shop_orders_from_a_supplier_and_the_supplier_follows_up(): void
@@ -157,6 +150,8 @@ class SuppliersTest extends TestCase
         $owner = $this->owner();
         $this->getJson("/api/vendor/stores/{$cashier['storeId']}/suppliers", $cashier['headers'])->assertStatus(403);
         $this->getJson("/api/vendor/stores/{$owner['storeId']}/suppliers/buildpro-trading", $owner['headers'])->assertStatus(404); // not approved
+        $this->postJson('/api/auth/login', ['login' => '0700 111 444', 'password' => self::PASSWORD])->assertStatus(403); // BuildPro is waiting
+        $this->postJson('/api/admin/suppliers', ['name' => 'X', 'phone' => '0711 222 333'], $this->admin()['headers'])->assertStatus(405); // admins don't add suppliers
         $this->getJson("/api/vendor/stores/{$owner['storeId']}/dashboard", $s['headers'])->assertStatus(404); // suppliers aren't shop staff
         $this->getJson('/api/admin/suppliers', $s['headers'])->assertStatus(403);
         $this->getJson('/api/supplier/me', $owner['headers'])->assertStatus(403);

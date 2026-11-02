@@ -139,6 +139,7 @@ export const api = {
   requestCredit: (id, body) => http('POST', `${v(id)}/credit-requests`, body),
 
   // supplier accounts
+  supplierSignUp: (body) => http('POST', '/supplier-signups', body),
   supplierMe: () => http('GET', '/supplier/me'),
   updateSupplierProfile: (body) => http('PUT', '/supplier/profile', body),
   listOwnProducts: () => http('GET', '/supplier/products'),
@@ -160,11 +161,9 @@ export const api = {
   listIncidents: (show) => http('GET', `/admin/incidents${q({ show })}`),
   resolveIncident: (id, resolved = true) => http('PATCH', `/admin/incidents/${id}`, { resolved }),
   adminSuppliers: () => http('GET', '/admin/suppliers'),
-  adminCreateSupplier: (body) => http('POST', '/admin/suppliers', body),
   adminSupplier: (id) => http('GET', `/admin/suppliers/${id}`),
   adminUpdateSupplier: (id, body) => http('PATCH', `/admin/suppliers/${id}`, body),
   adminReviewSupplier: (id, action, note) => http('POST', `/admin/suppliers/${id}/review`, { action, note }),
-  adminReviewProduct: (pid, action, note) => http('POST', `/admin/supplier-products/${pid}/review`, { action, note }),
   adminResetSupplierPassword: (id) => http('POST', `/admin/suppliers/${id}/reset-password`),
   adminAccounting: (month) => http('GET', `/admin/accounting${q({ month })}`),
   downloadPlatformAccounting: (type, month) => download(`/admin/accounting/export${q({ type, month })}`),

@@ -241,6 +241,11 @@ function GrowSection({ suppliers }) {
               ))}
             </ul>
           )}
+          <p className="mt-8 flex flex-col gap-3 rounded-2xl bg-white/5 p-5 ring-1 ring-white/10 sm:flex-row sm:items-center">
+            <Factory aria-hidden className="size-6 shrink-0 text-amber" />
+            <span className="flex-1 text-mist">Manufacturer or distributor? Sign up, and once Topline approves you, every hardware shop on Topline can order from you.</span>
+            <Button to="/suppliers/join" className="shrink-0">Sign up as a supplier</Button>
+          </p>
         </div>
 
         <div id="stock-credit" className="mt-14 flex scroll-mt-24 flex-col gap-5 rounded-2xl bg-amber p-6 text-navy-deep sm:flex-row sm:items-center sm:p-8">

@@ -52,7 +52,18 @@ export const monthLabel = (value, style = 'long') => {
 }
 
 export const SUPPLIER_STATUS = {
-  pending: ['Not approved yet', 'neutral'],
+  pending: ['Waiting for approval', 'amber'],
+  rejected: ['Rejected', 'bad'],
   approved: ['Listed', 'good'],
   hidden: ['Hidden', 'bad'],
 }
+
+/** How shops can pay a supplier. Same codes as Suppliers::PAYMENT_OPTIONS on the server. */
+export const SUPPLIER_PAYMENT_OPTIONS = [
+  ['mpesa', 'M-PESA (Paybill or Till)'],
+  ['bank', 'Bank transfer (PesaLink, RTGS or EFT)'],
+  ['on_delivery', 'Pay on delivery'],
+  ['deposit', 'Deposit now, balance on delivery'],
+  ['supplier_credit', 'Supplier credit / LPO (pay in 30–90 days)'],
+  ['topline_credit', 'Topline stock credit'],
+]

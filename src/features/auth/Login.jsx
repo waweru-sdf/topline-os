@@ -37,7 +37,7 @@ function Login() {
         <Logo className="mb-8" />
         <form action={logIn} className="rounded-card bg-white p-7 shadow-lift">
           <h1 className="text-2xl font-bold text-navy">Log in</h1>
-          <p className="mt-1 text-sm text-muted">For shop owners, their staff and the Topline team.</p>
+          <p className="mt-1 text-sm text-muted">For shop owners, their staff, suppliers and the Topline team.</p>
           <Field
             className="mt-6"
             name="login"
@@ -67,6 +67,7 @@ function Login() {
         </form>
         <p className="mt-6 text-center text-sm text-muted">
           New to Topline? <a href="/start" className="font-medium text-navy underline underline-offset-4">Open your store</a>
+          {' · '}<a href="/suppliers/join" className="font-medium text-navy underline underline-offset-4">Sign up as a supplier</a>
         </p>
       </div>
     </main>

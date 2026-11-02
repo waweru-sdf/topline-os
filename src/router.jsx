@@ -36,7 +36,10 @@ const mainSiteRoutes = [
   {
     id: 'marketing',
     lazy: () => import('@/features/marketing/MarketingLayout'),
-    children: [{ index: true, lazy: () => import('@/features/marketing/Landing') }],
+    children: [
+      { index: true, lazy: () => import('@/features/marketing/Landing') },
+      { path: 'suppliers/join', lazy: () => import('@/features/marketing/SupplierSignUp') },
+    ],
   },
   { path: 'start', lazy: () => import('@/features/onboarding/Onboarding') },
   { path: 'login', lazy: () => import('@/features/auth/Login') },
@@ -89,7 +92,6 @@ const mainSiteRoutes = [
     errorElement: <RouteError />,
     children: [
       { index: true, lazy: () => import('@/features/supplier/Orders') },
-      { path: 'products', lazy: () => import('@/features/supplier/Products') },
       { path: 'profile', lazy: () => import('@/features/supplier/Profile') },
     ],
   },

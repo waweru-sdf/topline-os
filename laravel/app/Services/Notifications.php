@@ -35,6 +35,14 @@ class Notifications
             "New Topline order {$order->reference} from {$store->name} ({$store->town}): {$lines}. Call ".Phone::display($order->contact_phone).'. Details in your Topline supplier account.');
     }
 
+    public static function supplierReviewed(Supplier $supplier): void
+    {
+        $text = $supplier->status === Supplier::APPROVED
+            ? "Topline: {$supplier->name} is approved. Log in at ".config('app.url').'/login with your phone number and password, then add your logo and products.'
+            : "Topline: your supplier sign-up for {$supplier->name} wasn't approved".($supplier->review_note ? ": {$supplier->review_note}" : '.');
+        self::send($supplier->user?->phone ?? $supplier->phone, $text);
+    }
+
     public static function newOrderForShop(Store $store, Sale $order): void
     {
         $lines = $order->items->take(3)->map(fn ($i) => "{$i->qty} {$i->name}")->implode(', ');

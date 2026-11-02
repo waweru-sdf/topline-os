@@ -35,6 +35,7 @@ Route::get('uploads/{name}', [MediaController::class, 'show'])->where('name', '[
 // Accounts
 Route::post('auth/login', [AuthController::class, 'login']);
 Route::post('stores', [AuthController::class, 'openStore']);
+Route::post('supplier-signups', [AuthController::class, 'applyAsSupplier']);
 Route::middleware('topline.user')->group(function () {
     Route::get('auth/me', [AuthController::class, 'me'])->name('auth.me');
     Route::post('auth/password', [AuthController::class, 'changePassword'])->name('auth.password');
@@ -124,12 +125,10 @@ Route::prefix('admin')->middleware(['topline.user', 'topline.admin'])->controlle
 });
 Route::prefix('admin')->middleware(['topline.user', 'topline.admin'])->group(function () {
     Route::get('suppliers', [AdminSuppliersController::class, 'index']);
-    Route::post('suppliers', [AdminSuppliersController::class, 'create']);
     Route::get('suppliers/{supplierId}', [AdminSuppliersController::class, 'show']);
     Route::patch('suppliers/{supplierId}', [AdminSuppliersController::class, 'update']);
     Route::post('suppliers/{supplierId}/review', [AdminSuppliersController::class, 'review']);
     Route::post('suppliers/{supplierId}/reset-password', [AdminSuppliersController::class, 'resetPassword']);
-    Route::post('supplier-products/{productId}/review', [AdminSuppliersController::class, 'reviewProduct']);
     Route::get('supplier-orders', [AdminSuppliersController::class, 'orders']);
     Route::get('accounting', [AdminFinanceController::class, 'accounting']);
     Route::get('accounting/export', [AdminFinanceController::class, 'export']);

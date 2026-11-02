@@ -96,6 +96,9 @@ class Passwords
         if (! $user->is_active) {
             throw ApiError::forbidden('This account is switched off. Contact Topline.');
         }
+        if ($user->isSupplier()) {
+            Suppliers::checkCanLogIn($user);
+        }
         $user->failed_logins = 0;
         $user->locked_until = null;
         $user->last_login_at = $now;

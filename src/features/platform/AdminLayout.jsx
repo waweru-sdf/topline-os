@@ -10,20 +10,20 @@ export async function loader() {
   // Counts for the menu badges; a failing count never blocks the admin.
   const [incidents, suppliers, credit] = await Promise.all([
     api.listIncidents('open').catch(() => []),
-    api.adminSuppliers().catch(() => ({ pendingReviews: 0 })),
+    api.adminSuppliers().catch(() => ({ pendingSignUps: 0 })),
     api.adminCreditRequests().catch(() => ({ open: 0 })),
   ])
-  return { user, openIncidents: incidents.length, pendingReviews: suppliers.pendingReviews, openCredit: credit.open }
+  return { user, openIncidents: incidents.length, pendingSignUps: suppliers.pendingSignUps, openCredit: credit.open }
 }
 
 function AdminLayout() {
-  const { user, openIncidents, pendingReviews, openCredit } = useLoaderData()
+  const { user, openIncidents, pendingSignUps, openCredit } = useLoaderData()
   const nav = [
     { to: '/admin', label: 'Overview', icon: LayoutDashboard, end: true },
     { to: '/admin/stores', label: 'Stores', icon: Store },
     { to: '/admin/activity', label: 'Activity', icon: History },
     { to: '/admin/payments', label: 'Payments', icon: CreditCard },
-    { to: '/admin/suppliers', label: 'Suppliers', icon: Factory, badge: pendingReviews || null },
+    { to: '/admin/suppliers', label: 'Suppliers', icon: Factory, badge: pendingSignUps || null },
     { to: '/admin/credit', label: 'Credit requests', icon: HandCoins, badge: openCredit || null },
     { to: '/admin/accounting', label: 'Accounting', icon: Calculator },
     { to: '/admin/site', label: 'Site content', icon: Image },

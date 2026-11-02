@@ -20,8 +20,7 @@ class SuppliersController extends ApiController
     {
         Ctx::require(Permissions::BUY_STOCK);
         $counts = Suppliers::connectedCounts();
-        $productCounts = SupplierProduct::where('status', SupplierProduct::APPROVED)
-            ->selectRaw('supplier_id, COUNT(*) as n')->groupBy('supplier_id')->pluck('n', 'supplier_id');
+        $productCounts = SupplierProduct::selectRaw('supplier_id, COUNT(*) as n')->groupBy('supplier_id')->pluck('n', 'supplier_id');
 
         return $this->json(Suppliers::listed()->map(fn ($s) => [
             ...SupplierJson::forShop($s, $counts[$s->id] ?? 0),
@@ -33,7 +32,7 @@ class SuppliersController extends ApiController
     {
         Ctx::require(Permissions::BUY_STOCK);
         $s = Suppliers::findListed($supplier);
-        $products = SupplierProduct::where('supplier_id', $s->id)->where('status', SupplierProduct::APPROVED)->orderBy('name')->get();
+        $products = $s->products()->get();
 
         return $this->json(SupplierJson::forShop($s, Suppliers::connectedCounts()[$s->id] ?? 0, $products));
     }

@@ -43,7 +43,7 @@ To work on the website with instant reload, also run `npm run dev` in `topline-o
 
 ## Logins
 
-Log in with the **phone number or email** and the password **topline123** (every demo account). Demo suppliers: Rift Valley Cement Co. (0700 111 222), Pwani Steel Mills (0700 111 333), and BuildPro Trading (0700 111 444, waiting for approval). Owners' emails are `<first name>@<shop>.example.com`, e.g. `peter@mjengo.example.com`; admins are `admin@toplinehub.co.ke` and `felix@toplinehub.co.ke`.
+Log in with the **phone number or email** and the password **topline123** (every demo account). Demo suppliers: Rift Valley Cement Co. (0700 111 222), Pwani Steel Mills (0700 111 333), and BuildPro Trading (0700 111 444, a sign-up waiting for approval, so it can't log in). Owners' emails are `<first name>@<shop>.example.com`, e.g. `peter@mjengo.example.com`; admins are `admin@toplinehub.co.ke` and `felix@toplinehub.co.ke`.
 
 | Who | Phone | Store | Link (dev) | Status |
 | --- | --- | --- | --- | --- |
@@ -123,9 +123,10 @@ Test with `sk_test_` keys first.
 
 Manufacturers and distributors ("suppliers") get their own login and portal at `/supplier`.
 
-- **Adding one:** Topline admin → **Suppliers** → Add supplier (company, contact person, mobile). You get a temporary password to send them; they choose their own on first login.
-- **Approval:** the supplier fills in their profile (logo, description, categories, payment options) and products (price per unit, minimum order, in stock). Nothing is shown until a Topline admin approves it under **Suppliers**. After the first approval, every change (a new price, out of stock, new description) waits for approval too, and shops keep seeing the approved version until then.
-- **Home page:** approved suppliers appear with logo, description, categories and how many hardware shops have ordered from them. No phone numbers, prices or payment details are shown there.
+- **Signing up:** suppliers sign up themselves at `/suppliers/join` (linked from the home page, the footer and the login page): company, contact person, mobile (their login), what they supply, how shops can pay them, and a password. At most 3 sign-ups per device per day. Topline admins can't add suppliers.
+- **Approval:** the sign-up waits under Topline admin → **Suppliers** (the menu shows a count). **Approve** lists them on the home page and to every shop at once; **Reject** asks for a reason. Either way they get an SMS. They can't log in until approved; a rejected supplier sees the reason when they try, and can still be approved later.
+- **After approval:** the supplier logs in and lands on **Profile & products** to add a logo, more details and products with prices. Their portal has two pages: **Orders** and **Profile & products**. Changes go live straight away, with no further approval. A Topline admin can **Hide** a supplier at any time.
+- **Home page:** listed suppliers appear with logo, description, categories and how many hardware shops have ordered from them. No phone numbers, prices or payment details are shown there. The list is cached for up to 10 minutes and refreshed whenever a supplier changes, so landing visits don't hit the database.
 - **Ordering:** in the shop admin (owners and managers) → **Suppliers**, a shop opens a supplier, enters quantities (or describes items not on the list), the contact phone, delivery place and how they'll pay. The supplier gets an SMS and sees the order with Call and WhatsApp buttons. They take it from there, outside Topline, and mark it *contacted*, *delivered* or *declined*. The shop can cancel while it's still new.
 - **Payment options** a supplier can accept: M-PESA (Paybill/Till), bank transfer (PesaLink/RTGS/EFT), pay on delivery, deposit then balance, supplier credit/LPO (30–90 days), and Topline stock credit. Money moves between shop and supplier directly; Topline doesn't hold it.
 

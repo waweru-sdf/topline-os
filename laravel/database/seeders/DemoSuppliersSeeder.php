@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Hash;
 
 /**
  * Demo supplier partners (made-up companies, not real brands), their products, a few orders
- * from the demo shops, one supplier waiting for approval, and Mjengo's expenses.
+ * from the demo shops, one sign-up waiting for approval, and Mjengo's expenses.
  * Supplier logins use the demo password "topline123".
  */
 class DemoSuppliersSeeder extends Seeder
@@ -73,21 +73,14 @@ class DemoSuppliersSeeder extends Seeder
                 'categories' => $spec['categories'], 'location' => $spec['location'], 'phone' => $phone, 'email' => $email,
                 'min_order' => $spec['min_order'], 'delivery_info' => $spec['delivery_info'], 'payment_options' => $spec['payment_options'],
                 'payment_instructions' => $spec['payment_instructions'], 'status' => $spec['status'],
-                'review_status' => $approved ? '' : 'pending', 'approved_at' => $approved ? $now->copy()->subDays(20) : null,
+                'approved_at' => $approved ? $now->copy()->subDays(20) : null,
                 'created_at' => $now->copy()->subDays(25),
             ]);
             foreach ($spec['products'] as [$pName, $unit, $price, $min, $desc]) {
                 SupplierProduct::create(['supplier_id' => $supplier->id, 'name' => $pName, 'unit' => $unit, 'price' => $price, 'min_qty' => $min,
-                    'description' => $desc, 'in_stock' => true, 'status' => $approved ? 'approved' : 'pending',
-                    'approved_at' => $approved ? $now->copy()->subDays(20) : null]);
+                    'description' => $desc, 'in_stock' => true]);
             }
         }
-
-        // A change waiting for approval on an approved supplier, so the review queue has something in it.
-        $steel = Supplier::where('slug', 'pwani-steel-mills')->first();
-        $bar = SupplierProduct::where('supplier_id', $steel->id)->where('name', 'like', 'Deformed bar Y12%')->first();
-        $bar->update(['draft' => ['name' => $bar->name, 'description' => $bar->description, 'unit' => $bar->unit, 'price' => 1420,
-            'min_qty' => $bar->min_qty, 'in_stock' => true, 'image' => '']]);
 
         $cement = Supplier::where('slug', 'rift-valley-cement')->first();
         $c325 = SupplierProduct::where('supplier_id', $cement->id)->where('name', 'like', 'Cement 32.5N%')->first();
