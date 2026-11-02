@@ -59,6 +59,7 @@ const mainSiteRoutes = [
       { path: 'settings', lazy: () => import('@/features/vendor/Settings') },
       { path: 'billing', lazy: () => import('@/features/vendor/Billing') },
       { path: 'activity', lazy: () => import('@/features/vendor/Activity') },
+      { path: 'accounting', lazy: () => import('@/features/vendor/Accounting') },
     ],
   },
   {
@@ -72,6 +73,7 @@ const mainSiteRoutes = [
       { path: 'site', lazy: () => import('@/features/platform/SiteContent') },
       { path: 'health', lazy: () => import('@/features/platform/Health') },
       { path: 'activity', lazy: () => import('@/features/platform/Activity') },
+      { path: 'accounting', lazy: () => import('@/features/platform/Accounting') },
     ],
   },
 ]

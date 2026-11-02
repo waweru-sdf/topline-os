@@ -1,5 +1,5 @@
 import { useLoaderData } from 'react-router'
-import { Activity, CreditCard, History, Image, KeyRound, LayoutDashboard, LogOut, Store } from 'lucide-react'
+import { Activity, Calculator, CreditCard, History, Image, KeyRound, LayoutDashboard, LogOut, Store } from 'lucide-react'
 import { api } from '@/services/api'
 import { clearSession } from '@/services/session'
 import { AppShell } from '@/components/layout/AppShell'
@@ -18,6 +18,7 @@ function AdminLayout() {
     { to: '/admin/stores', label: 'Stores', icon: Store },
     { to: '/admin/activity', label: 'Activity', icon: History },
     { to: '/admin/payments', label: 'Payments', icon: CreditCard },
+    { to: '/admin/accounting', label: 'Accounting', icon: Calculator, badge: 'Soon' },
     { to: '/admin/site', label: 'Site content', icon: Image },
     { to: '/admin/health', label: 'System health', icon: Activity, badge: openIncidents || null },
   ]

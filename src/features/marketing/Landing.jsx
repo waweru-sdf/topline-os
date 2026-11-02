@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useLoaderData, useNavigate, useRouteLoaderData } from 'react-router'
-import { Calculator, Check, CircleCheck, Factory, HandCoins, Link2, MessageCircle, Package, Receipt, ShieldCheck, Store, Users } from 'lucide-react'
+import { Check, CircleCheck, Factory, HandCoins, Link2, MessageCircle, Package, Receipt, ShieldCheck, Store, Users } from 'lucide-react'
 import { api } from '@/services/api'
 import { formatKES, slugify } from '@/lib/format'
 import { storeHost, storeLinkParts } from '@/lib/tenant'
@@ -200,19 +200,16 @@ function Features({ site }) {
 
 const COMING = [
   {
+    id: 'suppliers',
     icon: Factory,
     title: 'Connect to suppliers',
     body: 'Buy closer to the source. Topline will connect your shop with cement plants, steel mills and manufacturers abroad, including China, and help you order from them.',
   },
   {
+    id: 'stock-credit',
     icon: HandCoins,
     title: 'Stock credit',
     body: 'Stock up now and pay later, with credit from Topline’s lending partner based on your sales on Topline. Apply, follow and repay it all inside Topline.',
-  },
-  {
-    icon: Calculator,
-    title: 'Accounting',
-    body: 'Books that keep themselves: profit and loss, expenses, supplier bills and reports, built from the sales you already record in your shop admin.',
   },
 ]
 
@@ -222,9 +219,9 @@ function ComingSoon() {
       <div className="mx-auto max-w-6xl px-5 py-20 md:py-24">
         <p className="text-sm font-semibold tracking-wide text-amber uppercase">Coming soon</p>
         <h2 className="mt-2 max-w-2xl text-3xl font-bold tracking-tight sm:text-4xl">More ways Topline will help your shop grow</h2>
-        <div className="mt-12 grid gap-6 md:grid-cols-3">
+        <div className="mt-12 grid gap-6 md:grid-cols-2">
           {COMING.map((c) => (
-            <article key={c.title} className="flex flex-col rounded-2xl bg-white/5 p-6 ring-1 ring-white/10">
+            <article key={c.title} id={c.id} className="flex scroll-mt-24 flex-col rounded-2xl bg-white/5 p-6 ring-1 ring-white/10">
               <c.icon aria-hidden className="size-8 text-amber" />
               <h3 className="mt-4 text-xl font-bold">{c.title}</h3>
               <p className="mt-2 flex-1 leading-relaxed text-mist">{c.body}</p>

@@ -8,12 +8,21 @@ import { NavProgress } from '@/components/PageLoader'
 import { AccountLink } from '@/components/AccountLink'
 
 const NAV = [
-  { href: '#features', label: 'What you get' },
-  { href: '#coming-soon', label: 'Coming soon' },
-  { href: '#how', label: 'How to start' },
-  { href: '#pricing', label: 'Pricing' },
-  { href: '#faq', label: 'Questions' },
+  { href: '/#features', label: 'What you get' },
+  { href: '/#suppliers', label: 'Connect to suppliers', soon: true },
+  { href: '/#stock-credit', label: 'Stock credit', soon: true },
+  { href: '/#pricing', label: 'Pricing' },
+  { href: '/#faq', label: 'Questions' },
 ]
+
+function NavLabel({ item }) {
+  return (
+    <>
+      {item.label}
+      {item.soon && <span className="ml-1.5 rounded-full bg-amber/25 px-1.5 py-0.5 align-middle text-[0.65rem] font-bold tracking-wide text-amber-deep uppercase">Soon</span>}
+    </>
+  )
+}
 
 export async function loader() {
   return { site: await api.getSite({ view: 'landing' }) }
@@ -36,20 +45,20 @@ function MarketingLayout() {
       <header className="sticky top-0 z-40 border-b border-line/70 bg-white/95 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-6 px-5">
           <Logo />
-          <nav aria-label="Main" className="hidden items-center gap-7 md:flex">
+          <nav aria-label="Main" className="hidden items-center gap-6 xl:flex">
             {NAV.map((n) => (
-              <a key={n.href} href={n.href} className="text-[0.95rem] text-ink/80 hover:text-navy">
-                {n.label}
+              <a key={n.href} href={n.href} className="text-[0.95rem] whitespace-nowrap text-ink/80 hover:text-navy">
+                <NavLabel item={n} />
               </a>
             ))}
           </nav>
-          <div className="hidden items-center gap-2 md:flex">
+          <div className="hidden items-center gap-2 xl:flex">
             <AccountLink />
             <Button to="/start">Open your store</Button>
           </div>
           <button
             type="button"
-            className="-mr-2 rounded-md p-2 md:hidden"
+            className="-mr-2 rounded-md p-2 xl:hidden"
             aria-expanded={open}
             aria-controls="mobile-nav"
             aria-label={open ? 'Close menu' : 'Open menu'}
@@ -59,12 +68,12 @@ function MarketingLayout() {
           </button>
         </div>
         {open && (
-          <nav id="mobile-nav" aria-label="Main" className="border-t border-line px-5 py-4 md:hidden">
+          <nav id="mobile-nav" aria-label="Main" className="border-t border-line px-5 py-4 xl:hidden">
             <ul className="flex flex-col gap-1">
               {NAV.map((n) => (
                 <li key={n.href}>
                   <a href={n.href} onClick={() => setOpen(false)} className="block rounded-md px-2 py-2.5 hover:bg-concrete">
-                    {n.label}
+                    <NavLabel item={n} />
                   </a>
                 </li>
               ))}

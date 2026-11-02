@@ -1,5 +1,5 @@
 import { Link, useLoaderData } from 'react-router'
-import { AlertTriangle, Plus, Receipt, TrendingDown, TrendingUp } from 'lucide-react'
+import { AlertTriangle, Calculator, Plus, Receipt, TrendingDown, TrendingUp } from 'lucide-react'
 import { api } from '@/services/api'
 import { formatKES, formatTime, formatDate, pluralize } from '@/lib/format'
 import { cn } from '@/lib/cn'
@@ -140,6 +140,17 @@ function Dashboard() {
           </ol>
         </section>
       </div>
+
+      <Link to="/dashboard/accounting" className="mt-6 flex items-center gap-4 rounded-card bg-white p-5 ring-1 ring-line hover:ring-navy/40">
+        <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-concrete">
+          <Calculator aria-hidden className="size-5 text-navy" />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block font-bold">Accounting</span>
+          <span className="block text-sm text-muted">Profit and loss, expenses and reports, built from your sales.</span>
+        </span>
+        <span className="shrink-0 rounded-full bg-amber px-2.5 py-0.5 text-xs font-bold text-navy-deep">Coming soon</span>
+      </Link>
     </>
   )
 }

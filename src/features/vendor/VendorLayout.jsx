@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, useRouteLoaderData } from 'react-router'
-import { ArrowLeft, Check, Copy, CreditCard, ExternalLink, History, KeyRound, LayoutDashboard, LogOut, Package, Receipt, Settings, ShoppingBag, Users, Wallet } from 'lucide-react'
+import { ArrowLeft, Calculator, Check, Copy, CreditCard, ExternalLink, History, KeyRound, LayoutDashboard, LogOut, Package, Receipt, Settings, ShoppingBag, Users, Wallet } from 'lucide-react'
 import { api } from '@/services/api'
 import { clearSession, getUser, setActingStore } from '@/services/session'
 import { storeHost, storeUrl } from '@/lib/tenant'
@@ -24,6 +24,7 @@ const NAV = [
   { to: '/dashboard/products', label: 'Products & stock', icon: Package },
   { to: '/dashboard/customers', label: 'Customers & credit', icon: Users },
   { to: '/dashboard/money', label: 'Money received', icon: Wallet },
+  { to: '/dashboard/accounting', label: 'Accounting', icon: Calculator, badge: 'Soon', ownerOnly: true },
   { to: '/dashboard/activity', label: 'Activity', icon: History, ownerOnly: true },
   { to: '/dashboard/settings', label: 'Store settings', icon: Settings },
   { to: '/dashboard/billing', label: 'Plan & billing', icon: CreditCard },
