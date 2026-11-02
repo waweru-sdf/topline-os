@@ -8,6 +8,7 @@ $baseDir = dirname($vendorDir);
 return array(
     'AllowDynamicProperties' => $vendorDir . '/symfony/polyfill-php82/Resources/stubs/AllowDynamicProperties.php',
     'App\\Console\\Commands\\BillingSweep' => $baseDir . '/app/Console/Commands/BillingSweep.php',
+    'App\\Console\\Commands\\ClearData' => $baseDir . '/app/Console/Commands/ClearData.php',
     'App\\Console\\Commands\\CreateAdmin' => $baseDir . '/app/Console/Commands/CreateAdmin.php',
     'App\\Console\\Commands\\Deploy' => $baseDir . '/app/Console/Commands/Deploy.php',
     'App\\Console\\Commands\\Install' => $baseDir . '/app/Console/Commands/Install.php',

@@ -11,4 +11,4 @@ The API under `/api` and the server for the website (built into `public/` by `np
 | `routes/console.php` | jobs run by the Hostinger Cron Job (`schedule:run`): deploy steps, payment sweep, daily billing |
 | `tests/Feature/` | 83 tests, including a check of every response against `../docs/api-examples.json` |
 
-Commands: `php artisan topline:install [--demo]`, `topline:create-admin`, `topline:deploy`, `topline:payments-sweep`, `topline:billing-sweep`.
+Commands: `php artisan topline:install [--demo]`, `topline:create-admin`, `topline:deploy`, `topline:clear-data`, `topline:payments-sweep`, `topline:billing-sweep`.

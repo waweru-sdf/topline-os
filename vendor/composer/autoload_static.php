@@ -481,6 +481,7 @@ class ComposerStaticInit280fac7d9919910d1fc1196e95214a9f
     public static $classMap = array (
         'AllowDynamicProperties' => __DIR__ . '/..' . '/symfony/polyfill-php82/Resources/stubs/AllowDynamicProperties.php',
         'App\\Console\\Commands\\BillingSweep' => __DIR__ . '/../..' . '/app/Console/Commands/BillingSweep.php',
+        'App\\Console\\Commands\\ClearData' => __DIR__ . '/../..' . '/app/Console/Commands/ClearData.php',
         'App\\Console\\Commands\\CreateAdmin' => __DIR__ . '/../..' . '/app/Console/Commands/CreateAdmin.php',
         'App\\Console\\Commands\\Deploy' => __DIR__ . '/../..' . '/app/Console/Commands/Deploy.php',
         'App\\Console\\Commands\\Install' => __DIR__ . '/../..' . '/app/Console/Commands/Install.php',
