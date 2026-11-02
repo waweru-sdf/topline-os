@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Http\Presenters\SupplierJson;
 use App\Models\Store;
 use App\Models\Supplier;
 use App\Models\SupplierOrder;
@@ -12,14 +13,15 @@ use App\Support\Input;
 use App\Support\Phone;
 use App\Support\Text;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Connect to suppliers: profiles, products and orders.
+ * Connect to suppliers: sign-up, profiles, products and orders.
  *
- * Review rule: until a Topline admin first approves a profile or product, the supplier edits it
- * directly. After approval, the supplier's edits wait in `draft` and shops keep seeing the
- * approved version until an admin approves the change. Admin edits go live at once.
+ * A supplier signs up themselves; a Topline admin approves or rejects the sign-up. Only then
+ * can they log in. After approval, the supplier's profile and product edits go live at once
+ * (a Topline admin can hide a supplier at any time).
  */
 class Suppliers
 {
@@ -35,40 +37,36 @@ class Suppliers
 
     public const MAX_PRODUCTS = 300;
     public const MAX_ORDERS_PER_DAY = 20;
-    private const PROFILE_FIELDS = ['name', 'logo', 'description', 'categories', 'location', 'phone', 'email', 'website',
-        'min_order', 'delivery_info', 'payment_options', 'payment_instructions'];
-    private const PRODUCT_FIELDS = ['name', 'description', 'unit', 'price', 'min_qty', 'in_stock', 'image'];
+    /** The home page's supplier list is cached, so landing visits don't query the database. */
+    private const PUBLIC_CACHE_KEY = 'suppliers:public';
+    private const PUBLIC_CACHE_SECONDS = 600;
 
-    // ---------------------------------------------------------------- creating suppliers (admin)
+    // ---------------------------------------------------------------- sign-up and approval
 
-    /** @return array{0: Supplier, 1: string} the supplier and the login's temporary password */
-    public static function create(array $data, User $admin): array
+    /** A supplier signs up: login + starting profile, waiting for a Topline admin. */
+    public static function apply(array $data): Supplier
     {
-        $name = Input::text($data, 'name', true, 120, 'Enter the supplier’s name.');
-        $contact = Input::text($data, 'contactName', true, 120, 'Enter the name of the person who will log in.');
-        $phone = Phone::normalize($data['phone'] ?? null) ?? throw ApiError::invalid('Enter a mobile number like 0712 345 678.', 'phone');
-        $email = Passwords::normalizeEmail($data['email'] ?? null);
-        if (User::where('phone', $phone)->exists()) {
-            throw ApiError::invalid('That number already has a Topline login. Use a different number.', 'phone');
+        $profile = self::validateProfile($data);
+        $contact = Input::text($data, 'contactName', true, 120, 'Enter your name.');
+        $email = $profile['email'] ?: null;
+        if (User::where('phone', $profile['phone'])->exists()) {
+            throw ApiError::invalid('That number already has a Topline login. Log in, or use a different number.', 'phone');
         }
         if ($email && User::where('email', $email)->exists()) {
             throw ApiError::invalid('That email already has a Topline login.', 'email');
         }
-        $temp = Passwords::temporary();
+        $password = Passwords::checkNew($data['password'] ?? null);
 
-        $supplier = DB::transaction(function () use ($name, $contact, $phone, $email, $temp) {
-            $user = new User(['name' => $contact, 'phone' => $phone, 'email' => $email, 'role' => User::SUPPLIER, 'must_change_password' => true]);
-            Passwords::set($user, $temp);
+        $supplier = DB::transaction(function () use ($profile, $contact, $email, $password) {
+            $user = new User(['name' => $contact, 'phone' => $profile['phone'], 'email' => $email, 'role' => User::SUPPLIER]);
+            Passwords::set($user, $password);
             $user->save();
 
-            return Supplier::create([
-                'user_id' => $user->id, 'slug' => self::uniqueSlug($name), 'name' => $name, 'description' => '',
-                'phone' => $phone, 'email' => $email ?? '', 'payment_options' => [], 'status' => Supplier::PENDING,
-            ]);
+            return Supplier::create([...$profile, 'user_id' => $user->id, 'slug' => self::uniqueSlug($profile['name']), 'status' => Supplier::PENDING]);
         });
-        Activity::record('supplier_added', "{$admin->name} added supplier {$name}", null, $admin);
+        Activity::record('supplier_review', "{$supplier->name} signed up as a supplier and is waiting for approval", null, $supplier->user);
 
-        return [$supplier, $temp];
+        return $supplier;
     }
 
     private static function uniqueSlug(string $name): string
@@ -82,7 +80,64 @@ class Suppliers
         return $slug;
     }
 
-    // ---------------------------------------------------------------- profile
+    /** Called at login: suppliers get in only once approved. */
+    public static function checkCanLogIn(User $user): void
+    {
+        $supplier = Supplier::where('user_id', $user->id)->first();
+        if ($supplier?->status === Supplier::PENDING) {
+            throw ApiError::forbidden('Your supplier sign-up is waiting for Topline’s approval. We’ll send you an SMS once it’s approved.');
+        }
+        if (! $supplier?->approved_at) {
+            $why = $supplier?->review_note ? ": {$supplier->review_note}" : '.';
+            throw ApiError::forbidden("Your supplier sign-up wasn’t approved{$why} Contact Topline for help.");
+        }
+    }
+
+    /** A Topline admin approves or rejects a sign-up. A rejected one can still be approved later. */
+    public static function review(Supplier $supplier, string $action, string $note, User $admin): Supplier
+    {
+        $open = $action === 'reject' ? [Supplier::PENDING] : [Supplier::PENDING, Supplier::REJECTED];
+        if (! in_array($action, ['approve', 'reject'], true)) {
+            throw ApiError::invalid('Choose approve or reject.', 'action');
+        }
+        if (! in_array($supplier->status, $open, true)) {
+            throw ApiError::invalid('This supplier has already been approved.', 'action');
+        }
+        if ($action === 'approve') {
+            $supplier->status = Supplier::APPROVED;
+            $supplier->approved_at = now();
+            $supplier->review_note = '';
+        } else {
+            $supplier->status = Supplier::REJECTED;
+            $supplier->review_note = mb_substr(trim($note), 0, 300);
+        }
+        $supplier->save();
+        self::forgetPublicList();
+        Activity::record('supplier_review', "{$admin->name} ".($action === 'approve' ? 'approved' : 'rejected')." supplier {$supplier->name}", null, $admin);
+        Notifications::supplierReviewed($supplier);
+
+        return $supplier;
+    }
+
+    public static function pendingSignUps(): int
+    {
+        return Supplier::where('status', Supplier::PENDING)->count();
+    }
+
+    public static function setListed(Supplier $supplier, bool $listed, User $admin): Supplier
+    {
+        if (! $supplier->approved_at) {
+            throw ApiError::invalid('Approve the supplier first.', 'status');
+        }
+        $supplier->status = $listed ? Supplier::APPROVED : Supplier::HIDDEN;
+        $supplier->save();
+        self::forgetPublicList();
+        Activity::record('supplier_review', "{$admin->name} ".($listed ? 'listed' : 'hid')." supplier {$supplier->name}", null, $admin);
+
+        return $supplier;
+    }
+
+    // ---------------------------------------------------------------- profile and products (live at once)
 
     public static function validateProfile(array $data): array
     {
@@ -123,78 +178,14 @@ class Suppliers
         ];
     }
 
-    /** The supplier edits their own profile: live until first approval, a draft after that. */
-    public static function submitProfile(Supplier $supplier, array $data, User $by): Supplier
-    {
-        $fields = self::validateProfile($data);
-        if ($supplier->approved_at === null) {
-            $supplier->fill($fields);
-            $supplier->draft = null;
-        } else {
-            $supplier->draft = $fields;
-        }
-        $supplier->review_status = 'pending';
-        $supplier->review_note = '';
-        $supplier->save();
-        Activity::record('supplier_review', "{$supplier->name} sent profile changes for approval", null, $by);
-
-        return $supplier;
-    }
-
-    /** A Topline admin edits the profile: live at once. */
-    public static function adminUpdateProfile(Supplier $supplier, array $data, User $admin): Supplier
+    public static function updateProfile(Supplier $supplier, array $data): Supplier
     {
         $supplier->fill(self::validateProfile($data));
         $supplier->save();
-        Activity::record('supplier_review', "{$admin->name} edited supplier {$supplier->name}", null, $admin);
+        self::forgetPublicList();
 
         return $supplier;
     }
-
-    public static function reviewProfile(Supplier $supplier, string $action, string $note, User $admin): Supplier
-    {
-        if (! in_array($action, ['approve', 'reject'], true)) {
-            throw ApiError::invalid('Choose approve or reject.', 'action');
-        }
-        if ($action === 'approve') {
-            if ($supplier->draft) {
-                $supplier->fill(array_intersect_key($supplier->draft, array_flip(self::PROFILE_FIELDS)));
-            }
-            if (trim($supplier->description) === '' || ! $supplier->payment_options) {
-                throw ApiError::invalid('This profile isn’t complete yet: it needs a description and payment options.', 'action');
-            }
-            $supplier->draft = null;
-            $supplier->review_status = '';
-            $supplier->review_note = '';
-            if ($supplier->status === Supplier::PENDING) {
-                $supplier->status = Supplier::APPROVED;
-            }
-            $supplier->approved_at ??= now();
-            $summary = "{$admin->name} approved {$supplier->name}’s profile";
-        } else {
-            $supplier->review_status = 'rejected';
-            $supplier->review_note = mb_substr($note, 0, 300);
-            $summary = "{$admin->name} sent {$supplier->name}’s profile back for changes";
-        }
-        $supplier->save();
-        Activity::record('supplier_review', $summary, null, $admin);
-
-        return $supplier;
-    }
-
-    public static function setListed(Supplier $supplier, bool $listed, User $admin): Supplier
-    {
-        if ($listed && $supplier->approved_at === null) {
-            throw ApiError::invalid('Approve the profile first.', 'status');
-        }
-        $supplier->status = $listed ? Supplier::APPROVED : Supplier::HIDDEN;
-        $supplier->save();
-        Activity::record('supplier_review', "{$admin->name} ".($listed ? 'listed' : 'hid')." supplier {$supplier->name}", null, $admin);
-
-        return $supplier;
-    }
-
-    // ---------------------------------------------------------------- products
 
     public static function validateProduct(array $data): array
     {
@@ -220,61 +211,33 @@ class Suppliers
         ];
     }
 
-    public static function saveProduct(Supplier $supplier, ?SupplierProduct $product, array $data, User $by): SupplierProduct
+    public static function saveProduct(Supplier $supplier, ?SupplierProduct $product, array $data): SupplierProduct
     {
         $fields = self::validateProduct($data);
-        if (! $product) {
-            if ($supplier->products()->count() >= self::MAX_PRODUCTS) {
-                throw ApiError::invalid('You’ve reached '.self::MAX_PRODUCTS.' products. Remove some first.', 'name');
-            }
-            $product = new SupplierProduct(['supplier_id' => $supplier->id]);
+        if (! $product && $supplier->products()->count() >= self::MAX_PRODUCTS) {
+            throw ApiError::invalid('You’ve reached '.self::MAX_PRODUCTS.' products. Remove some first.', 'name');
         }
-        if ($product->approved_at === null) {
-            $product->fill($fields);
-            $product->status = SupplierProduct::PENDING;
-            $product->draft = null;
-        } else {
-            $product->draft = $fields; // shops keep seeing the approved version until this is approved
-        }
-        $product->review_note = '';
-        $product->save();
-        Activity::record('supplier_review', "{$supplier->name} sent “{$fields['name']}” for approval", null, $by);
+        $product ??= new SupplierProduct(['supplier_id' => $supplier->id]);
+        $product->fill($fields)->save();
 
         return $product;
     }
 
-    public static function reviewProduct(SupplierProduct $product, string $action, string $note, User $admin): SupplierProduct
-    {
-        if (! in_array($action, ['approve', 'reject'], true)) {
-            throw ApiError::invalid('Choose approve or reject.', 'action');
-        }
-        if ($action === 'approve') {
-            if ($product->draft) {
-                $product->fill(array_intersect_key($product->draft, array_flip(self::PRODUCT_FIELDS)));
-            }
-            $product->draft = null;
-            $product->status = SupplierProduct::APPROVED;
-            $product->review_note = '';
-            $product->approved_at ??= now();
-        } elseif ($product->draft) {
-            $product->draft = null; // the approved version stays
-            $product->review_note = 'Change not approved: '.mb_substr($note, 0, 270);
-        } else {
-            $product->status = SupplierProduct::REJECTED;
-            $product->review_note = mb_substr($note, 0, 300);
-        }
-        $product->save();
-        $verb = $action === 'approve' ? 'approved' : 'turned down';
-        Activity::record('supplier_review', "{$admin->name} {$verb} “{$product->name}” from {$product->supplier->name}", null, $admin);
+    // ---------------------------------------------------------------- what shops and the home page see
 
-        return $product;
+    /** @return array<int, array> the home page's supplier cards (no contacts or prices) */
+    public static function publicList(): array
+    {
+        return Cache::remember(self::PUBLIC_CACHE_KEY, self::PUBLIC_CACHE_SECONDS, function () {
+            $counts = self::connectedCounts();
+
+            return self::listed()->map(fn ($s) => SupplierJson::publicCard($s, $counts[$s->id] ?? 0))->values()->all();
+        });
     }
 
-    /** Things waiting for a Topline admin: profiles and products. */
-    public static function pendingReviews(): int
+    public static function forgetPublicList(): void
     {
-        return Supplier::where('review_status', 'pending')->count()
-            + SupplierProduct::where(fn ($q) => $q->where('status', SupplierProduct::PENDING)->orWhereNotNull('draft'))->count();
+        Cache::forget(self::PUBLIC_CACHE_KEY);
     }
 
     // ---------------------------------------------------------------- orders
@@ -312,7 +275,7 @@ class Suppliers
         if (! is_array($lines) || ! $lines || ! array_is_list($lines) || count($lines) > 50) {
             throw ApiError::invalid('Add at least one item (up to 50).', 'items');
         }
-        $products = SupplierProduct::where('supplier_id', $supplier->id)->where('status', SupplierProduct::APPROVED)->get()->keyBy('id');
+        $products = SupplierProduct::where('supplier_id', $supplier->id)->get()->keyBy('id');
         $items = [];
         $total = 0;
         $priced = false;
@@ -361,6 +324,7 @@ class Suppliers
             'updated_at' => now(),
         ]);
         Activity::record('supplier_order', "{$store->name} sent order {$order->reference} to {$supplier->name}", $store->id, $by);
+        self::forgetPublicList(); // "works with N shops" may have changed
         Notifications::newSupplierOrder($supplier, $store, $order);
 
         return $order;

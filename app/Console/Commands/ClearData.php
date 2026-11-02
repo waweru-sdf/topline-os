@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\User;
+use App\Services\Suppliers;
 use App\Services\Uploads;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
@@ -58,6 +59,7 @@ class ClearData extends Command
             $counts['logins of deleted users'] = DB::table('personal_access_tokens')->whereNotIn('tokenable_id', $keepIds)->delete();
         });
 
+        Suppliers::forgetPublicList(); // their "works with N shops" counts are now 0
         foreach ($shopPhotos as $id) {
             @unlink(Uploads::folder().'/'.basename($id));
         }

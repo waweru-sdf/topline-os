@@ -7,9 +7,13 @@ use App\Models\User;
 use App\Services\Access;
 use App\Services\Passwords;
 use App\Services\Stores;
+use App\Services\Suppliers;
+use App\Support\ApiError;
+use App\Support\Phone;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Http\Request;
 
-/** Log in with phone or email + password; change password; sign up (open a store). */
+/** Log in with phone or email + password; change password; sign up (open a store, or apply as a supplier). */
 class AuthController extends ApiController
 {
     private function session(User $user, int $status = 200, array $extra = [])
@@ -47,5 +51,18 @@ class AuthController extends ApiController
         [$store, $user] = Stores::create($this->body($request));
 
         return $this->session($user, 201, ['store' => Json::storePrivate($store)]);
+    }
+
+    /** A supplier signs up. No login until a Topline admin approves. At most 3 sign-ups per device per day. */
+    public function applyAsSupplier(Request $request)
+    {
+        $key = 'supplier-signup:'.$request->ip();
+        if (RateLimiter::tooManyAttempts($key, 3)) {
+            throw new ApiError('Too many sign-ups from this device today. Try again tomorrow, or contact Topline.', 429);
+        }
+        $supplier = Suppliers::apply($this->body($request));
+        RateLimiter::hit($key, 86400);
+
+        return $this->json(['name' => $supplier->name, 'phone' => Phone::display($supplier->phone)], 201);
     }
 }
