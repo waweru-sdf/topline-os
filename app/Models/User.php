@@ -13,6 +13,7 @@ class User extends Authenticatable
 
     public const VENDOR = 'vendor';
     public const PLATFORM_ADMIN = 'platform_admin';
+    public const SUPPLIER = 'supplier';
 
     public $timestamps = false;
 
@@ -43,6 +44,11 @@ class User extends Authenticatable
     public function memberships(): HasMany
     {
         return $this->hasMany(StoreMember::class)->orderBy('id');
+    }
+
+    public function isSupplier(): bool
+    {
+        return $this->role === self::SUPPLIER;
     }
 
     public function isPlatformAdmin(): bool

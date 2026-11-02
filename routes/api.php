@@ -1,13 +1,19 @@
 <?php
 
 use App\Http\Controllers\Api\AdminController;
+use App\Http\Controllers\Api\AdminFinanceController;
+use App\Http\Controllers\Api\AdminSuppliersController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BillingController;
 use App\Http\Controllers\Api\MediaController;
 use App\Http\Controllers\Api\PaymentsController;
 use App\Http\Controllers\Api\PublicController;
 use App\Http\Controllers\Api\StorefrontController;
+use App\Http\Controllers\Api\SupplierPortalController;
+use App\Http\Controllers\Api\Vendor\AccountingController;
+use App\Http\Controllers\Api\Vendor\CreditController;
 use App\Http\Controllers\Api\Vendor\ShopController;
+use App\Http\Controllers\Api\Vendor\SuppliersController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,6 +27,7 @@ Route::get('ping', [PublicController::class, 'ping']);
 Route::get('plans', [PublicController::class, 'plans']);
 Route::get('stores/check-slug', [PublicController::class, 'checkSlug']);
 Route::get('site', [PublicController::class, 'site']);
+Route::get('suppliers', [PublicController::class, 'suppliers']);
 Route::post('telemetry/error', [PublicController::class, 'browserError']);
 Route::get('tls/check', [PublicController::class, 'tlsCheck']);
 Route::get('uploads/{name}', [MediaController::class, 'show'])->where('name', '[A-Za-z0-9._-]+');
@@ -73,6 +80,32 @@ Route::prefix('vendor/stores/{storeId}')->middleware(['topline.user', 'topline.s
     Route::get('payouts', 'payouts');
     Route::get('activity', 'activity');
 });
+Route::prefix('vendor/stores/{storeId}')->middleware(['topline.user', 'topline.store'])->group(function () {
+    Route::get('suppliers', [SuppliersController::class, 'index']);
+    Route::get('suppliers/{supplier}', [SuppliersController::class, 'show']);
+    Route::post('suppliers/{supplier}/orders', [SuppliersController::class, 'placeOrder']);
+    Route::get('supplier-orders', [SuppliersController::class, 'orders']);
+    Route::patch('supplier-orders/{orderId}', [SuppliersController::class, 'cancelOrder']);
+    Route::get('accounting', [AccountingController::class, 'summary']);
+    Route::get('accounting/export', [AccountingController::class, 'export']);
+    Route::get('expenses', [AccountingController::class, 'expenses']);
+    Route::post('expenses', [AccountingController::class, 'addExpense']);
+    Route::delete('expenses/{expenseId}', [AccountingController::class, 'deleteExpense'])->whereNumber('expenseId');
+    Route::get('credit-requests', [CreditController::class, 'index']);
+    Route::post('credit-requests', [CreditController::class, 'create']);
+});
+
+// Supplier accounts (Connect to suppliers)
+Route::prefix('supplier')->middleware(['topline.user', 'topline.supplier'])->controller(SupplierPortalController::class)->group(function () {
+    Route::get('me', 'me');
+    Route::put('profile', 'updateProfile');
+    Route::get('products', 'products');
+    Route::post('products', 'createProduct');
+    Route::put('products/{productId}', 'updateProduct');
+    Route::delete('products/{productId}', 'deleteProduct');
+    Route::get('orders', 'orders');
+    Route::patch('orders/{orderId}', 'updateOrder');
+});
 
 // Topline admin
 Route::prefix('admin')->middleware(['topline.user', 'topline.admin'])->controller(AdminController::class)->group(function () {
@@ -88,4 +121,18 @@ Route::prefix('admin')->middleware(['topline.user', 'topline.admin'])->controlle
     Route::put('site', 'updateSite');
     Route::get('incidents', 'incidents');
     Route::patch('incidents/{incidentId}', 'resolveIncident')->whereNumber('incidentId');
+});
+Route::prefix('admin')->middleware(['topline.user', 'topline.admin'])->group(function () {
+    Route::get('suppliers', [AdminSuppliersController::class, 'index']);
+    Route::post('suppliers', [AdminSuppliersController::class, 'create']);
+    Route::get('suppliers/{supplierId}', [AdminSuppliersController::class, 'show']);
+    Route::patch('suppliers/{supplierId}', [AdminSuppliersController::class, 'update']);
+    Route::post('suppliers/{supplierId}/review', [AdminSuppliersController::class, 'review']);
+    Route::post('suppliers/{supplierId}/reset-password', [AdminSuppliersController::class, 'resetPassword']);
+    Route::post('supplier-products/{productId}/review', [AdminSuppliersController::class, 'reviewProduct']);
+    Route::get('supplier-orders', [AdminSuppliersController::class, 'orders']);
+    Route::get('accounting', [AdminFinanceController::class, 'accounting']);
+    Route::get('accounting/export', [AdminFinanceController::class, 'export']);
+    Route::get('credit-requests', [AdminFinanceController::class, 'creditRequests']);
+    Route::patch('credit-requests/{requestId}', [AdminFinanceController::class, 'updateCreditRequest']);
 });

@@ -38,6 +38,15 @@ class PublicController extends ApiController
     }
 
     /** Main-site content: headline, pictures, contacts. ?view=landing counts a visit. */
+    /** Listed suppliers for the landing page: profile, logo and how many shops they work with. No contacts or prices. */
+    public function suppliers()
+    {
+        $counts = \App\Services\Suppliers::connectedCounts();
+
+        return $this->json(\App\Services\Suppliers::listed()
+            ->map(fn ($s) => \App\Http\Presenters\SupplierJson::publicCard($s, $counts[$s->id] ?? 0))->values());
+    }
+
     public function site(Request $request)
     {
         if ($request->query('view') === 'landing') {

@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Models\Sale;
 use App\Models\Store;
+use App\Models\Supplier;
+use App\Models\SupplierOrder;
 use App\Services\Sms\Sms;
 use App\Support\Phone;
 use App\Support\Text;
@@ -24,6 +26,13 @@ class Notifications
         } catch (Throwable $e) {
             Log::error("SMS to {$number} failed: ".$e->getMessage()); // a failed SMS must never fail an order
         }
+    }
+
+    public static function newSupplierOrder(Supplier $supplier, Store $store, SupplierOrder $order): void
+    {
+        $lines = collect($order->items)->take(3)->map(fn ($i) => "{$i['qty']} {$i['name']}")->implode(', ');
+        self::send($supplier->phone ?: $supplier->user?->phone,
+            "New Topline order {$order->reference} from {$store->name} ({$store->town}): {$lines}. Call ".Phone::display($order->contact_phone).'. Details in your Topline supplier account.');
     }
 
     public static function newOrderForShop(Store $store, Sale $order): void

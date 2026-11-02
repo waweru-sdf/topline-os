@@ -55,6 +55,7 @@ class DemoSeeder extends Seeder
                 $this->views(null, 180); // main site
             }
         });
+        $this->call(DemoSuppliersSeeder::class);
     }
 
     private function createStore(array $spec, array $data, $now, string $hash): array

@@ -1,1 +1,0 @@
-var e={mpesa:`M-PESA`,cash:`Cash`,bank:`Bank`,credit:`On credit`};export{e as t};
