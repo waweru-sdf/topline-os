@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, useRouteLoaderData } from 'react-router'
-import { ArrowLeft, Calculator, Check, Copy, CreditCard, ExternalLink, History, KeyRound, LayoutDashboard, LogOut, Package, Receipt, Settings, ShoppingBag, Users, Wallet } from 'lucide-react'
+import { ArrowLeft, Calculator, Check, Copy, CreditCard, ExternalLink, Factory, HandCoins, History, KeyRound, LayoutDashboard, LogOut, Package, Receipt, Settings, ShoppingBag, Users, Wallet } from 'lucide-react'
 import { api } from '@/services/api'
 import { clearSession, getUser, setActingStore } from '@/services/session'
 import { storeHost, storeUrl } from '@/lib/tenant'
@@ -24,7 +24,9 @@ const NAV = [
   { to: '/dashboard/products', label: 'Products & stock', icon: Package },
   { to: '/dashboard/customers', label: 'Customers & credit', icon: Users },
   { to: '/dashboard/money', label: 'Money received', icon: Wallet },
-  { to: '/dashboard/accounting', label: 'Accounting', icon: Calculator, badge: 'Soon', ownerOnly: true },
+  { to: '/dashboard/suppliers', label: 'Suppliers', icon: Factory, perm: 'buy_stock' },
+  { to: '/dashboard/accounting', label: 'Accounting', icon: Calculator, perm: 'manage_accounts' },
+  { to: '/dashboard/credit', label: 'Stock credit', icon: HandCoins, perm: 'manage_billing' },
   { to: '/dashboard/activity', label: 'Activity', icon: History, ownerOnly: true },
   { to: '/dashboard/settings', label: 'Store settings', icon: Settings },
   { to: '/dashboard/billing', label: 'Plan & billing', icon: CreditCard },
@@ -32,8 +34,10 @@ const NAV = [
 
 function VendorLayout() {
   const { user, store } = useVendor()
-  // Cashiers don't see the shop's activity (it shows sales totals and settings changes).
-  const nav = NAV.filter((item) => !item.ownerOnly || user.role === 'platform_admin' || user.storeRole !== 'cashier')
+  // Cashiers don't see the shop's activity (it shows sales totals and settings changes); each item
+  // with `perm` shows only to roles that may use it (the backend checks the same permission).
+  const nav = NAV.filter((item) => (!item.ownerOnly || user.role === 'platform_admin' || user.storeRole !== 'cashier')
+    && (!item.perm || store.permissions?.includes(item.perm)))
 
   return (
     <AppShell

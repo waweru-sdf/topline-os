@@ -7,20 +7,23 @@ import { storeHost, storeLinkParts } from '@/lib/tenant'
 import { cn } from '@/lib/cn'
 import { Button } from '@/components/ui/Button'
 import { Img } from '@/components/ui/Img'
+import { SupplierLogo } from '@/components/SupplierLogo'
 
 export async function loader() {
-  return { plans: await api.getPlans() }
+  // Suppliers are a nice-to-have on this page: if they can't load, the page still shows.
+  const [plans, suppliers] = await Promise.all([api.getPlans(), api.listPublicSuppliers().catch(() => [])])
+  return { plans, suppliers }
 }
 
 function Landing() {
-  const { plans } = useLoaderData()
+  const { plans, suppliers } = useLoaderData()
   const { site } = useRouteLoaderData('marketing')
   return (
     <>
       <title>Topline — Run your hardware shop, sell online</title>
       <Hero site={site} />
       <Features site={site} />
-      <ComingSoon />
+      <GrowSection suppliers={suppliers} />
       <HowToStart />
       <Pricing plans={plans} />
       <Faq site={site} />
@@ -196,40 +199,59 @@ function Features({ site }) {
   )
 }
 
-/* ---------------- Coming soon ---------------- */
+/* ---------------- Suppliers and stock credit ---------------- */
 
-const COMING = [
-  {
-    id: 'suppliers',
-    icon: Factory,
-    title: 'Connect to suppliers',
-    body: 'Buy closer to the source. Topline will connect your shop with cement plants, steel mills and manufacturers abroad, including China, and help you order from them.',
-  },
-  {
-    id: 'stock-credit',
-    icon: HandCoins,
-    title: 'Stock credit',
-    body: 'Stock up now and pay later, with credit from Topline’s lending partner based on your sales on Topline. Apply, follow and repay it all inside Topline.',
-  },
-]
-
-function ComingSoon() {
+function GrowSection({ suppliers }) {
   return (
-    <section id="coming-soon" className="scroll-mt-20 bg-navy text-white">
+    <section className="bg-navy text-white">
       <div className="mx-auto max-w-6xl px-5 py-20 md:py-24">
-        <p className="text-sm font-semibold tracking-wide text-amber uppercase">Coming soon</p>
-        <h2 className="mt-2 max-w-2xl text-3xl font-bold tracking-tight sm:text-4xl">More ways Topline will help your shop grow</h2>
-        <div className="mt-12 grid gap-6 md:grid-cols-2">
-          {COMING.map((c) => (
-            <article key={c.title} id={c.id} className="flex scroll-mt-24 flex-col rounded-2xl bg-white/5 p-6 ring-1 ring-white/10">
-              <c.icon aria-hidden className="size-8 text-amber" />
-              <h3 className="mt-4 text-xl font-bold">{c.title}</h3>
-              <p className="mt-2 flex-1 leading-relaxed text-mist">{c.body}</p>
-              <button type="button" disabled aria-disabled="true" className="mt-6 cursor-not-allowed self-start rounded-lg bg-white/10 px-4 py-2 text-sm font-medium text-mist">
-                Coming soon
-              </button>
-            </article>
-          ))}
+        <div id="suppliers" className="scroll-mt-24">
+          <p className="text-sm font-semibold tracking-wide text-amber uppercase">Connect to suppliers</p>
+          <h2 className="mt-2 max-w-2xl text-3xl font-bold tracking-tight sm:text-4xl">Buy straight from manufacturers and distributors</h2>
+          <p className="mt-3 max-w-2xl leading-relaxed text-mist">
+            Shops on Topline see each supplier’s products and prices and send orders from their shop admin. The supplier calls back to confirm delivery and payment.
+          </p>
+          {suppliers.length === 0 ? (
+            <div className="mt-10 flex items-center gap-4 rounded-2xl bg-white/5 p-6 ring-1 ring-white/10">
+              <Factory aria-hidden className="size-8 shrink-0 text-amber" />
+              <p className="text-mist">We’re signing up cement plants, steel mills and manufacturers abroad, including China. They’ll be listed here soon.</p>
+            </div>
+          ) : (
+            <ul className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {suppliers.map((sup) => (
+                <li key={sup.id} className="flex flex-col rounded-2xl bg-white/5 p-6 ring-1 ring-white/10">
+                  <div className="flex items-center gap-4">
+                    <SupplierLogo supplier={sup} className="size-14 ring-white/10" />
+                    <div className="min-w-0">
+                      <h3 className="text-lg leading-snug font-bold">{sup.name}</h3>
+                      {sup.location && <p className="text-sm text-mist">{sup.location}</p>}
+                    </div>
+                  </div>
+                  <p className="mt-4 flex-1 leading-relaxed text-mist">{sup.description}</p>
+                  {sup.categories.length > 0 && (
+                    <ul className="mt-4 flex flex-wrap gap-1.5" aria-label="Categories">
+                      {sup.categories.map((c) => <li key={c} className="rounded-full bg-white/10 px-2.5 py-0.5 text-xs">{c}</li>)}
+                    </ul>
+                  )}
+                  <p className="mt-4 flex items-center gap-2 border-t border-white/10 pt-4 text-sm">
+                    <Store aria-hidden className="size-4 text-amber" />
+                    {sup.connectedShops === 0 ? 'New on Topline' : `Works with ${sup.connectedShops} hardware ${sup.connectedShops === 1 ? 'shop' : 'shops'} on Topline`}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        <div id="stock-credit" className="mt-14 flex scroll-mt-24 flex-col gap-5 rounded-2xl bg-amber p-6 text-navy-deep sm:flex-row sm:items-center sm:p-8">
+          <HandCoins aria-hidden className="size-10 shrink-0" />
+          <div className="flex-1">
+            <h2 className="text-2xl font-bold">Stock credit</h2>
+            <p className="mt-1 max-w-2xl leading-relaxed">
+              Stock up now and pay later, with credit from Topline’s lending partner based on your shop’s sales on Topline. Shop owners request it from their shop admin.
+            </p>
+          </div>
+          <Link to="/dashboard/credit" className="shrink-0 rounded-lg bg-navy px-5 py-3 font-medium text-white hover:bg-navy-deep">Request stock credit</Link>
         </div>
       </div>
     </section>

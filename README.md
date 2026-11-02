@@ -7,7 +7,7 @@ Hardware shops sign up, pay, and get their own online store at `toplinehub.co.ke
 | Phase | What | Status |
 | --- | --- | --- |
 | 1 | Website (React): password login and sign-up, admin password reset, Activity pages, product measurements and photos | ✅ done |
-| 2 | Backend in Laravel + MySQL ([`laravel/`](laravel)), matching [docs/API-CONTRACT.md](docs/API-CONTRACT.md) | ✅ done: 83 tests, on SQLite and MySQL/MariaDB |
+| 2 | Backend in Laravel + MySQL ([`laravel/`](laravel)), matching [docs/API-CONTRACT.md](docs/API-CONTRACT.md) | ✅ done: 97 tests, on SQLite and MySQL/MariaDB |
 | 3 | Go live: GitHub → Hostinger, deployed automatically on every push | see [Deploying](#deploying) |
 
 ```
@@ -43,7 +43,7 @@ To work on the website with instant reload, also run `npm run dev` in `topline-o
 
 ## Logins
 
-Log in with the **phone number or email** and the password **topline123** (every demo account). Owners' emails are `<first name>@<shop>.example.com`, e.g. `peter@mjengo.example.com`; admins are `admin@toplinehub.co.ke` and `felix@toplinehub.co.ke`.
+Log in with the **phone number or email** and the password **topline123** (every demo account). Demo suppliers: Rift Valley Cement Co. (0700 111 222), Pwani Steel Mills (0700 111 333), and BuildPro Trading (0700 111 444, waiting for approval). Owners' emails are `<first name>@<shop>.example.com`, e.g. `peter@mjengo.example.com`; admins are `admin@toplinehub.co.ke` and `felix@toplinehub.co.ke`.
 
 | Who | Phone | Store | Link (dev) | Status |
 | --- | --- | --- | --- | --- |
@@ -66,7 +66,7 @@ Reset the demo data with `php artisan migrate:fresh && php artisan topline:insta
 ```bash
 npm run build:laravel   # build the website into laravel/public (for Hostinger)
 npm run lint
-cd laravel && vendor/bin/phpunit   # 83 backend tests
+cd laravel && vendor/bin/phpunit   # 97 backend tests
 ```
 
 ## What's in it
@@ -118,6 +118,25 @@ The Paystack integration is fully written (`laravel/app/Services/Payments/Paysta
 5. Nothing to restart: `.env` is read on every request. `GET /api/health` shows `"payments": "paystack"`.
 
 Test with `sk_test_` keys first.
+
+### Connect to suppliers
+
+Manufacturers and distributors ("suppliers") get their own login and portal at `/supplier`.
+
+- **Adding one:** Topline admin → **Suppliers** → Add supplier (company, contact person, mobile). You get a temporary password to send them; they choose their own on first login.
+- **Approval:** the supplier fills in their profile (logo, description, categories, payment options) and products (price per unit, minimum order, in stock). Nothing is shown until a Topline admin approves it under **Suppliers**. After the first approval, every change (a new price, out of stock, new description) waits for approval too, and shops keep seeing the approved version until then.
+- **Home page:** approved suppliers appear with logo, description, categories and how many hardware shops have ordered from them. No phone numbers, prices or payment details are shown there.
+- **Ordering:** in the shop admin (owners and managers) → **Suppliers**, a shop opens a supplier, enters quantities (or describes items not on the list), the contact phone, delivery place and how they'll pay. The supplier gets an SMS and sees the order with Call and WhatsApp buttons. They take it from there, outside Topline, and mark it *contacted*, *delivered* or *declined*. The shop can cancel while it's still new.
+- **Payment options** a supplier can accept: M-PESA (Paybill/Till), bank transfer (PesaLink/RTGS/EFT), pay on delivery, deposit then balance, supplier credit/LPO (30–90 days), and Topline stock credit. Money moves between shop and supplier directly; Topline doesn't hold it.
+
+### Accounting
+
+- **Shop admin → Accounting** (owners and managers): monthly profit and loss built from sales (takings minus what the stock cost) and the expenses the shop records (rent, wages, transport…). Also shows payment methods, credit collected, online payouts, what customers owe, a 6-month chart, and CSV downloads of sales and expenses for an accountant.
+- **Topline admin → Accounting:** plan income, commission, money sent to shops (sent, waiting, failed), monthly recurring revenue, plans past due, and CSV downloads of payments and payouts.
+
+### Stock credit
+
+Shop owners request credit under **Stock credit** (amount, purpose, repayment period, monthly sales, contact, and consent to share a sales summary with the lending partner). They see "Information received, we'll reach out after processing". Each shop can have one open request at a time. Topline admins see every request under **Credit requests** (with a count in the menu), call or WhatsApp the shop, and set the status (received, being reviewed, approved, not approved, closed) with a private note.
 
 ### Monitoring and alerts
 
@@ -264,7 +283,7 @@ On the website's dashboard ("Connected with GitHub"), set **Branch: `hostinger`*
 - **`.env` and photos** stay on the server across deploys; they're never in Git.
 - **Forgotten passwords:** Topline admin → Stores → ⋯ → Reset owner's password. Add more admins from the terminal (`php artisan topline:create-admin "Name" 07XXXXXXXX`) or with the `FIRST_ADMIN_*` lines while no admin exists.
 - **Errors:** System health in the admin, and `public_html/storage/logs/` in File Manager.
-- **Start over with an empty platform** (deletes every shop, owner, product, sale and payment; keeps Topline admins, plans and site content): on the server, in `public_html`, run `php artisan topline:clear-data` and type `CLEAR`.
+- **Start over with an empty platform** (deletes every shop, owner, product, sale, payment, supplier order, credit request and expense; keeps Topline admins, plans, site content and supplier partners): on the server, in `public_html`, run `php artisan topline:clear-data` and type `CLEAR`.
 - The `hostinger` branch is generated; don't edit it by hand.
 
 ## Known gaps

@@ -60,6 +60,9 @@ const mainSiteRoutes = [
       { path: 'billing', lazy: () => import('@/features/vendor/Billing') },
       { path: 'activity', lazy: () => import('@/features/vendor/Activity') },
       { path: 'accounting', lazy: () => import('@/features/vendor/Accounting') },
+      { path: 'suppliers', lazy: () => import('@/features/vendor/Suppliers') },
+      { path: 'suppliers/:slug', lazy: () => import('@/features/vendor/SupplierDetail') },
+      { path: 'credit', lazy: () => import('@/features/vendor/Credit') },
     ],
   },
   {
@@ -74,6 +77,20 @@ const mainSiteRoutes = [
       { path: 'health', lazy: () => import('@/features/platform/Health') },
       { path: 'activity', lazy: () => import('@/features/platform/Activity') },
       { path: 'accounting', lazy: () => import('@/features/platform/Accounting') },
+      { path: 'suppliers', lazy: () => import('@/features/platform/Suppliers') },
+      { path: 'suppliers/:supplierId', lazy: () => import('@/features/platform/SupplierDetail') },
+      { path: 'credit', lazy: () => import('@/features/platform/Credit') },
+    ],
+  },
+  {
+    path: 'supplier',
+    id: 'supplier',
+    lazy: () => import('@/features/supplier/SupplierLayout'),
+    errorElement: <RouteError />,
+    children: [
+      { index: true, lazy: () => import('@/features/supplier/Orders') },
+      { path: 'products', lazy: () => import('@/features/supplier/Products') },
+      { path: 'profile', lazy: () => import('@/features/supplier/Profile') },
     ],
   },
 ]

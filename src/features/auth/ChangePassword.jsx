@@ -16,7 +16,7 @@ function ChangePassword() {
   const navigate = useNavigate()
   const user = getUser()
   const forced = Boolean(user?.mustChangePassword)
-  const home = user?.role === 'platform_admin' ? '/admin' : '/dashboard'
+  const home = user?.role === 'platform_admin' ? '/admin' : user?.role === 'supplier' ? '/supplier' : '/dashboard'
 
   const [state, save, pending] = useActionState(async (_prev, fd) => {
     const next = fd.get('newPassword')

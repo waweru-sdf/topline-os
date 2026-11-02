@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
 /** Money coming IN: one M-PESA prompt. `reference` is ours; `provider_ref` is the M-PESA receipt. */
 class Payment extends Model
 {
@@ -18,4 +20,9 @@ class Payment extends Model
     public $incrementing = false;
 
     protected $casts = ['claimed' => 'boolean', 'created_at' => 'datetime', 'paid_at' => 'datetime', 'amount' => 'integer'];
+
+    public function store(): BelongsTo
+    {
+        return $this->belongsTo(Store::class);
+    }
 }

@@ -47,7 +47,7 @@ function Payments() {
         ))}
       </div>
 
-      <div className="overflow-x-auto rounded-card bg-white ring-1 ring-line">
+      <div className="relative overflow-x-auto rounded-card bg-white ring-1 ring-line">
         {tab === 'in' ? (
           <table className="w-full min-w-[52rem] text-sm">
             <thead className="text-left text-muted">

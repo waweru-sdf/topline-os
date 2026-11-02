@@ -63,7 +63,7 @@ function Sell() {
   if (receipt) return <Receipt sale={receipt} store={store} onNew={() => setReceipt(null)} />
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_24rem]">
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[minmax(0,1fr)_24rem]">
       <title>Sell — Topline</title>
       <section aria-label="Products">
         <h1 className="sr-only">Sell at the counter</h1>
@@ -79,7 +79,7 @@ function Sell() {
             className="h-12 w-full rounded-lg border border-line bg-white pr-4 pl-11 focus:border-navy focus:ring-3 focus:ring-navy/15 focus:outline-none"
           />
         </label>
-        <div className="mt-3 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none]">
+        <div className="relative mt-3 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none]">
           {[{ id: '', name: 'All' }, ...categories].map((c) => (
             <button
               key={c.id || 'all'}

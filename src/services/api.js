@@ -45,6 +45,27 @@ async function http(method, path, body, { form } = {}) {
   return data
 }
 
+/** Download a file (CSV) that needs the login token, as a normal browser download. */
+async function download(path) {
+  let res
+  try {
+    res = await fetch(`${BASE}${path}`, { headers: getToken() ? { Authorization: `Bearer ${getToken()}` } : {} })
+  } catch {
+    throw new ApiError('Can’t reach Topline right now. Check your internet connection and try again.', 0)
+  }
+  if (!res.ok) {
+    const data = await res.json().catch(() => null)
+    throw new ApiError(data?.message ?? `Download failed (${res.status})`, res.status, data?.field)
+  }
+  const name = /filename="([^"]+)"/.exec(res.headers.get('Content-Disposition') ?? '')?.[1] ?? 'topline.csv'
+  const url = URL.createObjectURL(await res.blob())
+  const a = Object.assign(document.createElement('a'), { href: url, download: name })
+  document.body.append(a)
+  a.click()
+  a.remove()
+  setTimeout(() => URL.revokeObjectURL(url), 1000)
+}
+
 const q = (params) => {
   const s = new URLSearchParams(Object.entries(params ?? {}).filter(([, v]) => v != null && v !== '')).toString()
   return s ? `?${s}` : ''
@@ -58,6 +79,7 @@ export const api = {
   getSite: (params) => http('GET', `/site${q(params)}`),
   checkSlug: (slug) => http('GET', `/stores/check-slug${q({ slug })}`),
   reportError: (error) => http('POST', '/telemetry/error', error).catch(() => {}),
+  listPublicSuppliers: () => http('GET', '/suppliers'),
 
   // storefront (public, per store)
   getStorefront: (slug) => http('GET', `/storefront/${slug}`),
@@ -102,6 +124,29 @@ export const api = {
   listPayouts: (id) => http('GET', `${v(id)}/payouts`),
   listStoreActivity: (id, params) => http('GET', `${v(id)}/activity${q(params)}`),
 
+  // shop admin: suppliers, accounting, stock credit
+  listSuppliers: (id) => http('GET', `${v(id)}/suppliers`),
+  getSupplier: (id, slug) => http('GET', `${v(id)}/suppliers/${encodeURIComponent(slug)}`),
+  orderFromSupplier: (id, slug, body) => http('POST', `${v(id)}/suppliers/${encodeURIComponent(slug)}/orders`, body),
+  listSupplierOrders: (id) => http('GET', `${v(id)}/supplier-orders`),
+  cancelSupplierOrder: (id, orderId) => http('PATCH', `${v(id)}/supplier-orders/${orderId}`, { status: 'cancelled' }),
+  getAccounting: (id, month) => http('GET', `${v(id)}/accounting${q({ month })}`),
+  listExpenses: (id, month) => http('GET', `${v(id)}/expenses${q({ month })}`),
+  addExpense: (id, body) => http('POST', `${v(id)}/expenses`, body),
+  deleteExpense: (id, expenseId) => http('DELETE', `${v(id)}/expenses/${expenseId}`),
+  downloadAccounting: (id, type, month) => download(`${v(id)}/accounting/export${q({ type, month })}`),
+  listCreditRequests: (id) => http('GET', `${v(id)}/credit-requests`),
+  requestCredit: (id, body) => http('POST', `${v(id)}/credit-requests`, body),
+
+  // supplier accounts
+  supplierMe: () => http('GET', '/supplier/me'),
+  updateSupplierProfile: (body) => http('PUT', '/supplier/profile', body),
+  listOwnProducts: () => http('GET', '/supplier/products'),
+  saveOwnProduct: (p) => (p.id ? http('PUT', `/supplier/products/${p.id}`, p) : http('POST', '/supplier/products', p)),
+  deleteOwnProduct: (pid) => http('DELETE', `/supplier/products/${pid}`),
+  listIncomingOrders: () => http('GET', '/supplier/orders'),
+  updateIncomingOrder: (orderId, status) => http('PATCH', `/supplier/orders/${orderId}`, { status }),
+
   // Topline admin
   getOverview: () => http('GET', '/admin/overview'),
   listAllStores: () => http('GET', '/admin/stores'),
@@ -114,4 +159,15 @@ export const api = {
   updateSite: (data) => http('PUT', '/admin/site', data),
   listIncidents: (show) => http('GET', `/admin/incidents${q({ show })}`),
   resolveIncident: (id, resolved = true) => http('PATCH', `/admin/incidents/${id}`, { resolved }),
+  adminSuppliers: () => http('GET', '/admin/suppliers'),
+  adminCreateSupplier: (body) => http('POST', '/admin/suppliers', body),
+  adminSupplier: (id) => http('GET', `/admin/suppliers/${id}`),
+  adminUpdateSupplier: (id, body) => http('PATCH', `/admin/suppliers/${id}`, body),
+  adminReviewSupplier: (id, action, note) => http('POST', `/admin/suppliers/${id}/review`, { action, note }),
+  adminReviewProduct: (pid, action, note) => http('POST', `/admin/supplier-products/${pid}/review`, { action, note }),
+  adminResetSupplierPassword: (id) => http('POST', `/admin/suppliers/${id}/reset-password`),
+  adminAccounting: (month) => http('GET', `/admin/accounting${q({ month })}`),
+  downloadPlatformAccounting: (type, month) => download(`/admin/accounting/export${q({ type, month })}`),
+  adminCreditRequests: (status) => http('GET', `/admin/credit-requests${q({ status })}`),
+  adminUpdateCreditRequest: (id, body) => http('PATCH', `/admin/credit-requests/${id}`, body),
 }

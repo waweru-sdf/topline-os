@@ -8,7 +8,7 @@ import { Logo } from '@/components/ui/Logo'
 import { PasswordField } from '@/components/ui/PasswordField'
 
 export const homeFor = (user) =>
-  user.mustChangePassword ? '/change-password' : user.role === 'platform_admin' ? '/admin' : '/dashboard'
+  user.mustChangePassword ? '/change-password' : user.role === 'platform_admin' ? '/admin' : user.role === 'supplier' ? '/supplier' : '/dashboard'
 
 export async function loader() {
   const user = getUser()

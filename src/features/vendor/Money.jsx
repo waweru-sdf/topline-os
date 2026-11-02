@@ -48,7 +48,7 @@ function Money() {
       {payouts.length === 0 ? (
         <EmptyState icon={Wallet} title="No online payments yet">When customers pay with the M-PESA prompt, each payment shows here once it’s sent to you.</EmptyState>
       ) : (
-        <div className="overflow-x-auto rounded-card bg-white ring-1 ring-line">
+        <div className="relative overflow-x-auto rounded-card bg-white ring-1 ring-line">
           <table className="w-full min-w-[40rem] text-sm">
             <thead className="text-left text-muted">
               <tr className="border-b border-line">

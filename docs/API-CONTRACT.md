@@ -268,3 +268,20 @@ Item JSON: `{id, kind, summary, actor, storeId, storeName, data, createdAt}`.
 | Ali Hassan | 0733 902 117 | ali@kilimani-paints.example.com |
 | Kiprono Rotich | 0720 664 018 | kiprono@rift-timber.example.com |
 | Mary Muthoni | 0798 221 560 | mary@nyeri-plumb.example.com |
+
+## 12. Suppliers, accounting and stock credit
+
+Errors use the same `{message, field}` shape. Money is whole KES. Phones are shown as `0712 345 678`.
+
+| Who | Endpoint | Notes |
+| --- | --- | --- |
+| Anyone | `GET /suppliers` | Listed suppliers for the home page: `{id, slug, name, logo, description, categories[], location, connectedShops}`. Never phone, email, prices or payment details. |
+| Shop (`buy_stock`: owner, manager) | `GET /vendor/stores/:id/suppliers`, `GET …/suppliers/:slug` | Approved profile and approved products only (never drafts), with phone, payment options and payment instructions. |
+| | `POST …/suppliers/:slug/orders` | `{items: [{productId, qty} or {name, unit, qty}], contactName, contactPhone, deliveryLocation, paymentOption, notes}`. Checks the minimum order, that the payment option is one the supplier accepts, and max 20 orders per shop per day. |
+| | `GET …/supplier-orders`, `PATCH …/supplier-orders/:id {status: "cancelled"}` | Cancel only while `new`. |
+| Shop (`manage_accounts`: owner, manager) | `GET …/accounting?month=YYYY-MM`, `GET/POST …/expenses`, `DELETE …/expenses/:id`, `GET …/accounting/export?type=sales\|expenses&month=` | Months follow Kenyan time. Takings exclude unpaid, unconfirmed and cancelled sales. CSV cells that start with `= + - @` are prefixed so spreadsheets never run them. |
+| Shop owner (`manage_billing`) | `GET/POST …/credit-requests` | One open (`new`/`reviewing`) request per shop (409 otherwise); `consent: true` required. |
+| Supplier (role `supplier`) | `GET /supplier/me`, `PUT /supplier/profile`, `GET/POST/PUT/DELETE /supplier/products[/:id]`, `GET /supplier/orders`, `PATCH /supplier/orders/:id {status}` | Only their own records (another supplier's id → 404). Edits before the first approval change the record; after it, they wait in `draft`. Order moves: new → contacted/completed/declined; contacted → completed/declined. |
+| Topline admin | `GET/POST /admin/suppliers`, `GET/PATCH /admin/suppliers/:id` (`{listed}` or `{profile}`), `POST /admin/suppliers/:id/review {action, note}`, `POST /admin/supplier-products/:id/review`, `POST /admin/suppliers/:id/reset-password`, `GET /admin/supplier-orders` | Creating a supplier makes a login with a temporary password (must be changed on first login). |
+| | `GET /admin/accounting?month=`, `GET /admin/accounting/export?type=payments\|payouts&month=`, `GET /admin/credit-requests?status=`, `PATCH /admin/credit-requests/:id {status, adminNote}` | |
+

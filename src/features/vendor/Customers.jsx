@@ -14,7 +14,6 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { useVendor } from './VendorLayout'
 import { requireStoreId } from './guard'
 
-const TODAY = new Date('2026-10-29T08:00:00.000Z')
 
 export async function loader() {
   return { customers: await api.listCustomers(requireStoreId()) }
@@ -53,7 +52,7 @@ function Customers() {
       {customers.length === 0 ? (
         <EmptyState icon={Users} title="No customers yet">Add the fundis and contractors who buy on credit so you can track what they owe.</EmptyState>
       ) : (
-        <div className="overflow-x-auto rounded-card bg-white ring-1 ring-line">
+        <div className="relative overflow-x-auto rounded-card bg-white ring-1 ring-line">
           <table className="w-full min-w-[44rem] text-sm">
             <thead className="text-left text-muted">
               <tr className="border-b border-line">
@@ -66,7 +65,7 @@ function Customers() {
             </thead>
             <tbody className="divide-y divide-line">
               {sorted.map((c) => {
-                const overdue = c.balance > 0 && c.dueAt && new Date(c.dueAt) < TODAY
+                const overdue = c.balance > 0 && c.dueAt && new Date(c.dueAt) < new Date()
                 const used = c.creditLimit ? Math.min(100, (c.balance / c.creditLimit) * 100) : 0
                 const phone = normalizePhone(c.phone)
                 const reminder = `Habari ${c.name}, this is ${store.name}. Your balance is ${formatKES(c.balance)}${c.dueAt ? `, due ${formatDate(c.dueAt)}` : ''}. Pay via M-PESA ${payToLine(store.payments)}. Asante!`

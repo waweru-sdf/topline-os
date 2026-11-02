@@ -9,8 +9,9 @@ import { AccountLink } from '@/components/AccountLink'
 
 const NAV = [
   { href: '/#features', label: 'What you get' },
-  { href: '/#suppliers', label: 'Connect to suppliers', soon: true },
-  { href: '/#stock-credit', label: 'Stock credit', soon: true },
+  { href: '/#suppliers', label: 'Suppliers' },
+  { href: '/#stock-credit', label: 'Stock credit' },
+  { href: '/#how', label: 'How to start' },
   { href: '/#pricing', label: 'Pricing' },
   { href: '/#faq', label: 'Questions' },
 ]

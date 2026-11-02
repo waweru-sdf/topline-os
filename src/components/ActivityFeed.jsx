@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useSearchParams } from 'react-router'
 import {
-  Banknote, CircleUserRound, KeyRound, LoaderCircle, Package, PackageMinus, PackagePlus, Receipt, Settings2,
+  Banknote, Calculator, CircleUserRound, Factory, HandCoins, KeyRound, LoaderCircle, Package, PackageMinus, PackagePlus, Receipt, Settings2,
   ShieldAlert, ShoppingCart, Store, Wallet,
 } from 'lucide-react'
 import { formatDate, formatTime } from '@/lib/format'
@@ -26,6 +26,12 @@ const ACTIVITY_KINDS = {
   login: ['Log in', CircleUserRound, 'text-steel'],
   password_changed: ['Password changed', KeyRound, 'text-steel'],
   password_reset: ['Password reset', KeyRound, 'text-amber-deep'],
+  supplier_order: ['Supplier order', Factory, 'text-navy'],
+  supplier_added: ['New supplier', Factory, 'text-navy'],
+  supplier_review: ['Supplier review', Factory, 'text-steel'],
+  credit_request: ['Stock credit', HandCoins, 'text-amber-deep'],
+  expense_added: ['Expense', Calculator, 'text-steel'],
+  expense_deleted: ['Expense removed', Calculator, 'text-bad'],
 }
 
 /**

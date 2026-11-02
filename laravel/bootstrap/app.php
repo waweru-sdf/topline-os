@@ -25,6 +25,7 @@ $app = Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'topline.user' => RequireUser::class,
             'topline.admin' => RequireAdmin::class,
+            'topline.supplier' => \App\Http\Middleware\RequireSupplier::class,
             'topline.store' => LoadStore::class,
         ]);
         $middleware->api(prepend: [TrackRequests::class]);

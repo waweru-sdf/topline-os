@@ -14,14 +14,19 @@ class ClearDataTest extends TestCase
     {
         $this->putJson('/api/admin/site', ['heroTitle' => 'Kept title'], $this->admin()['headers'])->assertOk();
         $this->owner(); // a shop owner login (token) that must go
-        $adminCount = User::where('role', User::PLATFORM_ADMIN)->count();
+        $keptUsers = User::whereIn('role', [User::PLATFORM_ADMIN, User::SUPPLIER])->count();
+        $suppliers = \App\Models\Supplier::count();
+        $this->assertGreaterThan(0, DB::table('supplier_orders')->count() + DB::table('expenses')->count());
 
         $this->artisan('topline:clear-data')->expectsQuestion('Type CLEAR to continue', 'CLEAR')->assertSuccessful();
 
         $this->assertSame(0, Store::count());
         $this->assertSame(0, DB::table('products')->count() + DB::table('sales')->count() + DB::table('customers')->count()
             + DB::table('payments')->count() + DB::table('activity_log')->count() + DB::table('page_views')->count());
-        $this->assertSame($adminCount, User::count());
+        $this->assertSame($keptUsers, User::count());
+        $this->assertSame($suppliers, \App\Models\Supplier::count()); // supplier partners stay
+        $this->assertSame(0, DB::table('supplier_orders')->count() + DB::table('expenses')->count() + DB::table('credit_requests')->count());
+        $this->postJson('/api/auth/login', ['login' => '0700 111 222', 'password' => self::PASSWORD])->assertOk(); // supplier login still works
         $this->assertSame(3, Plan::count());
         $this->assertSame('Kept title', $this->getJson('/api/site')->json('heroTitle'));
         $this->postJson('/api/auth/login', ['login' => self::OWNER_PHONE, 'password' => self::PASSWORD])->assertStatus(401);

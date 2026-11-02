@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button'
 export function AccountLink({ variant = 'ghost', className }) {
   const user = getUser()
   if (user?.role === 'platform_admin') return <Button to="/admin" variant={variant} className={className}>Topline admin</Button>
+  if (user?.role === 'supplier') return <Button to="/supplier" variant={variant} className={className}>Supplier account</Button>
   if (user?.role === 'vendor') return <Button to="/dashboard" variant={variant} className={className}>My shop admin</Button>
   return <Button to="/login" variant={variant} className={className}>Log in</Button>
 }

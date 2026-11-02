@@ -67,7 +67,7 @@ function StoreHome() {
               className="h-12 w-full rounded-lg border border-line bg-white pr-4 pl-11 focus:border-navy focus:ring-3 focus:ring-navy/15 focus:outline-none"
             />
           </label>
-          <div className="mt-3 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none]" role="group" aria-label="Filter by category">
+          <div className="relative mt-3 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none]" role="group" aria-label="Filter by category">
             {[{ id: '', name: 'All' }, ...categories].map((c) => (
               <button
                 key={c.id || 'all'}

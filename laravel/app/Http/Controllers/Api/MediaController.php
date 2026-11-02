@@ -13,7 +13,7 @@ use Illuminate\Http\Request;
 /** Uploading and serving photos. */
 class MediaController extends ApiController
 {
-    /** Shop staff upload into their store (form field storeId); Topline admins may upload site images. */
+    /** Shop staff upload into their store (form field storeId); Topline admins (site images) and suppliers upload without one. */
     public function upload(Request $request)
     {
         $user = Access::currentUser();
@@ -21,7 +21,7 @@ class MediaController extends ApiController
         if ($storeId) {
             Access::loadStore($storeId);
             Ctx::require(Permissions::MANAGE_PRODUCTS);
-        } elseif (! $user->isPlatformAdmin()) {
+        } elseif (! $user->isPlatformAdmin() && ! $user->isSupplier()) { // suppliers: logo and product photos
             throw ApiError::notFound("That store doesn't exist.");
         }
 

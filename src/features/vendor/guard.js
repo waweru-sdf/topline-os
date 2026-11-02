@@ -11,7 +11,14 @@ export function requireStoreId() {
   if (user?.role === 'vendor') return user.storeId
   // Topline admins work inside whichever store they opened from the admin.
   if (user?.role === 'platform_admin' && getActingStoreId()) return getActingStoreId()
-  throw redirect(user?.role === 'platform_admin' ? '/admin' : '/login')
+  throw redirect(user?.role === 'platform_admin' ? '/admin' : user?.role === 'supplier' ? '/supplier' : '/login')
+}
+
+export function requireSupplier() {
+  const user = getUser()
+  if (!user || user.role !== 'supplier') throw redirect('/login')
+  if (user.mustChangePassword) throw redirect('/change-password')
+  return user
 }
 
 export function requirePlatformAdmin() {

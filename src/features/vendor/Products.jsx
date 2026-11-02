@@ -58,7 +58,7 @@ function Products() {
           <Search aria-hidden className="pointer-events-none absolute top-1/2 left-3 size-4.5 -translate-y-1/2 text-steel" />
           <input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search products" className="h-11 w-full rounded-lg border border-line bg-white pr-3 pl-10 focus:border-navy focus:ring-3 focus:ring-navy/15 focus:outline-none" />
         </label>
-        <div className="flex gap-1 overflow-x-auto rounded-lg bg-white p-1 ring-1 ring-line">
+        <div className="relative flex gap-1 overflow-x-auto rounded-lg bg-white p-1 ring-1 ring-line">
           {FILTERS.map(([id, label]) => (
             <button key={id} type="button" aria-pressed={filter === id} onClick={() => setFilter(id)} className={cn('shrink-0 rounded-md px-3 py-1.5 text-sm', filter === id ? 'bg-navy text-white' : 'text-muted hover:text-ink')}>
               {label}
@@ -74,7 +74,7 @@ function Products() {
           </EmptyState>
         </div>
       ) : (
-        <div className="mt-4 overflow-x-auto rounded-card bg-white ring-1 ring-line">
+        <div className="relative mt-4 overflow-x-auto rounded-card bg-white ring-1 ring-line">
           <table className="w-full min-w-[46rem] text-sm">
             <thead className="text-left text-muted">
               <tr className="border-b border-line">

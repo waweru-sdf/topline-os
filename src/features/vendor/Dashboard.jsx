@@ -93,7 +93,7 @@ function Dashboard() {
       <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
         <section className="overflow-hidden rounded-card bg-white ring-1 ring-line">
           <h2 className="px-5 pt-5 font-bold">Latest sales</h2>
-          <div className="mt-3 overflow-x-auto">
+          <div className="relative mt-3 overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="text-left text-muted">
                 <tr className="border-b border-line">
@@ -147,9 +147,9 @@ function Dashboard() {
         </span>
         <span className="min-w-0 flex-1">
           <span className="block font-bold">Accounting</span>
-          <span className="block text-sm text-muted">Profit and loss, expenses and reports, built from your sales.</span>
+          <span className="block text-sm text-muted">This month’s profit and loss, expenses and downloads for your accountant.</span>
         </span>
-        <span className="shrink-0 rounded-full bg-amber px-2.5 py-0.5 text-xs font-bold text-navy-deep">Coming soon</span>
+        <span className="shrink-0 text-sm font-medium text-navy">Open →</span>
       </Link>
     </>
   )
