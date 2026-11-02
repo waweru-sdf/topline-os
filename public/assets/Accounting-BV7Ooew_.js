@@ -1,0 +1,1 @@
+import{i as e,y as t}from"./index-BS1IaLZR.js";import{t as n}from"./ComingSoon-CJvatv51.js";var r=t(),i=e();function a(){let e=(0,r.c)(1),t;return e[0]===Symbol.for(`react.memo_cache_sentinel`)?(t=(0,i.jsx)(n,{variant:`shop`}),e[0]=t):t=e[0],t}export{a as Component};
