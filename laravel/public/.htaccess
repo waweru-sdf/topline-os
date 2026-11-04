@@ -5,6 +5,14 @@
 
     RewriteEngine On
 
+    # On Hostinger this folder sits inside public_html, so it can also be opened as /public/...
+    # (old links, browser history). Send those to the real address: "/public/admin" → "/admin".
+    # THE_REQUEST is what the browser asked for, so requests rewritten here internally never match.
+    RewriteCond %{THE_REQUEST} \s/public/?[\s?]
+    RewriteRule ^ / [L,R=301]
+    RewriteCond %{THE_REQUEST} \s/public(/[^\s?]+)
+    RewriteRule ^ %1 [L,R=301]
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
