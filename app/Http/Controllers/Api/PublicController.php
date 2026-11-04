@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Presenters\Json;
 use App\Models\Plan;
 use App\Models\Store;
+use App\Services\Domains;
 use App\Services\Monitoring;
 use App\Services\Reviews;
 use App\Services\Site;
@@ -90,5 +91,13 @@ class PublicController extends ApiController
         RateLimiter::hit($key, 86400);
 
         return $this->json(['received' => true], 201);
+    }
+
+    /** ?host= → {slug} when that host is a shop's connected own domain; 404 otherwise. */
+    public function resolveDomain(Request $request)
+    {
+        $slug = Domains::resolve((string) $request->query('host', ''));
+
+        return $slug ? $this->json(['slug' => $slug]) : throw ApiError::notFound('No shop uses this domain.');
     }
 }

@@ -14,12 +14,15 @@ use App\Models\Store;
 use App\Models\StoreMember;
 use App\Services\Access;
 use App\Services\Activity;
+use App\Services\Branches;
 use App\Services\Catalog;
 use App\Services\Customers;
 use App\Services\Dashboard;
 use App\Services\Orders;
 use App\Services\Permissions as P;
+use App\Services\Plans;
 use App\Services\Products;
+use App\Services\Quotations;
 use App\Services\Sales;
 use App\Services\Stock;
 use App\Services\Stores;
@@ -49,7 +52,13 @@ class ShopController extends ApiController
 
     public function show()
     {
-        return $this->json([...Json::storePrivate(Ctx::store()), 'myRole' => Ctx::storeRole() ?? 'platform_admin', 'permissions' => Ctx::permissions()]);
+        $store = Ctx::store();
+
+        return $this->json([...Json::storePrivate($store), 'myRole' => Ctx::storeRole() ?? 'platform_admin', 'permissions' => Ctx::permissions(),
+            ...Branches::summary($store), 'limits' => [
+                'products' => Plans::limit($store, 'products'), 'staff' => Plans::limit($store, 'staff'),
+                'branches' => Plans::limit($store, 'branches'), 'customDomain' => Plans::limit($store, 'customDomain'),
+            ]]);
     }
 
     public function update(Request $request)
@@ -59,36 +68,63 @@ class ShopController extends ApiController
         return $this->json(Json::storePrivate(Stores::updateProfile(Ctx::store(), $this->body($request))));
     }
 
-    public function dashboard()
+    /** ?branchId= one branch; empty = the whole shop (staff tied to a branch always see theirs). */
+    public function dashboard(Request $request)
     {
         Ctx::require(P::VIEW_DASHBOARD);
+        $requested = (string) $request->query('branchId', '');
+        $branch = Branches::forCaller(Ctx::store(), $requested);
+        $whole = $requested === '' && $branch->is_main && ! $this->tiedToBranch();
 
-        return $this->json(Dashboard::build(Ctx::store(), Ctx::can(P::VIEW_COSTS)));
+        return $this->json(Dashboard::build(Ctx::store(), Ctx::can(P::VIEW_COSTS), $whole ? null : $branch));
+    }
+
+    private function tiedToBranch(): bool
+    {
+        $user = Access::currentUser();
+
+        return ! $user->isPlatformAdmin() && (bool) StoreMember::where('store_id', Ctx::store()->id)->where('user_id', $user->id)->value('branch_id');
     }
 
     // ---- Products & stock ----
 
-    public function products()
+    /** ?branchId= : "stock" is the stock at that branch. Owners and managers also get every branch's stock. */
+    public function products(Request $request)
     {
         Ctx::require(P::VIEW_PRODUCTS);
-        $rows = Product::where('store_id', Ctx::store()->id)->orderByDesc('created_at')->get();
+        $store = Ctx::store();
+        $branch = Branches::forCaller($store, $request->query('branchId'));
+        $stock = Branches::stockMap($store, $branch);
+        $rows = Product::where('store_id', $store->id)->orderByDesc('created_at')->get();
+        $data = ['products' => $rows->map(fn ($p) => Json::product($p, Ctx::can(P::VIEW_COSTS), $stock[$p->id] ?? 0))->all(),
+            'categories' => Catalog::CATEGORIES, 'branchId' => $branch->id];
+        if (Ctx::can(P::VIEW_COSTS) && Branches::all($store)->count() > 1) {
+            $data['stockByBranch'] = Branches::stockByBranch($store);
+        }
 
-        return $this->json(['products' => $rows->map(fn ($p) => Json::product($p, Ctx::can(P::VIEW_COSTS)))->all(), 'categories' => Catalog::CATEGORIES]);
+        return $this->json($data);
     }
 
     public function createProduct(Request $request)
     {
         Ctx::require(P::MANAGE_PRODUCTS);
 
-        return $this->json(Json::product(Products::save(Ctx::store(), $this->body($request), Access::currentUser()), true), 201);
+        $data = $this->body($request);
+        $branch = Branches::forCaller(Ctx::store(), $data['branchId'] ?? null);
+        $product = Products::save(Ctx::store(), $data, Access::currentUser(), null, $branch);
+
+        return $this->json(Json::product($product, true, Branches::stockAt($product, $branch)), 201);
     }
 
     public function updateProduct(Request $request, string $storeId, string $productId)
     {
         Ctx::require(P::MANAGE_PRODUCTS);
         $product = Products::find(Ctx::store(), $productId);
+        $data = $this->body($request);
+        $branch = Branches::forCaller(Ctx::store(), $data['branchId'] ?? null);
+        $product = Products::save(Ctx::store(), $data, Access::currentUser(), $product, $branch);
 
-        return $this->json(Json::product(Products::save(Ctx::store(), $this->body($request), Access::currentUser(), $product), true));
+        return $this->json(Json::product($product, true, Branches::stockAt($product, $branch)));
     }
 
     public function deleteProduct(string $storeId, string $productId)
@@ -103,15 +139,38 @@ class ShopController extends ApiController
     {
         Ctx::require(P::MANAGE_PRODUCTS);
         $product = Products::find(Ctx::store(), $productId);
-        $delta = Input::integer($this->body($request), 'delta', required: true, message: 'Enter how much to add or remove.');
-        DB::transaction(function () use ($product, $delta) {
-            $before = $product->stock;
-            Stock::adjust($product, $delta, 'adjust', 'stock button', Access::currentUser()->id);
-            Activity::record('stock_adjusted', "Stock of {$product->name} changed {$before} → {$product->stock}", $product->store_id,
-                data: ['productId' => $product->id, 'before' => $before, 'after' => $product->stock]);
+        $data = $this->body($request);
+        $delta = Input::integer($data, 'delta', required: true, message: 'Enter how much to add or remove.');
+        $branch = Branches::forCaller(Ctx::store(), $data['branchId'] ?? null);
+        DB::transaction(function () use ($product, $delta, $branch) {
+            $before = Branches::stockAt($product, $branch);
+            Stock::adjust($product, $delta, 'adjust', 'stock button', Access::currentUser()->id, $branch);
+            $where = $branch->is_main ? '' : " at {$branch->name}";
+            Activity::record('stock_adjusted', "Stock of {$product->name}{$where} changed {$before} → ".($before + $delta), $product->store_id,
+                data: ['productId' => $product->id, 'before' => $before, 'after' => $before + $delta, 'branchId' => $branch->id]);
         });
 
-        return $this->json(Json::product($product->refresh(), Ctx::can(P::VIEW_COSTS)));
+        return $this->json(Json::product($product->refresh(), Ctx::can(P::VIEW_COSTS), Branches::stockAt($product, $branch)));
+    }
+
+    /** {fromBranchId, toBranchId, qty}: move stock between branches (owners and managers). */
+    public function transferStock(Request $request, string $storeId, string $productId)
+    {
+        Ctx::require(P::MANAGE_PRODUCTS);
+        if ($this->tiedToBranch()) {
+            throw ApiError::forbidden('Ask the owner or a manager who works at every branch to move stock.');
+        }
+        $store = Ctx::store();
+        $product = Products::find($store, $productId);
+        $data = $this->body($request);
+        $from = Branches::find($store, $data['fromBranchId'] ?? null);
+        $to = Branches::find($store, $data['toBranchId'] ?? null);
+        $qty = Input::integer($data, 'qty', required: true, minimum: 1, message: 'Enter how many to move.');
+        Stock::transfer($product, $from, $to, $qty, Access::currentUser()->id);
+        Activity::record('stock_adjusted', "Moved {$qty} {$product->unit} of {$product->name} from {$from->name} to {$to->name}", $store->id,
+            data: ['productId' => $product->id]);
+
+        return $this->json(['stockByBranch' => Branches::stockByBranch($store)]);
     }
 
     // ---- Counter sales and online orders ----
@@ -126,6 +185,10 @@ class ShopController extends ApiController
         if ($request->query('status')) {
             $query->where('status', $request->query('status'));
         }
+        if ($request->query('branchId') || $this->tiedToBranch()) {
+            $branch = Branches::forCaller(Ctx::store(), $request->query('branchId'));
+            $query->where(fn ($q) => $branch->is_main ? $q->where('branch_id', $branch->id)->orWhereNull('branch_id') : $q->where('branch_id', $branch->id));
+        }
         $rows = $query->orderByDesc('created_at')->orderByDesc('number')->limit($this->limit($request, 200))->get();
 
         return $this->json($rows->map(fn ($s) => Json::sale($s, Ctx::can(P::VIEW_COSTS)))->all());
@@ -135,7 +198,10 @@ class ShopController extends ApiController
     {
         Ctx::require(P::SELL);
         $data = $this->body($request);
-        $sale = Sales::counterSale(Ctx::store(), Access::currentUser(), $data['items'] ?? null, $data['method'] ?? null, $data['customerId'] ?? null);
+        $store = Ctx::store();
+        $quote = ($data['quoteId'] ?? null) ? Quotations::find($store, $data['quoteId']) : null;
+        $sale = Sales::counterSale($store, Access::currentUser(), $data['items'] ?? null, $data['method'] ?? null, $data['customerId'] ?? null,
+            Branches::forCaller($store, $data['branchId'] ?? null), $quote);
 
         return $this->json(Json::sale($sale, Ctx::can(P::VIEW_COSTS)), 201);
     }
@@ -183,7 +249,14 @@ class ShopController extends ApiController
         return $this->json(Json::customer(Customers::recordPayment(Ctx::store(), $customerId, $this->body($request), Access::currentUser())));
     }
 
-    // ---- Quote requests from the storefront ----
+    // ---- Quotations: requests from the store page, and ones priced at the till ----
+
+    public function saveQuotation(Request $request)
+    {
+        Ctx::require(P::SELL);
+
+        return $this->json(Json::quote(Quotations::save(Ctx::store(), $this->body($request), Access::currentUser())), 201);
+    }
 
     public function quotes()
     {

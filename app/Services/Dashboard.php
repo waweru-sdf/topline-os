@@ -3,17 +3,18 @@
 namespace App\Services;
 
 use App\Http\Presenters\Json;
+use App\Models\Branch;
 use App\Models\Customer;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Models\Store;
 
-/** Numbers for the shop owner's Overview page (last 14 days, Kenyan days). */
+/** Numbers for the shop owner's Overview page (last 14 days, Kenyan days), for the whole shop or one branch. */
 class Dashboard
 {
     public const DAYS = 14;
 
-    public static function build(Store $store, bool $showCost = true): array
+    public static function build(Store $store, bool $showCost = true, ?Branch $branch = null): array
     {
         $tz = config('topline.timezone');
         $now = now();
@@ -21,6 +22,9 @@ class Dashboard
         $since = $today->copy()->subDays(self::DAYS - 1)->startOfDay();
         $sales = Sale::with('items')->where('store_id', $store->id)->where('created_at', '>=', $since->copy()->utc())
             ->whereNotIn('status', [Sale::AWAITING_PAYMENT, Sale::AWAITING_CONFIRMATION, Sale::CANCELLED])
+            ->when($branch, fn ($q) => $branch->is_main
+                ? $q->where(fn ($w) => $w->where('branch_id', $branch->id)->orWhereNull('branch_id')) // online orders and older sales: main
+                : $q->where('branch_id', $branch->id))
             ->orderByDesc('created_at')->get();
 
         $perDay = [];
@@ -46,6 +50,7 @@ class Dashboard
 
         $customers = Customer::where('store_id', $store->id)->get();
         $products = Product::where('store_id', $store->id)->get();
+        $stock = $branch ? Branches::stockMap($store, $branch) : $products->pluck('stock', 'id')->all();
         arsort($byProduct);
 
         return [
@@ -56,7 +61,9 @@ class Dashboard
             'sales7' => array_sum(array_column($last7, 'count')),
             'owedToYou' => (int) $customers->sum('balance'),
             'overdueCustomers' => $customers->filter(fn ($c) => $c->balance > 0 && $c->due_at && $c->due_at->lt($now))->count(),
-            'lowStock' => $products->filter(fn ($p) => $p->stock <= $p->reorder_at)->map(fn ($p) => Json::product($p, $showCost))->values()->all(),
+            // At a branch, only products it has ever stocked (a new branch doesn't list the whole catalogue).
+            'lowStock' => $products->filter(fn ($p) => ($branch?->is_main === false ? array_key_exists($p->id, $stock) : true) && ($stock[$p->id] ?? 0) <= $p->reorder_at)
+                ->map(fn ($p) => Json::product($p, $showCost, $stock[$p->id] ?? 0))->values()->all(),
             'newOrders' => Sale::where('store_id', $store->id)->where('channel', Sale::ONLINE)
                 ->whereIn('status', [Sale::NEW, Sale::AWAITING_CONFIRMATION])->count(),
             'topProducts' => collect($byProduct)->take(5)->map(fn ($r, $n) => ['name' => $n, 'revenue' => $r])->values()->all(),

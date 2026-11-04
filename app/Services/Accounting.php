@@ -90,6 +90,7 @@ class Accounting
             'creditCollected' => (int) DB::table('customer_payments')->where('store_id', $store->id)
                 ->where('created_at', '>=', $from)->where('created_at', '<', $to)->sum('amount'),
             'owedToYou' => (int) Customer::where('store_id', $store->id)->sum('balance'),
+            'owedToSuppliers' => SupplierAccounts::totalOwed($store),
             'onlineReceived' => (int) Payout::where('store_id', $store->id)->where('status', 'paid')
                 ->where('created_at', '>=', $from)->where('created_at', '<', $to)->sum('amount'),
             'onlineFees' => (int) Payout::where('store_id', $store->id)->where('status', 'paid')

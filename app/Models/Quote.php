@@ -12,5 +12,5 @@ class Quote extends Model
 
     public $incrementing = false;
 
-    protected $casts = ['created_at' => 'datetime'];
+    protected $casts = ['created_at' => 'datetime', 'lines' => 'array', 'total' => 'integer'];
 }

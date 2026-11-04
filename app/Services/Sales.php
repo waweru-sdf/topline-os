@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
+use App\Models\Branch;
 use App\Models\Customer;
 use App\Models\Product;
+use App\Models\Quote;
 use App\Models\Sale;
 use App\Models\Store;
 use App\Models\User;
@@ -16,8 +18,10 @@ class Sales
 {
     public const CREDIT_TERM_DAYS = 30;
 
-    public static function counterSale(Store $store, User $user, mixed $items, mixed $method, mixed $customerId = null): Sale
+    /** $branch: where the goods leave from (staff tied to a branch always sell from theirs). $quote: the quotation this sale fulfils. */
+    public static function counterSale(Store $store, User $user, mixed $items, mixed $method, mixed $customerId = null, ?Branch $branch = null, ?Quote $quote = null): Sale
     {
+        $branch ??= Branches::main($store);
         if (! in_array($method, Sale::PAYMENT_METHODS, true)) {
             throw ApiError::invalid('Choose how the customer paid.', 'method');
         }
@@ -57,7 +61,7 @@ class Sales
             }
         }
 
-        return DB::transaction(function () use ($store, $user, $method, $customer, $lines, $products, $total) {
+        return DB::transaction(function () use ($store, $user, $method, $customer, $lines, $products, $total, $branch, $quote) {
             if ($method === 'credit') {
                 $customer->balance += $total;
                 $customer->due_at ??= now()->addDays(self::CREDIT_TERM_DAYS);
@@ -65,11 +69,12 @@ class Sales
             }
             $sale = Sale::create(['store_id' => $store->id, 'channel' => Sale::POS, 'status' => Sale::COMPLETED, 'method' => $method,
                 'total' => $total, 'staff_id' => $user->id, 'staff_name' => $user->name, 'customer_id' => $customer?->id,
-                'customer_name' => $customer?->name, 'paid_at' => now()]);
+                'customer_name' => $customer?->name, 'paid_at' => now(), 'branch_id' => $branch->id]);
             foreach ($lines as $i => $line) {
                 $sale->items()->create($line);
-                Stock::adjust($products[$i], -$line['qty'], 'sale', $sale->code, $user->id);
+                Stock::adjust($products[$i], -$line['qty'], 'sale', $sale->code, $user->id, $branch);
             }
+            $quote?->update(['status' => 'won', 'sale_id' => $sale->code]);
             $items = "{$lines[0]['qty']} × {$lines[0]['name']}".(count($lines) > 1 ? ' and '.(count($lines) - 1).' more' : '');
             Activity::record('counter_sale', "Counter sale {$sale->code}: {$items} — ".Text::kes($total)." ({$method})", $store->id, $user,
                 ['sale' => $sale->code, 'total' => $total, 'method' => $method]);

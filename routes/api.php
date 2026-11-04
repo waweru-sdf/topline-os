@@ -14,7 +14,9 @@ use App\Http\Controllers\Api\SupplierPortalController;
 use App\Http\Controllers\Api\Vendor\AccountingController;
 use App\Http\Controllers\Api\Vendor\CreditController;
 use App\Http\Controllers\Api\Vendor\ShopController;
+use App\Http\Controllers\Api\Vendor\SupplierAccountsController;
 use App\Http\Controllers\Api\Vendor\SuppliersController;
+use App\Http\Controllers\Api\Vendor\TeamController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -38,6 +40,7 @@ Route::post('auth/login', [AuthController::class, 'login']);
 Route::post('stores', [AuthController::class, 'openStore']);
 Route::post('supplier-signups', [AuthController::class, 'applyAsSupplier']);
 Route::post('reviews', [PublicController::class, 'createReview']);
+Route::get('domains/resolve', [PublicController::class, 'resolveDomain']);
 Route::middleware('topline.user')->group(function () {
     Route::get('auth/me', [AuthController::class, 'me'])->name('auth.me');
     Route::post('auth/password', [AuthController::class, 'changePassword'])->name('auth.password');
@@ -71,6 +74,7 @@ Route::prefix('vendor/stores/{storeId}')->middleware(['topline.user', 'topline.s
     Route::put('products/{productId}', 'updateProduct');
     Route::delete('products/{productId}', 'deleteProduct');
     Route::post('products/{productId}/stock', 'adjustStock');
+    Route::post('products/{productId}/transfer', 'transferStock');
     Route::get('sales', 'sales');
     Route::post('sales', 'createSale');
     Route::patch('sales/{saleId}', 'updateSale');
@@ -79,6 +83,7 @@ Route::prefix('vendor/stores/{storeId}')->middleware(['topline.user', 'topline.s
     Route::get('customers/{customerId}', 'customer');
     Route::post('customers/{customerId}/payments', 'customerPayment');
     Route::get('quotes', 'quotes');
+    Route::post('quotes', 'saveQuotation');
     Route::patch('quotes/{quoteId}', 'updateQuote');
     Route::get('payouts', 'payouts');
     Route::get('activity', 'activity');
@@ -94,6 +99,21 @@ Route::prefix('vendor/stores/{storeId}')->middleware(['topline.user', 'topline.s
     Route::get('expenses', [AccountingController::class, 'expenses']);
     Route::post('expenses', [AccountingController::class, 'addExpense']);
     Route::delete('expenses/{expenseId}', [AccountingController::class, 'deleteExpense'])->whereNumber('expenseId');
+    Route::get('staff', [TeamController::class, 'staff']);
+    Route::post('staff', [TeamController::class, 'addStaff']);
+    Route::patch('staff/{memberId}', [TeamController::class, 'updateStaff']);
+    Route::delete('staff/{memberId}', [TeamController::class, 'removeStaff']);
+    Route::post('staff/{memberId}/reset-password', [TeamController::class, 'resetStaffPassword']);
+    Route::post('branches', [TeamController::class, 'addBranch']);
+    Route::patch('branches/{branchId}', [TeamController::class, 'updateBranch']);
+    Route::delete('branches/{branchId}', [TeamController::class, 'removeBranch']);
+    Route::put('domain', [TeamController::class, 'setDomain']);
+    Route::get('supplier-accounts', [SupplierAccountsController::class, 'index']);
+    Route::post('supplier-accounts', [SupplierAccountsController::class, 'create']);
+    Route::get('supplier-accounts/{accountId}', [SupplierAccountsController::class, 'show']);
+    Route::patch('supplier-accounts/{accountId}', [SupplierAccountsController::class, 'update']);
+    Route::delete('supplier-accounts/{accountId}', [SupplierAccountsController::class, 'destroy']);
+    Route::post('supplier-accounts/{accountId}/entries', [SupplierAccountsController::class, 'addEntry']);
     Route::get('credit-requests', [CreditController::class, 'index']);
     Route::post('credit-requests', [CreditController::class, 'create']);
 });

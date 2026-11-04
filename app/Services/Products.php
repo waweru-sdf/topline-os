@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Branch;
 use App\Models\Product;
 use App\Models\Store;
 use App\Models\User;
@@ -22,9 +23,10 @@ class Products
         return $product;
     }
 
-    /** Create ($product = null) or update a product from the editor form. */
-    public static function save(Store $store, array $data, User $user, ?Product $product = null): Product
+    /** Create ($product = null) or update a product from the editor form. "stock" is the stock at $branch (default: main). */
+    public static function save(Store $store, array $data, User $user, ?Product $product = null, ?Branch $branch = null): Product
     {
+        $branch ??= Branches::main($store);
         $name = Input::text($data, 'name', required: true, maxLength: 160, message: 'Give the product a name.');
         $sellPrice = Input::integer($data, 'sellPrice', required: true, minimum: 1, message: 'Enter a selling price above 0.');
         $categoryId = ($data['categoryId'] ?? null) ?: 'tools';
@@ -38,13 +40,13 @@ class Products
         $gallery = array_key_exists('gallery', $data) ? self::cleanGallery($data['gallery']) : null;
         $specs = array_key_exists('specs', $data) ? self::cleanSpecs($data['specs']) : null;
 
-        return DB::transaction(function () use ($store, $data, $user, $product, $name, $sellPrice, $categoryId, $vatClass, $gallery, $specs) {
+        return DB::transaction(function () use ($store, $data, $user, $product, $name, $sellPrice, $categoryId, $vatClass, $gallery, $specs, $branch) {
             $isNew = $product === null;
             if ($isNew) {
                 self::checkPlanLimit($store);
                 $product = new Product(['store_id' => $store->id, 'slug' => self::uniqueSlug($store, $name), 'stock' => 0]);
             }
-            $oldStock = $isNew ? 0 : $product->stock;
+            $oldStock = $isNew ? 0 : Branches::stockAt($product, $branch);
             $product->fill([
                 'name' => $name,
                 'category_id' => $categoryId,
@@ -76,7 +78,7 @@ class Products
 
             // Stock typed into the form is recorded as an adjustment, so history stays complete.
             $newStock = Input::integer($data, 'stock', default: $oldStock);
-            Stock::adjust($product, $newStock - $oldStock, 'adjust', 'product form', $user->id);
+            Stock::adjust($product, $newStock - $oldStock, 'adjust', 'product form', $user->id, $branch);
             $size = $product->size ? " ({$product->size})" : '';
             if ($isNew) {
                 Activity::record('product_added', "Added {$product->name}{$size}, {$newStock} {$product->unit} in stock", $store->id, $user, ['productId' => $product->id]);
