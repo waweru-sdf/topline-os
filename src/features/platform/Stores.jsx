@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useFetcher, useLoaderData, useNavigate } from 'react-router'
-import { Activity, Copy, ExternalLink, KeyRound, LayoutDashboard, MoreHorizontal, Search } from 'lucide-react'
+import { Activity, Copy, ExternalLink, Globe, KeyRound, LayoutDashboard, MoreHorizontal, Search } from 'lucide-react'
 import { Dialog } from '@/components/ui/Dialog'
 import { api } from '@/services/api'
 import { formatDate, formatKES } from '@/lib/format'
@@ -21,6 +21,7 @@ export async function action({ request }) {
   const fd = await request.formData()
   try {
     if (fd.get('intent') === 'reset-password') return { reset: await api.resetOwnerPassword(fd.get('storeId')) }
+    if (fd.get('domainStatus')) return { store: await api.setStoreDomainStatus(fd.get('storeId'), fd.get('domainStatus')) }
     return { store: await api.setStoreStatus(fd.get('storeId'), fd.get('status')) }
   } catch (e) {
     return { error: e.message }
@@ -115,6 +116,11 @@ function StoreRow({ store }) {
         <a href={`/s/${store.slug}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs text-muted hover:text-navy">
           {storeHost(store.slug)} <ExternalLink className="size-3" />
         </a>
+        {store.customDomain && (
+          <span className={cn('mt-0.5 flex items-center gap-1 text-xs', store.domainStatus === 'connected' ? 'text-good' : 'font-medium text-[#7a4f00]')}>
+            <Globe className="size-3" />{store.customDomain}{store.domainStatus === 'connected' ? '' : ': to connect'}
+          </span>
+        )}
       </td>
       <td className="px-3 py-3">
         <span className="block">{store.owner?.name}</span>
@@ -139,6 +145,12 @@ function StoreRow({ store }) {
               <Link to={`/admin/activity?storeId=${store.id}`} className="flex items-center gap-2 rounded-md px-3 py-2 hover:bg-concrete">
                 <Activity className="size-4 text-steel" /> See activity
               </Link>
+              {store.customDomain && (
+                <button name="domainStatus" value={store.domainStatus === 'connected' ? 'pending' : 'connected'}
+                  className="flex w-full items-center gap-2 rounded-md px-3 py-2 hover:bg-concrete">
+                  <Globe className="size-4 text-steel" /> {store.domainStatus === 'connected' ? 'Mark domain as not connected' : `Mark ${store.customDomain} as connected`}
+                </button>
+              )}
               <button
                 name="intent"
                 value="reset-password"

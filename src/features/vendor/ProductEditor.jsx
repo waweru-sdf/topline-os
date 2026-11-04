@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/Button'
 import { Field } from '@/components/ui/Field'
 import { Img } from '@/components/ui/Img'
 import { PhotoUpload } from '@/components/PhotoUpload'
-import { useVendor } from './VendorLayout'
+import { branchParam, useVendor } from './VendorLayout'
 import { requireStoreId } from './guard'
 
 const SPEC_LABELS = ['Size', 'Length', 'Width', 'Thickness', 'Diameter', 'Weight', 'Capacity', 'Grade', 'Gauge', 'Colour', 'Brand', 'Material', 'Finish', 'Pack size']
@@ -19,7 +19,7 @@ const PRODUCT_PHOTOS = Object.keys(PHOTOS).filter((k) => !['heroShelves', 'toolW
 
 export async function loader({ params }) {
   const storeId = requireStoreId()
-  const { products, categories } = await api.listProducts(storeId)
+  const { products, categories } = await api.listProducts(storeId, branchParam(storeId))
   if (!params.productId) return { product: null, categories }
   const product = products.find((p) => p.id === params.productId)
   if (!product) throw data({ message: 'That product was deleted or never existed.' }, { status: 404 })
@@ -45,6 +45,7 @@ export async function action({ request, params }) {
       sellPrice: num('sellPrice'),
       buyPrice: num('buyPrice') || 0,
       stock: num('stock') || 0,
+      branchId: branchParam(storeId), // the stock typed in is the stock at this branch
       reorderAt: num('reorderAt') || 0,
       description: fd.get('description').trim(),
       size: fd.get('size').trim(),
@@ -61,7 +62,7 @@ export async function action({ request, params }) {
 
 function ProductEditor() {
   const { product, categories } = useLoaderData()
-  const { store } = useVendor()
+  const { store, branch } = useVendor()
   const result = useActionData()
   const navigation = useNavigation()
   const saving = navigation.state === 'submitting' && navigation.formData?.get('intent') !== 'delete'
@@ -168,7 +169,8 @@ function ProductEditor() {
             onChange={(e) => setPrices((p) => ({ ...p, buy: Number(e.target.value) }))}
             hint={margin !== null ? `${margin}% margin, ${formatKES(prices.sell - prices.buy)} profit per unit. Staff can’t see this.` : 'Only you and managers can see this.'}
           />
-          <Field name="stock" label="Quantity in stock" inputMode="numeric" defaultValue={product?.stock ?? 0} />
+          <Field name="stock" label={store.branches.length > 1 ? `Quantity in stock at ${branch.name}` : 'Quantity in stock'} inputMode="numeric" defaultValue={product?.stock ?? 0}
+            hint={store.branches.length > 1 ? 'Other branches keep their own count. Move stock between branches from Products & stock.' : undefined} />
           <Field name="reorderAt" label="Warn me when stock falls to" inputMode="numeric" defaultValue={product?.reorderAt ?? 10} />
         </section>
 

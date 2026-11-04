@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useFetcher, useLoaderData } from 'react-router'
-import { Minus, Package, Plus, Search } from 'lucide-react'
+import { ArrowLeftRight, Minus, Package, Plus, Search } from 'lucide-react'
 import { api } from '@/services/api'
 import { formatKES } from '@/lib/format'
 import { cn } from '@/lib/cn'
@@ -9,17 +9,30 @@ import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { Img } from '@/components/ui/Img'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { Dialog } from '@/components/ui/Dialog'
+import { Field } from '@/components/ui/Field'
+import { branchParam, useVendor } from './VendorLayout'
 import { requireStoreId } from './guard'
 
 export async function loader() {
-  return api.listProducts(requireStoreId())
+  const storeId = requireStoreId()
+  return api.listProducts(storeId, branchParam(storeId))
 }
 
-/** Quick +/- stock adjustment from the list. */
+/** Quick +/- stock at the current branch, or moving stock between branches. */
 export async function action({ request }) {
+  const storeId = requireStoreId()
   const fd = await request.formData()
-  await api.adjustStock(requireStoreId(), fd.get('productId'), Number(fd.get('delta')))
-  return null
+  try {
+    if (fd.get('intent') === 'transfer') {
+      await api.transferStock(storeId, fd.get('productId'), { fromBranchId: fd.get('from'), toBranchId: fd.get('to'), qty: Number(fd.get('qty')) })
+      return { moved: true }
+    }
+    await api.adjustStock(storeId, fd.get('productId'), Number(fd.get('delta')), branchParam(storeId))
+    return null
+  } catch (e) {
+    return { error: e.message }
+  }
 }
 
 const FILTERS = [
@@ -30,7 +43,11 @@ const FILTERS = [
 ]
 
 function Products() {
-  const { products, categories } = useLoaderData()
+  const { products, categories, stockByBranch } = useLoaderData()
+  const { store, branch } = useVendor()
+  const can = (perm) => store.permissions?.includes(perm)
+  const multi = store.branches.length > 1
+  const [moving, setMoving] = useState(null) // product whose stock is being moved between branches
   const [query, setQuery] = useState('')
   const [filter, setFilter] = useState('all')
   const catName = Object.fromEntries(categories.map((c) => [c.id, c.name]))
@@ -48,8 +65,8 @@ function Products() {
   return (
     <>
       <title>Products — Topline</title>
-      <PageHeader title="Products & stock" actions={<Button to="/dashboard/products/new" variant="navy"><Plus className="size-4" />Add product</Button>}>
-        {products.length} products, stock worth {formatKES(stockValue)} at buying price.
+      <PageHeader title="Products & stock" actions={can('manage_products') && <Button to="/dashboard/products/new" variant="navy"><Plus className="size-4" />Add product</Button>}>
+        {products.length} products{multi && `; stock shown is at ${branch.name}`}{can('view_costs') && `, worth ${formatKES(stockValue)} at buying price`}.
       </PageHeader>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -80,8 +97,8 @@ function Products() {
               <tr className="border-b border-line">
                 <th className="px-4 py-3 font-medium">Product</th>
                 <th className="px-3 py-3 text-right font-medium">Selling price</th>
-                <th className="px-3 py-3 text-right font-medium">Buying price</th>
-                <th className="px-3 py-3 text-center font-medium">In stock</th>
+                {can('view_costs') && <th className="px-3 py-3 text-right font-medium">Buying price</th>}
+                <th className="px-3 py-3 text-center font-medium">{multi ? `In stock at ${branch.name}` : 'In stock'}</th>
                 <th className="px-4 py-3 font-medium">On store</th>
               </tr>
             </thead>
@@ -98,7 +115,7 @@ function Products() {
                     </Link>
                   </td>
                   <td className="px-3 py-3 text-right font-medium tabular">{formatKES(p.sellPrice)}</td>
-                  <td className="px-3 py-3 text-right text-muted tabular">
+                  {can('view_costs') && <td className="px-3 py-3 text-right text-muted tabular">
                     {p.buyPrice > 0 ? (
                       <>
                         {formatKES(p.buyPrice)}
@@ -107,8 +124,15 @@ function Products() {
                     ) : (
                       <Link to={`/dashboard/products/${p.id}`} className="text-xs text-navy hover:underline">Add buying price</Link>
                     )}
+                  </td>}
+                  <td className="px-3 py-3">
+                    {can('manage_products') ? <StockStepper product={p} /> : <span className="block text-center font-bold tabular">{p.stock}</span>}
+                    {stockByBranch && !store.myBranchId && (
+                      <button type="button" onClick={() => setMoving(p)} className="mx-auto mt-1 flex items-center gap-1 text-xs text-navy hover:underline">
+                        <ArrowLeftRight className="size-3" />Branches
+                      </button>
+                    )}
                   </td>
-                  <td className="px-3 py-3"><StockStepper product={p} /></td>
                   <td className="px-4 py-3">{p.published ? <Badge tone="good">Visible</Badge> : <Badge>Hidden</Badge>}</td>
                 </tr>
               ))}
@@ -116,7 +140,47 @@ function Products() {
           </table>
         </div>
       )}
+      {moving && <MoveStock product={moving} branches={store.branches} stock={stockByBranch} onClose={() => setMoving(null)} />}
     </>
+  )
+}
+
+/** Stock at every branch, and moving some from one branch to another. */
+function MoveStock({ product, branches, stock, onClose }) {
+  const fetcher = useFetcher()
+  const [from, setFrom] = useState(branches[0].id)
+  const [to, setTo] = useState(branches[1].id)
+  const busy = fetcher.state !== 'idle'
+  const done = fetcher.state === 'idle' && fetcher.data?.moved
+  return (
+    <Dialog open onClose={onClose} title={`${product.name}: stock by branch`}>
+      <ul className="divide-y divide-line rounded-lg ring-1 ring-line">
+        {branches.map((b) => (
+          <li key={b.id} className="flex justify-between px-4 py-2.5 text-sm">
+            <span>{b.name}</span><span className="font-bold tabular">{stock[b.id]?.[product.id] ?? 0} {product.unit}</span>
+          </li>
+        ))}
+      </ul>
+      <fetcher.Form method="post" className="mt-5 space-y-4">
+        <input type="hidden" name="intent" value="transfer" />
+        <input type="hidden" name="productId" value={product.id} />
+        <div className="grid grid-cols-2 gap-3">
+          <Field as="select" name="from" label="Move from" value={from} onChange={(e) => setFrom(e.target.value)}>
+            {branches.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
+          </Field>
+          <Field as="select" name="to" label="To" value={to} onChange={(e) => setTo(e.target.value)}>
+            {branches.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
+          </Field>
+        </div>
+        <Field name="qty" label={`How many (${product.unit})`} inputMode="numeric" required />
+        {fetcher.data?.error && <p className="text-sm text-bad" role="alert">{fetcher.data.error}</p>}
+        {done && <p className="text-sm text-good" role="status">Moved. The counts above are up to date.</p>}
+        <div className="flex justify-end gap-2">
+          <Button type="button" variant="ghost" onClick={onClose}>Close</Button>
+          <Button type="submit" variant="navy" pending={busy} disabled={from === to}>Move stock</Button>
+        </div>
+      </fetcher.Form>
+    </Dialog>
   )
 }
 

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useRevalidator } from 'react-router'
-import { CircleCheck, Plus, Trash2 } from 'lucide-react'
+import { CircleCheck, Clock, Globe, Plus, Trash2 } from 'lucide-react'
 import { api } from '@/services/api'
 import { COUNTIES } from '@/lib/counties'
 import { storeHost } from '@/lib/tenant'
@@ -50,7 +50,8 @@ function Settings() {
   const method = payoutMethod(form.payments.method)
 
   return (
-    <form onSubmit={save} className="max-w-3xl space-y-6">
+    <div className="max-w-3xl space-y-6">
+    <form onSubmit={save} className="space-y-6">
       <title>Store settings — Topline</title>
       <PageHeader title="Store settings">What customers see on {storeHost(store.slug)}.</PageHeader>
 
@@ -159,6 +160,8 @@ function Settings() {
         <Button type="submit" variant="navy" pending={status?.saving}>Save changes</Button>
       </div>
     </form>
+    <OwnDomain store={store} />
+    </div>
   )
 }
 
@@ -186,6 +189,55 @@ function ZonesEditor({ zones, onChange, error }) {
       </button>
       {error && <p className="mt-1 text-sm text-bad">{error}</p>}
     </div>
+  )
+}
+
+/** The shop's own domain, on plans that include it. Topline connects it on the hosting, then marks it connected. */
+function OwnDomain({ store }) {
+  const revalidator = useRevalidator()
+  const [domain, setDomain] = useState(store.customDomain ?? '')
+  const [status, setStatus] = useState(null)
+  if (!store.limits?.customDomain && !store.customDomain) {
+    return (
+      <section className="rounded-card bg-white p-5 ring-1 ring-line sm:p-6">
+        <h2 className="flex items-center gap-2 font-bold"><Globe className="size-5" />Your own domain</h2>
+        <p className="mt-2 text-sm text-muted">Use an address like yourshop.co.ke for your store. Your plan doesn’t include it; see Plan & billing.</p>
+      </section>
+    )
+  }
+  async function save(e) {
+    e.preventDefault()
+    setStatus({ saving: true })
+    try {
+      const saved = await api.setDomain(store.id, domain)
+      setDomain(saved.customDomain ?? '')
+      setStatus({ saved: true })
+      revalidator.revalidate()
+    } catch (e2) {
+      setStatus({ error: e2.message })
+    }
+  }
+  return (
+    <form onSubmit={save} className="rounded-card bg-white p-5 ring-1 ring-line sm:p-6">
+      <h2 className="flex items-center gap-2 font-bold"><Globe className="size-5" />Your own domain</h2>
+      <ol className="mt-2 list-decimal space-y-1 pl-5 text-sm text-muted">
+        <li>Buy a domain (e.g. from a .co.ke registrar) if you don’t have one.</li>
+        <li>WhatsApp Topline for the server address, and ask your registrar to point the domain (both <em>@</em> and <em>www</em>) to it.</li>
+        <li>Enter it below. Topline connects it and adds a secure (https) certificate, usually within one working day.</li>
+      </ol>
+      <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end">
+        <Field className="flex-1" label="Domain" value={domain} onChange={(e) => { setStatus(null); setDomain(e.target.value) }} placeholder="yourshop.co.ke" error={status?.error} />
+        <Button type="submit" variant="navy" pending={status?.saving}>{domain ? 'Save domain' : 'Remove domain'}</Button>
+      </div>
+      {store.customDomain && (
+        <p className={cn('mt-3 flex items-center gap-1.5 text-sm', store.domainStatus === 'connected' ? 'text-good' : 'text-[#7a4f00]')} role="status">
+          {store.domainStatus === 'connected'
+            ? <><CircleCheck className="size-4" />Connected: your store opens at https://{store.customDomain}</>
+            : <><Clock className="size-4" />Waiting for Topline to connect {store.customDomain}</>}
+        </p>
+      )}
+      {status?.saved && !store.customDomain && <p className="mt-3 text-sm text-good" role="status">Saved.</p>}
+    </form>
   )
 }
 

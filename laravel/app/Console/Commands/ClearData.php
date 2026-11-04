@@ -22,9 +22,9 @@ class ClearData extends Command
     protected $description = 'Delete every shop and its data; keep Topline admins, plans, site content and supplier partners';
 
     /** Children before parents, so foreign keys are never in the way. */
-    private const TABLES = ['activity_log', 'incidents', 'request_stats', 'page_views', 'store_reviews', 'expenses', 'credit_requests', 'supplier_orders',
+    private const TABLES = ['activity_log', 'incidents', 'request_stats', 'page_views', 'store_reviews', 'supplier_account_entries', 'supplier_accounts', 'expenses', 'credit_requests', 'supplier_orders',
         'quotes', 'payouts', 'payments',
-        'sale_items', 'sales', 'customer_payments', 'customers', 'stock_movements', 'products', 'store_members', 'stores'];
+        'sale_items', 'sales', 'customer_payments', 'customers', 'stock_movements', 'branch_stock', 'products', 'store_members', 'branches', 'stores'];
 
     public function handle(): int
     {

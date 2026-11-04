@@ -67,6 +67,9 @@ const mainSiteRoutes = [
       { path: 'suppliers', lazy: () => import('@/features/vendor/Suppliers') },
       { path: 'suppliers/:slug', lazy: () => import('@/features/vendor/SupplierDetail') },
       { path: 'credit', lazy: () => import('@/features/vendor/Credit') },
+      { path: 'quotations', lazy: () => import('@/features/vendor/Quotations') },
+      { path: 'supplier-balances', lazy: () => import('@/features/vendor/SupplierBalances') },
+      { path: 'team', lazy: () => import('@/features/vendor/Team') },
     ],
   },
   {

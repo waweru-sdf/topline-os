@@ -158,7 +158,8 @@ function PlanEditor({ plan }) {
   const revalidator = useRevalidator()
   const [form, setForm] = useState(() => ({
     name: plan.name, priceMonthly: plan.priceMonthly, priceYearly: plan.priceYearly, blurb: plan.blurb,
-    features: plan.features.join('\n'), productLimit: plan.limits.products ?? '', popular: plan.popular,
+    features: plan.features.join('\n'), productLimit: plan.limits.products ?? '', staffLimit: plan.limits.staff ?? '',
+    branchLimit: plan.limits.branches ?? '', customDomain: Boolean(plan.limits.customDomain), popular: plan.popular,
   }))
   const [status, setStatus] = useState(null)
   const set = (patch) => { setStatus(null); setForm((f) => ({ ...f, ...patch })) }
@@ -185,8 +186,16 @@ function PlanEditor({ plan }) {
       </div>
       <Field label="Short description" value={form.blurb} onChange={(e) => set({ blurb: e.target.value })} error={err('blurb')} maxLength={200} />
       <Field as="textarea" rows={6} label="What it includes (one per line)" value={form.features} onChange={(e) => set({ features: e.target.value })} error={err('features')} />
-      <Field label="Product limit" type="number" min="1" inputMode="numeric" value={form.productLimit} onChange={(e) => set({ productLimit: e.target.value })}
-        error={err('productLimit')} hint="Leave empty for unlimited. Shops can’t add more products than this." />
+      <p className="text-sm font-medium">Limits <span className="font-normal text-muted">(empty = unlimited; every plan has every feature)</span></p>
+      <div className="grid grid-cols-3 gap-3">
+        <Field label="Products" type="number" min="1" inputMode="numeric" value={form.productLimit} onChange={(e) => set({ productLimit: e.target.value })} error={err('productLimit')} />
+        <Field label="Staff logins" type="number" min="0" inputMode="numeric" value={form.staffLimit} onChange={(e) => set({ staffLimit: e.target.value })} error={err('staffLimit')} />
+        <Field label="Branches" type="number" min="1" inputMode="numeric" value={form.branchLimit} onChange={(e) => set({ branchLimit: e.target.value })} error={err('branchLimit')} />
+      </div>
+      <label className="flex items-center gap-2 text-sm">
+        <input type="checkbox" checked={form.customDomain} onChange={(e) => set({ customDomain: e.target.checked })} className="size-4 accent-navy" />
+        Shops can use their own domain
+      </label>
       <label className="flex items-center gap-2 text-sm">
         <input type="checkbox" checked={form.popular} onChange={(e) => set({ popular: e.target.checked })} className="size-4 accent-navy" />
         Highlight as “Most shops pick this”

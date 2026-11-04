@@ -1,6 +1,7 @@
-import { Link, useLoaderData } from 'react-router'
+import { Link, redirect, useLoaderData, useSearchParams } from 'react-router'
 import { AlertTriangle, Calculator, Plus, Receipt, TrendingDown, TrendingUp } from 'lucide-react'
 import { api } from '@/services/api'
+import { getUser } from '@/services/session'
 import { formatKES, formatTime, formatDate, pluralize } from '@/lib/format'
 import { cn } from '@/lib/cn'
 import { PageHeader } from '@/components/layout/AppShell'
@@ -11,14 +12,18 @@ import { SalesChart } from '@/components/SalesChart'
 import { useVendor } from './VendorLayout'
 import { requireStoreId } from './guard'
 
-export async function loader() {
-  return api.getDashboard(requireStoreId())
+/** ?branch= one branch; none = the whole shop. */
+export async function loader({ request }) {
+  if (getUser()?.storeRole === 'cashier') throw redirect('/dashboard/sell') // cashiers don't see the shop's totals
+  return api.getDashboard(requireStoreId(), new URL(request.url).searchParams.get('branch') ?? '')
 }
 
 function Dashboard() {
   const d = useLoaderData()
   const { user, store } = useVendor()
   const change = d.revenuePrev7 ? Math.round(((d.revenue7 - d.revenuePrev7) / d.revenuePrev7) * 100) : null
+  const [params, setParams] = useSearchParams()
+  const showBranches = store.branches.length > 1 && !store.myBranchId
 
   return (
     <>
@@ -32,8 +37,18 @@ function Dashboard() {
           </>
         }
       >
-        Here’s how the shop did over the last 7 days.
+        Here’s how {store.myBranchId ? store.branches.find((b) => b.id === store.myBranchId)?.name : 'the shop'} did over the last 7 days.
       </PageHeader>
+      {showBranches && (
+        <div className="mb-4 flex items-center gap-2">
+          <label htmlFor="dash-branch" className="text-sm font-medium">Showing</label>
+          <select id="dash-branch" value={params.get('branch') ?? ''} onChange={(e) => setParams(e.target.value ? { branch: e.target.value } : {})}
+            className="h-9 rounded-lg border border-line bg-white px-2 text-sm">
+            <option value="">All branches</option>
+            {store.branches.map((b) => <option key={b.id} value={b.id}>{b.name}{b.isMain ? ' (and online orders)' : ''}</option>)}
+          </select>
+        </div>
+      )}
 
       {/* Headline numbers as one strip, not a row of identical cards */}
       <section aria-label="Last 7 days" className="grid divide-y divide-line rounded-card bg-white ring-1 ring-line sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-4 lg:divide-x">

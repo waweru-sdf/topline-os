@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useSearchParams } from 'react-router'
 import {
+  BookOpenText, FileText, Globe, MapPin, UserCog, UserMinus, UserPlus,
   Banknote, Calculator, CircleUserRound, Factory, HandCoins, KeyRound, LoaderCircle, Package, PackageMinus, PackagePlus, Receipt, Settings2,
   ShieldAlert, ShoppingCart, Store, Wallet,
 } from 'lucide-react'
@@ -32,6 +33,14 @@ const ACTIVITY_KINDS = {
   credit_request: ['Stock credit', HandCoins, 'text-amber-deep'],
   expense_added: ['Expense', Calculator, 'text-steel'],
   expense_deleted: ['Expense removed', Calculator, 'text-bad'],
+  staff_added: ['Staff added', UserPlus, 'text-navy'],
+  staff_changed: ['Staff changed', UserCog, 'text-steel'],
+  staff_removed: ['Staff removed', UserMinus, 'text-bad'],
+  branch_added: ['Branch added', MapPin, 'text-navy'],
+  branch_removed: ['Branch removed', MapPin, 'text-bad'],
+  domain_changed: ['Own domain', Globe, 'text-steel'],
+  supplier_balance: ['Supplier balance', BookOpenText, 'text-steel'],
+  quotation: ['Quotation', FileText, 'text-navy'],
 }
 
 /**

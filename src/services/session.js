@@ -35,3 +35,7 @@ export const clearSession = () => setSession(null)
 /** Topline admins can open a store's shop admin; this remembers which one. */
 export const getActingStoreId = () => read()?.actingStoreId ?? null
 export const setActingStore = (storeId) => setSession({ ...read(), actingStoreId: storeId })
+
+/** The branch this browser works at, per store (shops with several branches). '' = the main branch. */
+export const getBranchId = (storeId) => read()?.branches?.[storeId] ?? ''
+export const setBranchId = (storeId, branchId) => setSession({ ...read(), branches: { ...read()?.branches, [storeId]: branchId } })

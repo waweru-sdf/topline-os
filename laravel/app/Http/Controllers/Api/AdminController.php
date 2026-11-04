@@ -15,6 +15,7 @@ use App\Services\Access;
 use App\Services\Activity;
 use App\Services\Analytics;
 use App\Services\Billing;
+use App\Services\Domains;
 use App\Services\Passwords;
 use App\Services\Payouts;
 use App\Services\Plans;
@@ -87,6 +88,9 @@ class AdminController extends ApiController
             }
             $store->save();
         });
+        if (array_key_exists('domainStatus', $data)) { // after adding the shop's domain in hPanel
+            Domains::setStatus($store, (string) $data['domainStatus'], $admin);
+        }
 
         return $this->json(Json::storePrivate($store->refresh()));
     }
@@ -161,6 +165,7 @@ class AdminController extends ApiController
             'pendingSignUps' => Suppliers::pendingSignUps(),
             'openCredit' => CreditRequest::whereIn('status', CreditRequest::OPEN)->count(),
             'newReviews' => Reviews::newCount(),
+            'pendingDomains' => Domains::pendingCount(),
         ]);
     }
 

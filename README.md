@@ -139,6 +139,16 @@ Manufacturers and distributors ("suppliers") get their own login and portal at `
 
 Shop owners request credit under **Stock credit** (amount, purpose, repayment period, monthly sales, contact, and consent to share a sales summary with the lending partner). They see "Information received, we'll reach out after processing". Each shop can have one open request at a time. Topline admins see every request under **Credit requests** (with a count in the menu), call or WhatsApp the shop, and set the status (received, being reviewed, approved, not approved, closed) with a private note.
 
+### Plans, staff, branches and own domain
+
+Every plan includes every feature; plans differ by price and limits, which Topline admins set under Site content → Price plans (products, staff logins, branches, own domain). Defaults: Starter 150 products / 2 staff / 1 branch; Business 1,500 / 8 / 2; Pro unlimited / 25 / 5 plus own domain. A shop over a limit after changing plan keeps what it has but can't add more.
+
+- **Staff logins** (owner → **Staff & branches**): add a manager or cashier by name and mobile; you get a temporary password to send them (WhatsApp button), and they choose their own on first login. Managers see everything except store settings, billing and staff; cashiers sell, take orders and credit payments, and never see buying prices or profit (they start on the till). Remove someone and they're logged out at once; their name stays on past sales.
+- **Branches**: each branch has its own stock and sales. Owners pick the branch they're working at in the top bar; staff can be tied to one branch and then only sell and see stock there. Products are shared; stock is counted per branch, and **Branches** on a product moves stock between branches. Online orders always come from the main branch. Overview can show all branches or one. A branch with sales can be renamed but not removed.
+- **Own domain** (shops on a plan that includes it, Store settings → Your own domain): the owner enters e.g. `mjengohardware.co.ke` and points it to the hosting (A records for `@` and `www` to the server IP shown in hPanel → Websites → toplinehub.co.ke → Dashboard; send them that IP). Then a Topline admin adds it in hPanel as a **parked domain** of toplinehub.co.ke (so it serves the same site), installs SSL for it (hPanel → Security → SSL), and in admin → **Stores** → ⋯ → **Mark … as connected** (the Stores menu shows a count of domains waiting). From then on that domain opens the shop, and the shop's share link uses it.
+- **Supplier balances** (owners and managers): suppliers the shop buys from on credit, bills (with due dates) and payments, the balance owed to each and in total. Accounting shows the total owed.
+- **Quotations**: customers' requests from the store page appear under **Quotations**. At the till, add items and press **Save as quotation** (or **Price it at the till** for a request), send it on WhatsApp, and later **Turn into a sale**, which fills the till and marks the quotation won.
+
 ### Reviews of shops
 
 Anyone can review a hardware shop at `/reviews` (in the main menu, the footer, and a link at the bottom of every store, which fills in that shop for them). Shop names are never listed publicly: the reviewer types the name, and it's matched to a Topline shop when it's exactly one shop's name (or came from the store's link). The form asks for the shop name, 1–5 stars, the review, when they dealt with the shop, their name and an optional phone. At most 5 per device per day. Reviews are **only** visible to Topline admins (admin → **Reviews**, with a count of new ones): see the typed name and which Topline shop it matched, filter by shop to see its average, call the reviewer, mark reviews done, or delete spam. Shops never see them.
@@ -292,13 +302,13 @@ On the website's dashboard ("Connected with GitHub"), set **Branch: `hostinger`*
 - **`.env` and photos** stay on the server across deploys; they're never in Git.
 - **Forgotten passwords:** Topline admin → Stores → ⋯ → Reset owner's password. Add more admins from the terminal (`php artisan topline:create-admin "Name" 07XXXXXXXX`) or with the `FIRST_ADMIN_*` lines while no admin exists.
 - **Errors:** System health in the admin, and `public_html/storage/logs/` in File Manager.
-- **Start over with an empty platform** (deletes every shop, owner, product, sale, payment, supplier order, credit request, expense and shop review; keeps Topline admins, plans, site content and supplier partners): on the server, in `public_html`, run `php artisan topline:clear-data` and type `CLEAR`.
+- **Start over with an empty platform** (deletes every shop, owner, product, sale, payment, supplier order, credit request, expense, shop review, branch, staff login and supplier balance; keeps Topline admins, plans, site content and supplier partners): on the server, in `public_html`, run `php artisan topline:clear-data` and type `CLEAR`.
 - The `hostinger` branch is generated; don't edit it by hand.
 
 ## Known gaps
 
 - Receipt printing setup
 - Paystack recipient codes for till/paybill transfers to confirm with Paystack
-- Plans only differ by price and **product limit** (enforced). Not built yet: adding staff logins (so the staff limit isn't used), branches, using a shop's own domain, and switching features on or off per plan. Edit the plan wording under Site content so it only promises what exists.
-- Quotations list, eTIMS
+- Own domains need the manual hPanel step above for each shop.
+- eTIMS invoices
 - Pricing on the landing page is a placeholder until Topline confirms final prices

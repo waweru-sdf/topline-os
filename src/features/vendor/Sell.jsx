@@ -1,6 +1,6 @@
 import { useState, useTransition } from 'react'
-import { useLoaderData, useRevalidator } from 'react-router'
-import { CircleCheck, Minus, Plus, Printer, Search, Share2, Trash2 } from 'lucide-react'
+import { useLoaderData, useRevalidator, useSearchParams } from 'react-router'
+import { CircleCheck, FileText, Minus, Plus, Printer, Search, Share2, Trash2, X } from 'lucide-react'
 import { api } from '@/services/api'
 import { formatKES } from '@/lib/format'
 import { cn } from '@/lib/cn'
@@ -8,24 +8,35 @@ import { Button } from '@/components/ui/Button'
 import { Field } from '@/components/ui/Field'
 import { Img } from '@/components/ui/Img'
 import { METHOD_LABEL } from '@/lib/labels'
-import { useVendor } from './VendorLayout'
+import { Dialog } from '@/components/ui/Dialog'
+import { branchParam, useVendor } from './VendorLayout'
 import { requireStoreId } from './guard'
+import { quotationText, waNumber } from './quotation'
 
-export async function loader() {
+export async function loader({ request }) {
   const storeId = requireStoreId()
-  const [{ products, categories }, customers] = await Promise.all([api.listProducts(storeId), api.listCustomers(storeId)])
-  return { products, categories, customers }
+  const quoteId = new URL(request.url).searchParams.get('quote')
+  const [{ products, categories }, customers, quotes] = await Promise.all([
+    api.listProducts(storeId, branchParam(storeId)), api.listCustomers(storeId), quoteId ? api.listQuotes(storeId) : [],
+  ])
+  return { products, categories, customers, quote: quotes.find((q) => q.id === quoteId) ?? null }
 }
+
+/** A quotation's lines as till lines, at today's products (lines for deleted products are dropped). */
+const ticketFrom = (quote, products) =>
+  (quote?.lines ?? []).flatMap((l) => { const product = products.find((p) => p.id === l.productId); return product ? [{ product, qty: l.qty }] : [] })
 
 const METHODS = ['mpesa', 'cash', 'bank', 'credit']
 
 function Sell() {
-  const { products, categories, customers } = useLoaderData()
-  const { store, user } = useVendor()
+  const { products, categories, customers, quote } = useLoaderData()
+  const { store, branch } = useVendor()
   const revalidator = useRevalidator()
+  const [, setParams] = useSearchParams()
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState('')
-  const [ticket, setTicket] = useState([]) // { product, qty }
+  const [ticket, setTicket] = useState(() => ticketFrom(quote, products)) // { product, qty }
+  const [quoting, setQuoting] = useState(false)
   const [method, setMethod] = useState('mpesa')
   const [customerId, setCustomerId] = useState('')
   const [error, setError] = useState(null)
@@ -48,11 +59,13 @@ function Sell() {
           items: ticket.map((l) => ({ productId: l.product.id, qty: l.qty })),
           method,
           customerId: method === 'credit' ? customerId : null,
-          staff: user.name,
+          branchId: branch.id,
+          quoteId: quote?.status !== 'won' ? quote?.id : undefined,
         })
         setReceipt(sale)
         setTicket([])
         setCustomerId('')
+        if (quote) setParams({}, { replace: true })
         revalidator.revalidate() // refresh stock counts
       } catch (e) {
         setError(e.message)
@@ -67,6 +80,16 @@ function Sell() {
       <title>Sell — Topline</title>
       <section aria-label="Products">
         <h1 className="sr-only">Sell at the counter</h1>
+        {quote && (
+          <div className="mb-4 flex gap-3 rounded-card bg-amber-tint px-4 py-3 text-sm">
+            <FileText className="mt-0.5 size-4 shrink-0" />
+            <div className="min-w-0 flex-1">
+              <p className="font-medium">Quotation {quote.reference} for {quote.name}{quote.phone && ` (${quote.phone})`}{quote.status === 'won' && ': already sold'}</p>
+              {quote.items && <p className="mt-1 break-words whitespace-pre-line text-ink/80">“{quote.items}”</p>}
+            </div>
+            <button type="button" onClick={() => { setParams({}, { replace: true }); setTicket([]) }} aria-label="Stop working on this quotation" className="h-fit rounded p-1 hover:bg-amber/30"><X className="size-4" /></button>
+          </div>
+        )}
         <label className="relative block">
           <span className="sr-only">Find a product</span>
           <Search aria-hidden className="pointer-events-none absolute top-1/2 left-3.5 size-5 -translate-y-1/2 text-steel" />
@@ -175,9 +198,64 @@ function Sell() {
           <Button size="lg" className="w-full" disabled={!ticket.length} pending={isPending} onClick={completeSale}>
             Complete sale
           </Button>
+          <Button variant="ghost" className="w-full" disabled={!ticket.length} onClick={() => setQuoting(true)}>
+            <FileText className="size-4" />Save as quotation
+          </Button>
         </div>
       </section>
+      {quoting && <SaveQuotation store={store} ticket={ticket} quote={quote} onClose={() => setQuoting(false)} />}
     </div>
+  )
+}
+
+/** Saves the current items as a priced quotation (or prices a customer's request) and offers to send it on WhatsApp. */
+function SaveQuotation({ store, ticket, quote, onClose }) {
+  const [name, setName] = useState(quote?.name ?? '')
+  const [phone, setPhone] = useState(quote?.phone ?? '')
+  const [saved, setSaved] = useState(null)
+  const [error, setError] = useState(null)
+  const [busy, setBusy] = useState(false)
+  async function save(e) {
+    e.preventDefault()
+    setBusy(true)
+    setError(null)
+    try {
+      setSaved(await api.saveQuotation(store.id, { quoteId: quote?.status !== 'won' ? quote?.id : undefined, name, phone,
+        items: ticket.map((l) => ({ productId: l.product.id, qty: l.qty })) }))
+    } catch (e2) {
+      setError(e2)
+    } finally {
+      setBusy(false)
+    }
+  }
+  const waPhone = waNumber(saved?.phone)
+  return (
+    <Dialog open onClose={onClose} title={saved ? `Quotation ${saved.reference} saved` : 'Save as quotation'}>
+      {saved ? (
+        <div className="space-y-4">
+          <p className="text-sm text-muted">{saved.name}: {formatKES(saved.total)}. When they come back, open it from Quotations and turn it into a sale.</p>
+          <div className="grid gap-2 sm:grid-cols-2">
+            <Button variant="navy" href={`https://wa.me/${waPhone}?text=${encodeURIComponent(quotationText(store, saved))}`} target="_blank" rel="noreferrer"><Share2 className="size-4" />Send on WhatsApp</Button>
+            <Button variant="outline" to="/dashboard/quotations">Go to quotations</Button>
+          </div>
+        </div>
+      ) : (
+        <form onSubmit={save} className="space-y-4">
+          {!quote && (
+            <>
+              <Field label="Customer’s name" value={name} onChange={(e) => setName(e.target.value)} error={error?.field === 'name' ? error.message : undefined} required />
+              <Field label="Phone (optional)" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} error={error?.field === 'phone' ? error.message : undefined} placeholder="0712 345 678" />
+            </>
+          )}
+          <p className="text-sm text-muted">{ticket.length} items at today’s prices. Saving doesn’t take anything from stock.</p>
+          {error && !['name', 'phone'].includes(error.field) && <p className="text-sm text-bad" role="alert">{error.message}</p>}
+          <div className="flex justify-end gap-2">
+            <Button type="button" variant="ghost" onClick={onClose}>Cancel</Button>
+            <Button type="submit" variant="navy" pending={busy}>Save quotation</Button>
+          </div>
+        </form>
+      )}
+    </Dialog>
   )
 }
 

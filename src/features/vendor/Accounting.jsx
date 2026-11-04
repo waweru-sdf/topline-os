@@ -108,6 +108,7 @@ function Accounting() {
             <Row label="Online orders sent to you" value={s.onlineReceived} />
             {s.onlineFees > 0 && <Row label="Topline fees on online orders" value={s.onlineFees} />}
             <Row label="Customers owe you now" value={s.owedToYou} />
+            {s.owedToSuppliers > 0 && <Row label="You owe suppliers now" value={s.owedToSuppliers} />}
           </dl>
         </section>
       </div>

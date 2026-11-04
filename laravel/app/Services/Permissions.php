@@ -17,13 +17,14 @@ class Permissions
     public const MANAGE_BILLING = 'manage_billing';
     public const BUY_STOCK = 'buy_stock';           // order from suppliers
     public const MANAGE_ACCOUNTS = 'manage_accounts'; // record expenses, see the books
+    public const MANAGE_STAFF = 'manage_staff';     // staff logins and branches
 
     public static function for(?string $storeRole, bool $isPlatformAdmin = false): array
     {
         $cashier = [self::VIEW_PRODUCTS, self::SELL, self::MANAGE_ORDERS, self::VIEW_CUSTOMERS];
         $manager = [...$cashier, self::VIEW_DASHBOARD, self::VIEW_COSTS, self::MANAGE_PRODUCTS, self::MANAGE_CUSTOMERS,
             self::BUY_STOCK, self::MANAGE_ACCOUNTS];
-        $owner = [...$manager, self::MANAGE_SETTINGS, self::MANAGE_BILLING];
+        $owner = [...$manager, self::MANAGE_SETTINGS, self::MANAGE_BILLING, self::MANAGE_STAFF];
         if ($isPlatformAdmin) {
             $roles = $owner;
         } else {

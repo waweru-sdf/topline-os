@@ -297,3 +297,19 @@ Errors use the same `{message, field}` shape. Money is whole KES. Phones are sho
 | | `PUT /admin/plans/:id` | `{name, priceMonthly, priceYearly, blurb, features[], productLimit (empty = unlimited), popular}` → the plan. Only one plan is `popular`. |
 | | `PUT /admin/site` | Any of the keys `GET /site` returns. `…Points` are one point per line; `faqs` is a list of `{q, a}` (max 15). If any value is invalid nothing is saved. |
 
+## 14. Staff, branches, own domain, supplier balances, quotations
+
+All under `/vendor/stores/:storeId`. `GET /` now also returns `branches: [{id, name, location, isMain, staff}]`, `myBranchId` (staff tied to a branch), `limits: {products, staff, branches, customDomain}` (null = unlimited) and `domainStatus` (`pending|connected`, null without a domain). Users get `branchId` in `user`.
+
+| Who | Endpoint | Notes |
+|---|---|---|
+| Owner | `GET/POST /staff`, `PATCH/DELETE /staff/:memberId`, `POST /staff/:memberId/reset-password` | Add: `{name, phone, role: manager\|cashier, branchId?}` → `{member, temporaryPassword}`. Plan staff limit (owner not counted) → 422. The owner's own login can't be changed (403). Removing logs them out everywhere. |
+| Owner | `POST /branches {name, location?}`, `PATCH /branches/:id`, `DELETE /branches/:id` | Plan branch limit → 422. Main branch and branches with sales or stock can't be removed. |
+| Owner | `PUT /domain {domain}` | Plan must include it; normalised (no scheme/www); unique; empty removes. Admin then `PATCH /admin/stores/:id {domainStatus: connected\|pending}`. |
+| Anyone | `GET /domains/resolve?host=` | `{slug}` for a connected domain on a plan that includes it, else 404. The website calls it at startup on any non-Topline host. |
+| Staff | `?branchId=` on `GET /products`, `GET /dashboard`, `GET /sales`; `branchId` in `POST /sales`, `POST /products/:id/stock`, product save | `stock` is the stock at that branch (default main). Staff tied to a branch always get theirs. Dashboard without `branchId` = whole shop. Owners/managers also get `stockByBranch {branchId: {productId: qty}}` when there are several branches. |
+| Owner, manager (not tied) | `POST /products/:id/transfer {fromBranchId, toBranchId, qty}` | → `{stockByBranch}`. |
+| Owner, manager | `GET/POST /supplier-accounts`, `GET/PATCH/DELETE /supplier-accounts/:id`, `POST /supplier-accounts/:id/entries {kind: bill\|payment, amount, date?, dueOn?, note?}` | List: `{totalOwed, accounts: [{id, name, phone, note, balance, nextDue}]}`. Remove only when the balance is 0. `GET /accounting` adds `owedToSuppliers`. |
+| Staff who sell | `POST /quotes {items: [{productId, qty}], name, phone?}` or `{quoteId, items}` | Prices at today's selling price → the quotation (`source: shop\|customer, lines, total, status: replied`). `POST /sales {…, quoteId}` marks it `won` with `saleId`. |
+| Topline admin | `PUT /admin/plans/:id` also takes `staffLimit`, `branchLimit`, `customDomain`; `GET /admin/badges` adds `pendingDomains` | |
+

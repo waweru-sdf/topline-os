@@ -67,3 +67,16 @@ export const SUPPLIER_PAYMENT_OPTIONS = [
   ['supplier_credit', 'Supplier credit / LPO (pay in 30–90 days)'],
   ['topline_credit', 'Topline stock credit'],
 ]
+
+export const QUOTE_STATUS = {
+  new: ['Waiting for prices', 'amber'],
+  replied: ['Priced', 'navy'],
+  won: ['Became a sale', 'good'],
+  lost: ['Lost', 'neutral'],
+}
+
+export const STAFF_ROLE = {
+  owner: 'Owner',
+  manager: 'Manager',
+  cashier: 'Cashier',
+}

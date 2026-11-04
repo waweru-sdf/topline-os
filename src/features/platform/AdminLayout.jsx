@@ -16,7 +16,7 @@ function AdminLayout() {
   const { user, badges } = useLoaderData()
   const nav = [
     { to: '/admin', label: 'Overview', icon: LayoutDashboard, end: true },
-    { to: '/admin/stores', label: 'Stores', icon: Store },
+    { to: '/admin/stores', label: 'Stores', icon: Store, badge: badges.pendingDomains || null },
     { to: '/admin/activity', label: 'Activity', icon: History },
     { to: '/admin/payments', label: 'Payments', icon: CreditCard },
     { to: '/admin/suppliers', label: 'Suppliers', icon: Factory, badge: badges.pendingSignUps || null },

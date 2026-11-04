@@ -10,14 +10,15 @@
    "limits": {
     "products": 150,
     "staff": 2,
-    "branches": 1
+    "branches": 1,
+    "customDomain": false
    },
    "features": [
-    "Online store at yourshop.toplinehub.co.ke",
-    "Counter sales in bags, lengths and kg",
-    "M-PESA and cash payments",
-    "Stock levels and low-stock alerts",
-    "WhatsApp receipts"
+    "Online store with its own link",
+    "Till, stock, customer credit and quotations",
+    "Supplier balances and accounting",
+    "Up to 150 products",
+    "2 staff logins, 1 branch"
    ]
   },
   {
@@ -27,19 +28,18 @@
    "price_yearly": 35000,
    "sort_order": 2,
    "popular": true,
-   "blurb": "For busy shops that sell on credit and give quotations.",
+   "blurb": "For busy shops with a team, or a second branch.",
    "limits": {
     "products": 1500,
     "staff": 8,
-    "branches": 2
+    "branches": 2,
+    "customDomain": false
    },
    "features": [
     "Everything in Starter",
-    "Customer credit and statements",
-    "Quotations that turn into sales",
-    "Supplier balances",
-    "Staff roles that hide buying prices",
-    "Sales and profit reports"
+    "Up to 1,500 products",
+    "8 staff logins, with roles that hide buying prices",
+    "2 branches, each with its own stock"
    ]
   },
   {
@@ -52,13 +52,14 @@
    "limits": {
     "products": null,
     "staff": 25,
-    "branches": 5
+    "branches": 5,
+    "customDomain": true
    },
    "features": [
     "Everything in Business",
+    "Unlimited products",
+    "25 staff logins and up to 5 branches",
     "Your own domain (yourshop.co.ke)",
-    "Up to 5 branches",
-    "eTIMS invoices (coming soon)",
     "Priority WhatsApp support"
    ]
   }

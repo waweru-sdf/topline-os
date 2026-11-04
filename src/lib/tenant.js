@@ -4,6 +4,7 @@
  * Production: mjengo.toplinehub.co.ke  -> "mjengo"
  * Local dev:  mjengo.localhost:5173     -> "mjengo"
  * Fallback:   toplinehub.co.ke/s/mjengo (handled by the router, not here)
+ * Own domain: mjengohardware.co.ke     -> asked from the server at startup (main.jsx)
  *
  * The backend will do the same lookup server-side (and for custom domains);
  * the frontend only needs it to pick which route tree to mount.
@@ -18,7 +19,19 @@ const RESERVED = new Set(['www', 'app', 'admin', 'api', 'mail', 'static'])
  */
 const STORE_LINKS = import.meta.env.VITE_STORE_LINKS === 'path' ? 'path' : 'subdomain'
 
+// Set at startup when the site was opened on a shop's own domain (see main.jsx).
+let ownDomainSlug = null
+export const setOwnDomainSlug = (slug) => { ownDomainSlug = slug }
+
+/** True on a domain that isn't Topline's, a local address or an IP: maybe a shop's own domain. */
+export function isOtherDomain(hostname = window.location.hostname) {
+  const host = hostname.toLowerCase()
+  if (host === 'localhost' || host.endsWith('.localhost') || /^[\d.]+$/.test(host) || host.includes(':')) return false
+  return host !== ROOT_DOMAIN && !host.endsWith(`.${ROOT_DOMAIN}`)
+}
+
 export function getTenantSlugFromHost(hostname = window.location.hostname) {
+  if (ownDomainSlug && hostname === window.location.hostname) return ownDomainSlug
   const host = hostname.toLowerCase()
   let sub = null
 
@@ -35,6 +48,9 @@ export const storeHost = (slug) => (STORE_LINKS === 'path' ? `${ROOT_DOMAIN}/s/$
 
 /** Full link to share (WhatsApp, posters, copy button). */
 export const storeUrl = (slug) => `https://${storeHost(slug)}`
+
+/** A shop's link to share: its own domain once Topline has connected it, otherwise its Topline link. */
+export const shopLink = (store) => (store.customDomain && store.domainStatus === 'connected' ? `https://${store.customDomain}` : storeUrl(store.slug))
 
 /** The fixed text around the shop name when a link is being typed: before + name + after. */
 export const storeLinkParts = () =>

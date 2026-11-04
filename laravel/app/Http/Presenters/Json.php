@@ -60,6 +60,7 @@ class Json
             'mustChangePassword' => (bool) $u->must_change_password,
             'storeId' => $membership?->store_id,
             'storeRole' => $membership?->role,
+            'branchId' => $membership?->branch_id,
         ];
     }
 
@@ -73,12 +74,19 @@ class Json
             'items' => $q->items,
             'site' => $q->site,
             'status' => $q->status,
+            'source' => $q->source ?? 'customer',
+            'lines' => $q->lines ?? [],
+            'total' => $q->total,
+            'saleId' => $q->sale_id,
             'createdAt' => Text::iso($q->created_at),
         ];
     }
 
-    /** $showCost adds the buying price: owners and managers only, never customers or cashiers. */
-    public static function product(Product $p, bool $showCost = false): array
+    /**
+     * $showCost adds the buying price: owners and managers only, never customers or cashiers.
+     * $stock: the stock at the branch being viewed (default: the main branch, products.stock).
+     */
+    public static function product(Product $p, bool $showCost = false, ?int $stock = null): array
     {
         $data = [
             'id' => $p->id,
@@ -87,7 +95,7 @@ class Json
             'categoryId' => $p->category_id,
             'unit' => $p->unit,
             'sellPrice' => $p->sell_price,
-            'stock' => $p->stock,
+            'stock' => $stock ?? $p->stock,
             'reorderAt' => $p->reorder_at,
             'image' => $p->image,
             'gallery' => $p->gallery ?? [],
@@ -121,6 +129,7 @@ class Json
             'createdAt' => Text::iso($s->created_at),
             'paidAt' => Text::iso($s->paid_at),
             'staff' => $s->staff_name,
+            'branchId' => $s->branch_id,
             'customerId' => $s->customer_id,
             'customerName' => $s->customer_name,
             'customerPhone' => $s->customer_phone,
@@ -231,6 +240,7 @@ class Json
             'planId' => $store->plan_id,
             'billing' => ['period' => $store->billing_period],
             'customDomain' => $store->custom_domain,
+            'domainStatus' => $store->custom_domain ? ($store->domain_status ?: 'pending') : null,
             'createdAt' => Text::iso($store->created_at),
             'nextBillingAt' => Text::iso($store->next_billing_at),
             'owner' => self::owner($store, true),
