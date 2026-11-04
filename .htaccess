@@ -3,10 +3,18 @@
 # so the code, .env and storage can never be opened from a browser.
 <IfModule mod_rewrite.c>
     RewriteEngine On
+    DirectorySlash Off
+
+    # Redirects below are written out in full with https: Hostinger's server doesn't always know a
+    # visit came over https, and a plain redirect would send browsers to http:// (Chrome then warns).
+    # Local test servers (localhost) keep http.
+    RewriteRule ^ - [E=TL_SCHEME:https]
+    RewriteCond %{HTTP_HOST} ^(localhost|127\.0\.0\.1|[a-z0-9-]+\.localhost)(:\d+)?$ [NC]
+    RewriteRule ^ - [E=TL_SCHEME:http]
 
     # "/admin/" → "/admin" (done here, so the redirect never shows the internal /public folder)
     RewriteCond %{REQUEST_URI} ^(.+)/$
-    RewriteRule ^ %1 [L,R=301]
+    RewriteRule ^ %{ENV:TL_SCHEME}://%{HTTP_HOST}%1 [L,R=301]
 
     RewriteCond %{REQUEST_URI} !^/public/
     RewriteRule ^(.*)$ public/$1 [L]

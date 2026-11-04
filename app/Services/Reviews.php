@@ -9,7 +9,6 @@ use App\Support\Input;
 use App\Support\Phone;
 use App\Support\Text;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Cache;
 
 /**
  * Reviews of hardware shops from the public Reviews page. Only Topline admins see them,
@@ -17,19 +16,13 @@ use Illuminate\Support\Facades\Cache;
  */
 class Reviews
 {
-    private const STORES_CACHE_KEY = 'reviews:stores';
-
-    /** Shops a review can be about (every shop that has opened). Cached: it's on a public page. */
-    public static function reviewableStores(): array
-    {
-        return Cache::remember(self::STORES_CACHE_KEY, 600, fn () => Store::where('status', '!=', Store::DRAFT)->orderBy('name')
-            ->get(['slug', 'name', 'county'])->map(fn (Store $s) => ['slug' => $s->slug, 'name' => $s->name, 'county' => $s->county ?? ''])->all());
-    }
-
     public static function create(array $data): StoreReview
     {
-        $store = Store::where('slug', (string) ($data['store'] ?? ''))->where('status', '!=', Store::DRAFT)->first()
-            ?? throw ApiError::invalid('Choose the shop from the list.', 'store');
+        $name = Input::text($data, 'storeName', true, 120, 'Enter the shop’s name.');
+        if (mb_strlen($name) < 2) {
+            throw ApiError::invalid('Enter the shop’s name.', 'storeName');
+        }
+        $store = self::matchStore((string) ($data['store'] ?? ''), $name);
         $rating = Input::integer($data, 'rating', true, 1, 'Choose from 1 to 5 stars.');
         if ($rating > 5) {
             throw ApiError::invalid('Choose from 1 to 5 stars.', 'rating');
@@ -42,7 +35,8 @@ class Reviews
         $phone = $phone === '' ? '' : (Phone::normalize($phone) ?? throw ApiError::invalid('Enter a mobile number like 0712 345 678, or leave it empty.', 'phone'));
 
         return StoreReview::create([
-            'store_id' => $store->id,
+            'store_id' => $store?->id,
+            'store_name' => $name,
             'rating' => $rating,
             'body' => $body,
             'visited_on' => self::visitDate($data['visitedOn'] ?? null),
@@ -50,6 +44,21 @@ class Reviews
             'reviewer_phone' => $phone,
             'status' => StoreReview::NEW,
         ]);
+    }
+
+    /**
+     * Which Topline shop the review is about, if we can tell: the store's own link ("Review this shop"
+     * sends its slug), or a typed name that matches exactly one opened shop. Otherwise none; admins see the typed name.
+     */
+    private static function matchStore(string $slug, string $name): ?Store
+    {
+        $opened = fn () => Store::where('status', '!=', Store::DRAFT);
+        if ($slug !== '' && ($store = $opened()->where('slug', $slug)->first())) {
+            return $store;
+        }
+        $matches = $opened()->whereRaw('LOWER(name) = ?', [mb_strtolower($name)])->limit(2)->get();
+
+        return $matches->count() === 1 ? $matches->first() : null;
     }
 
     /** "When did you deal with the shop?": a real date, not in the future, within the last 2 years. */
@@ -87,7 +96,8 @@ class Reviews
     {
         return [
             'id' => $r->id,
-            'store' => $r->store ? ['id' => $r->store->id, 'name' => $r->store->name, 'slug' => $r->store->slug] : null,
+            'storeName' => $r->store_name,  // as the reviewer typed it
+            'store' => $r->store ? ['id' => $r->store->id, 'name' => $r->store->name, 'slug' => $r->store->slug] : null, // null: not matched to a shop
             'rating' => $r->rating,
             'body' => $r->body,
             'visitedOn' => $r->visited_on->format('Y-m-d'),

@@ -4,14 +4,24 @@
     </IfModule>
 
     RewriteEngine On
+    # No automatic "folder/" redirects: they'd use http:// and expose /public. The rules below decide.
+    DirectorySlash Off
+    RewriteOptions AllowNoSlash
+
+    # Redirects below are written out in full with https: Hostinger's server doesn't always know a
+    # visit came over https, and a plain redirect would send browsers to http:// (Chrome then warns).
+    # Local test servers (localhost) keep http.
+    RewriteRule ^ - [E=TL_SCHEME:https]
+    RewriteCond %{HTTP_HOST} ^(localhost|127\.0\.0\.1|[a-z0-9-]+\.localhost)(:\d+)?$ [NC]
+    RewriteRule ^ - [E=TL_SCHEME:http]
 
     # On Hostinger this folder sits inside public_html, so it can also be opened as /public/...
     # (old links, browser history). Send those to the real address: "/public/admin" → "/admin".
     # THE_REQUEST is what the browser asked for, so requests rewritten here internally never match.
     RewriteCond %{THE_REQUEST} \s/public/?[\s?]
-    RewriteRule ^ / [L,R=301]
+    RewriteRule ^ %{ENV:TL_SCHEME}://%{HTTP_HOST}/ [L,R=301]
     RewriteCond %{THE_REQUEST} \s/public(/[^\s?]+)
-    RewriteRule ^ %1 [L,R=301]
+    RewriteRule ^ %{ENV:TL_SCHEME}://%{HTTP_HOST}%1 [L,R=301]
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
@@ -24,7 +34,7 @@
     # Redirect Trailing Slashes If Not A Folder...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$
-    RewriteRule ^ %1 [L,R=301]
+    RewriteRule ^ %{ENV:TL_SCHEME}://%{HTTP_HOST}%1 [L,R=301]
 
     # Send Requests To Front Controller...
     RewriteCond %{REQUEST_FILENAME} !-d

@@ -15,14 +15,14 @@ class AdminReviewsController extends ApiController
         return StoreReview::with('store')->find($reviewId) ?? throw ApiError::notFound('That review doesn’t exist.');
     }
 
-    /** ?storeId= narrows to one shop. Also returns each reviewed shop's count and average rating. */
+    /** ?storeId= narrows to one shop. Also returns each matched shop's count and average rating. */
     public function index(Request $request)
     {
         $query = StoreReview::with('store')->orderByDesc('created_at')->limit($this->limit($request, 300));
         if ($storeId = $request->query('storeId')) {
             $query->where('store_id', $storeId);
         }
-        $stores = StoreReview::with('store:id,name')->selectRaw('store_id, COUNT(*) as n, AVG(rating) as avg')->groupBy('store_id')->get()
+        $stores = StoreReview::with('store:id,name')->whereNotNull('store_id')->selectRaw('store_id, COUNT(*) as n, AVG(rating) as avg')->groupBy('store_id')->get()
             ->map(fn ($row) => ['id' => $row->store_id, 'name' => $row->store?->name, 'count' => (int) $row->n, 'average' => round((float) $row->avg, 1)])
             ->sortBy('name')->values();
 

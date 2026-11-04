@@ -79,12 +79,6 @@ class PublicController extends ApiController
         return response('', $slug && ! str_contains($slug, '.') && Store::where('slug', $slug)->exists() ? 200 : 404);
     }
 
-    /** Shops a review can be about, for the Reviews page. */
-    public function reviewStores()
-    {
-        return $this->json(Reviews::reviewableStores());
-    }
-
     /** Someone reviews a shop. Only Topline admins see it. At most 5 per device per day. */
     public function createReview(Request $request)
     {
