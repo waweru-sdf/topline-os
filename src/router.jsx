@@ -39,6 +39,7 @@ const mainSiteRoutes = [
     children: [
       { index: true, lazy: () => import('@/features/marketing/Landing') },
       { path: 'suppliers/join', lazy: () => import('@/features/marketing/SupplierSignUp') },
+      { path: 'reviews', lazy: () => import('@/features/marketing/Reviews') },
     ],
   },
   { path: 'start', lazy: () => import('@/features/onboarding/Onboarding') },
@@ -83,6 +84,7 @@ const mainSiteRoutes = [
       { path: 'suppliers', lazy: () => import('@/features/platform/Suppliers') },
       { path: 'suppliers/:supplierId', lazy: () => import('@/features/platform/SupplierDetail') },
       { path: 'credit', lazy: () => import('@/features/platform/Credit') },
+      { path: 'reviews', lazy: () => import('@/features/platform/Reviews') },
     ],
   },
   {

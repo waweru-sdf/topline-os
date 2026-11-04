@@ -286,3 +286,15 @@ Errors use the same `{message, field}` shape. Money is whole KES. Phones are sho
 | Topline admin | `GET /admin/suppliers` (`{pendingSignUps, suppliers[]}`), `GET /admin/suppliers/:id`, `POST /admin/suppliers/:id/review {action: approve\|reject, note}`, `PATCH /admin/suppliers/:id {listed}`, `POST /admin/suppliers/:id/reset-password`, `GET /admin/supplier-orders` | Supplier status: `pending` (signed up) → `approved` or `rejected` (rejected can still be approved); `approved` ⇄ `hidden`. Admins can't create suppliers. |
 | | `GET /admin/accounting?month=`, `GET /admin/accounting/export?type=payments\|payouts&month=`, `GET /admin/credit-requests?status=`, `PATCH /admin/credit-requests/:id {status, adminNote}` | |
 
+## 13. Reviews, site content, plans
+
+| Who | Endpoint | Notes |
+|---|---|---|
+| Anyone | `GET /review-stores` | `[{slug, name, county}]` of every shop that has opened. Cached 10 minutes. |
+| | `POST /reviews` | `{store (slug), rating 1–5, body (10–2000 chars), visitedOn (YYYY-MM-DD, Nairobi date, not future, within 2 years), name, phone?}` → 201 `{received: true}`. 5 per IP per day (429). |
+| Topline admin | `GET /admin/reviews?storeId=` | `{newCount, stores: [{id, name, count, average}], reviews: [{id, store{id,name,slug}, rating, body, visitedOn, name, phone, status, createdAt}]}`. Shops get 403. |
+| | `PATCH /admin/reviews/:id {status: new\|done}`, `DELETE /admin/reviews/:id` | |
+| | `GET /admin/badges` | `{openIncidents, pendingSignUps, openCredit, newReviews}` for the menu. |
+| | `PUT /admin/plans/:id` | `{name, priceMonthly, priceYearly, blurb, features[], productLimit (empty = unlimited), popular}` → the plan. Only one plan is `popular`. |
+| | `PUT /admin/site` | Any of the keys `GET /site` returns. `…Points` are one point per line; `faqs` is a list of `{q, a}` (max 15). If any value is invalid nothing is saved. |
+

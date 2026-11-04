@@ -14,6 +14,7 @@ const NAV = [
   { href: '/#how', label: 'How to start' },
   { href: '/#pricing', label: 'Pricing' },
   { href: '/#faq', label: 'Questions' },
+  { href: '/reviews', label: 'Reviews' },
 ]
 
 function NavLabel({ item }) {
@@ -48,9 +49,7 @@ function MarketingLayout() {
           <Logo />
           <nav aria-label="Main" className="hidden items-center gap-6 xl:flex">
             {NAV.map((n) => (
-              <a key={n.href} href={n.href} className="text-[0.95rem] whitespace-nowrap text-ink/80 hover:text-navy">
-                <NavLabel item={n} />
-              </a>
+              <NavItem key={n.href} item={n} className="text-[0.95rem] whitespace-nowrap text-ink/80 hover:text-navy" />
             ))}
           </nav>
           <div className="hidden items-center gap-2 xl:flex">
@@ -73,9 +72,7 @@ function MarketingLayout() {
             <ul className="flex flex-col gap-1">
               {NAV.map((n) => (
                 <li key={n.href}>
-                  <a href={n.href} onClick={() => setOpen(false)} className="block rounded-md px-2 py-2.5 hover:bg-concrete">
-                    <NavLabel item={n} />
-                  </a>
+                  <NavItem item={n} onClick={() => setOpen(false)} className="block rounded-md px-2 py-2.5 hover:bg-concrete" />
                 </li>
               ))}
             </ul>
@@ -94,6 +91,13 @@ function MarketingLayout() {
   )
 }
 
+/** Section links ("/#pricing") are plain links so the browser scrolls; pages use the router. */
+function NavItem({ item, ...props }) {
+  return item.href.includes('#')
+    ? <a href={item.href} {...props}><NavLabel item={item} /></a>
+    : <Link to={item.href} {...props}><NavLabel item={item} /></Link>
+}
+
 function Footer({ site }) {
   return (
     <footer className="bg-navy-deep text-mist">
@@ -101,7 +105,7 @@ function Footer({ site }) {
         <div>
           <Logo tone="light" />
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-mist/80">
-            Shop software and an online store for hardware businesses in Kenya. Paid by M-PESA.
+            {site.footerText}
           </p>
         </div>
         <div>
@@ -110,6 +114,7 @@ function Footer({ site }) {
             <li><a href="/#features" className="hover:text-amber">What you get</a></li>
             <li><a href="/#pricing" className="hover:text-amber">Pricing</a></li>
             <li><Link to="/suppliers/join" className="hover:text-amber">Sell to shops as a supplier</Link></li>
+            <li><Link to="/reviews" className="hover:text-amber">Review a shop</Link></li>
             <li><Link to="/s/mjengo" className="hover:text-amber">See a demo store</Link></li>
             <li><Link to="/login" className="hover:text-amber">Log in</Link></li>
           </ul>
@@ -119,7 +124,7 @@ function Footer({ site }) {
           <ul className="mt-3 space-y-2 text-sm">
             <li><a href={`https://wa.me/${site.supportWhatsapp}`} className="hover:text-amber">WhatsApp {site.supportPhone}</a></li>
             <li><a href={`mailto:${site.supportEmail}`} className="hover:text-amber">{site.supportEmail}</a></li>
-            <li>Nairobi, Kenya</li>
+            {site.supportLocation && <li>{site.supportLocation}</li>}
           </ul>
         </div>
       </div>

@@ -51,7 +51,7 @@ class Deploy extends Command
         if ($installed !== $version) {
             $this->call('migrate', ['--force' => true]);
             $this->call('db:seed', ['--class' => PlansSeeder::class, '--force' => true]);
-            foreach (['config:clear', 'route:clear', 'view:clear'] as $clear) {
+            foreach (['config:clear', 'route:clear', 'view:clear', 'cache:clear'] as $clear) { // cache: lists saved by the old version
                 $this->callSilently($clear);
             }
             SiteSetting::updateOrCreate(['key' => self::VERSION_KEY], ['value' => $version, 'updated_at' => now()]);

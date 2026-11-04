@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Presenters\Json;
+use App\Models\CreditRequest;
 use App\Models\Incident;
 use App\Models\Payment;
 use App\Models\Payout;
@@ -16,7 +17,10 @@ use App\Services\Analytics;
 use App\Services\Billing;
 use App\Services\Passwords;
 use App\Services\Payouts;
+use App\Services\Plans;
+use App\Services\Reviews;
 use App\Services\Site;
+use App\Services\Suppliers;
 use App\Support\ApiError;
 use App\Support\Text;
 use Illuminate\Http\Request;
@@ -147,6 +151,24 @@ class AdminController extends ApiController
     public function plans()
     {
         return $this->json(Plan::orderBy('sort_order')->get()->map(fn ($p) => Json::plan($p))->all());
+    }
+
+    /** Counts for the admin menu badges, in one small request. */
+    public function badges()
+    {
+        return $this->json([
+            'openIncidents' => Incident::where('resolved', false)->count(),
+            'pendingSignUps' => Suppliers::pendingSignUps(),
+            'openCredit' => CreditRequest::whereIn('status', CreditRequest::OPEN)->count(),
+            'newReviews' => Reviews::newCount(),
+        ]);
+    }
+
+    public function updatePlan(Request $request, string $planId)
+    {
+        $plan = Plan::find($planId) ?? throw ApiError::notFound('That plan doesn’t exist.');
+
+        return $this->json(Json::plan(Plans::update($plan, $this->body($request))));
     }
 
     public function updateSite(Request $request)

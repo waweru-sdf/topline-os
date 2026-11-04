@@ -1,7 +1,7 @@
 import { Link, NavLink, Outlet, data, useNavigate, useNavigation } from 'react-router'
 import { Clock, LayoutDashboard, MapPin, MessageCircle, Phone, ShoppingCart, Store } from 'lucide-react'
 import { api } from '@/services/api'
-import { getTenantSlugFromHost, storeHost } from '@/lib/tenant'
+import { ROOT_DOMAIN, getTenantSlugFromHost, storeHost } from '@/lib/tenant'
 import { CartProvider, useCart } from '@/context/CartContext'
 import { NavProgress } from '@/components/PageLoader'
 import { Logo } from '@/components/ui/Logo'
@@ -130,6 +130,9 @@ function StoreFooter() {
           <p className="text-muted">Online store by</p>
           <Logo className="mt-1" to="/" />
           <p className="mt-2 text-xs text-muted">{storeHost(store.slug)}</p>
+          <a href={`https://${ROOT_DOMAIN}/reviews?store=${encodeURIComponent(store.slug)}`} className="mt-2 inline-block text-xs text-navy underline underline-offset-2">
+            Tell Topline how this shop treated you
+          </a>
         </div>
       </div>
     </footer>

@@ -139,6 +139,14 @@ Manufacturers and distributors ("suppliers") get their own login and portal at `
 
 Shop owners request credit under **Stock credit** (amount, purpose, repayment period, monthly sales, contact, and consent to share a sales summary with the lending partner). They see "Information received, we'll reach out after processing". Each shop can have one open request at a time. Topline admins see every request under **Credit requests** (with a count in the menu), call or WhatsApp the shop, and set the status (received, being reviewed, approved, not approved, closed) with a private note.
 
+### Reviews of shops
+
+Anyone can review a hardware shop at `/reviews` (in the main menu, the footer, and a link at the bottom of every store, which picks that shop for them): the shop, 1–5 stars, the review, when they dealt with the shop, their name and an optional phone. At most 5 per device per day. Reviews are **only** visible to Topline admins (admin → **Reviews**, with a count of new ones): filter by shop to see its average, call the reviewer, mark reviews done, or delete spam. Shops never see them.
+
+### Site content and plans
+
+Topline admin → **Site content** edits every word and picture on the main site: the announcement bar, headline, the three "what you get" blocks (heading, text, points, picture), the suppliers and stock-credit text, the three steps, pricing text and note, the questions (add, edit, remove), the closing banner, the Reviews page text, and the footer and contacts. **Price plans** (bottom of the same page) edits each plan's name, monthly and yearly price, description, what it includes, product limit, and which plan is highlighted. Deploys never overwrite these edits. The site text is cached and refreshed whenever you publish.
+
 ### Monitoring and alerts
 
 Every page visit (main site and each shop) and every API request is counted. Server errors, failed payments, failed payouts and errors in customers' browsers are grouped into **problems** on System health. Set `ALERT_WEBHOOK_URL` (a Slack, Discord or Teams channel webhook) to get a message the 1st, 10th, 100th and 1,000th time a problem happens. `ALERT_SMS_PHONES` sends SMS alerts once SMS is live.
@@ -284,12 +292,13 @@ On the website's dashboard ("Connected with GitHub"), set **Branch: `hostinger`*
 - **`.env` and photos** stay on the server across deploys; they're never in Git.
 - **Forgotten passwords:** Topline admin → Stores → ⋯ → Reset owner's password. Add more admins from the terminal (`php artisan topline:create-admin "Name" 07XXXXXXXX`) or with the `FIRST_ADMIN_*` lines while no admin exists.
 - **Errors:** System health in the admin, and `public_html/storage/logs/` in File Manager.
-- **Start over with an empty platform** (deletes every shop, owner, product, sale, payment, supplier order, credit request and expense; keeps Topline admins, plans, site content and supplier partners): on the server, in `public_html`, run `php artisan topline:clear-data` and type `CLEAR`.
+- **Start over with an empty platform** (deletes every shop, owner, product, sale, payment, supplier order, credit request, expense and shop review; keeps Topline admins, plans, site content and supplier partners): on the server, in `public_html`, run `php artisan topline:clear-data` and type `CLEAR`.
 - The `hostinger` branch is generated; don't edit it by hand.
 
 ## Known gaps
 
 - Receipt printing setup
 - Paystack recipient codes for till/paybill transfers to confirm with Paystack
-- Staff accounts and roles, quotations list, suppliers, expenses, eTIMS
+- Plans only differ by price and **product limit** (enforced). Not built yet: adding staff logins (so the staff limit isn't used), branches, using a shop's own domain, and switching features on or off per plan. Edit the plan wording under Site content so it only promises what exists.
+- Quotations list, eTIMS
 - Pricing on the landing page is a placeholder until Topline confirms final prices

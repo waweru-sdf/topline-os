@@ -3,7 +3,7 @@ import { Link, useLoaderData, useNavigate, useRouteLoaderData } from 'react-rout
 import { Check, CircleCheck, Factory, HandCoins, Link2, MessageCircle, Package, Receipt, ShieldCheck, Store, Users } from 'lucide-react'
 import { api } from '@/services/api'
 import { formatKES, slugify } from '@/lib/format'
-import { storeHost, storeLinkParts } from '@/lib/tenant'
+import { storeLinkParts } from '@/lib/tenant'
 import { cn } from '@/lib/cn'
 import { Button } from '@/components/ui/Button'
 import { Img } from '@/components/ui/Img'
@@ -23,11 +23,11 @@ function Landing() {
       <title>Topline — Run your hardware shop, sell online</title>
       <Hero site={site} />
       <Features site={site} />
-      <GrowSection suppliers={suppliers} />
-      <HowToStart />
-      <Pricing plans={plans} />
+      <GrowSection site={site} suppliers={suppliers} />
+      <HowToStart site={site} />
+      <Pricing site={site} plans={plans} />
       <Faq site={site} />
-      <ClosingCta />
+      <ClosingCta site={site} />
     </>
   )
 }
@@ -140,49 +140,30 @@ function StorePreview({ name, slug, image }) {
 
 /* ---------------- Features ---------------- */
 
+// Words come from Site content in the Topline admin; icons and picture slots are fixed.
 const FEATURES = [
-  {
-    icon: Store,
-    title: 'A store your customers can open on their phone',
-    body: 'Your shop gets its own link to share on WhatsApp, Facebook and your signboard. Customers see what you stock, your prices per bag, length or metre, and pay by M-PESA.',
-    points: ['Your logo, location and opening hours', 'Pickup or delivery, your choice', 'Request a quote for big orders'],
-    image: 'featureImageStore',
-    alt: 'A hardware storefront on a sunny day',
-  },
-  {
-    icon: Receipt,
-    title: 'A till that sells the way a hardware counter does',
-    body: 'Sell 20 bags of cement, 6 lengths of Y12 and 30 metres of cable in one sale. Take M-PESA, cash, bank or credit, and send the receipt on WhatsApp.',
-    points: ['Units you actually use: bags, lengths, kg, feet', 'Works on any phone, tablet or laptop', 'See which staff made each sale'],
-    image: 'featureImageTill',
-    alt: 'A wall of tools on display in a hardware shop',
-  },
-  {
-    icon: Users,
-    title: 'Know your stock, and who owes you',
-    body: 'Every sale updates your stock. Topline tells you what is running low before a fundi asks for it, and keeps a clear record of every customer on credit.',
-    points: ['Low-stock alerts', 'Credit limits, due dates and WhatsApp reminders', 'Staff can sell without seeing your buying prices'],
-    image: 'featureImageStock',
-    alt: 'An aisle of stocked shelves in a store',
-  },
+  { n: 1, icon: Store, image: 'featureImageStore', alt: 'A hardware storefront' },
+  { n: 2, icon: Receipt, image: 'featureImageTill', alt: 'Tools on display in a hardware shop' },
+  { n: 3, icon: Users, image: 'featureImageStock', alt: 'An aisle of stocked shelves' },
 ]
+const lines = (text) => (text || '').split('\n').map((l) => l.trim()).filter(Boolean)
 
 function Features({ site }) {
   return (
     <section id="features" className="scroll-mt-20 bg-white">
       <div className="mx-auto max-w-6xl px-5 py-20 md:py-28">
         <h2 className="max-w-2xl text-3xl font-bold tracking-tight text-navy sm:text-4xl">
-          One account runs your online store and your shop counter.
+          {site.featuresTitle}
         </h2>
         <div className="mt-14 space-y-20 md:space-y-28">
           {FEATURES.map((f, i) => (
-            <article key={f.title} className="grid items-center gap-8 md:grid-cols-2 md:gap-14">
+            <article key={f.n} className="grid items-center gap-8 md:grid-cols-2 md:gap-14">
               <div className={cn(i % 2 === 1 && 'md:order-2')}>
                 <f.icon aria-hidden className="size-7 text-amber-deep" />
-                <h3 className="mt-4 text-2xl leading-snug font-bold text-ink">{f.title}</h3>
-                <p className="mt-3 leading-relaxed text-muted">{f.body}</p>
+                <h3 className="mt-4 text-2xl leading-snug font-bold text-ink">{site[`feature${f.n}Title`]}</h3>
+                <p className="mt-3 leading-relaxed text-muted">{site[`feature${f.n}Text`]}</p>
                 <ul className="mt-6 space-y-2.5">
-                  {f.points.map((pt) => (
+                  {lines(site[`feature${f.n}Points`]).map((pt) => (
                     <li key={pt} className="flex gap-3">
                       <Check aria-hidden className="mt-0.5 size-5 shrink-0 text-good" />
                       <span>{pt}</span>
@@ -201,20 +182,18 @@ function Features({ site }) {
 
 /* ---------------- Suppliers and stock credit ---------------- */
 
-function GrowSection({ suppliers }) {
+function GrowSection({ site, suppliers }) {
   return (
     <section className="bg-navy text-white">
       <div className="mx-auto max-w-6xl px-5 py-20 md:py-24">
         <div id="suppliers" className="scroll-mt-24">
-          <p className="text-sm font-semibold tracking-wide text-amber uppercase">Connect to suppliers</p>
-          <h2 className="mt-2 max-w-2xl text-3xl font-bold tracking-tight sm:text-4xl">Buy straight from manufacturers and distributors</h2>
-          <p className="mt-3 max-w-2xl leading-relaxed text-mist">
-            Shops on Topline see each supplier’s products and prices and send orders from their shop admin. The supplier calls back to confirm delivery and payment.
-          </p>
+          <p className="text-sm font-semibold tracking-wide text-amber uppercase">{site.suppliersKicker}</p>
+          <h2 className="mt-2 max-w-2xl text-3xl font-bold tracking-tight sm:text-4xl">{site.suppliersTitle}</h2>
+          <p className="mt-3 max-w-2xl leading-relaxed text-mist">{site.suppliersText}</p>
           {suppliers.length === 0 ? (
             <div className="mt-10 flex items-center gap-4 rounded-2xl bg-white/5 p-6 ring-1 ring-white/10">
               <Factory aria-hidden className="size-8 shrink-0 text-amber" />
-              <p className="text-mist">We’re signing up cement plants, steel mills and manufacturers abroad, including China. They’ll be listed here soon.</p>
+              <p className="text-mist">{site.suppliersEmpty}</p>
             </div>
           ) : (
             <ul className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -243,7 +222,7 @@ function GrowSection({ suppliers }) {
           )}
           <p className="mt-8 flex flex-col gap-3 rounded-2xl bg-white/5 p-5 ring-1 ring-white/10 sm:flex-row sm:items-center">
             <Factory aria-hidden className="size-6 shrink-0 text-amber" />
-            <span className="flex-1 text-mist">Manufacturer or distributor? Sign up, and once Topline approves you, every hardware shop on Topline can order from you.</span>
+            <span className="flex-1 text-mist">{site.suppliersJoinText}</span>
             <Button to="/suppliers/join" className="shrink-0">Sign up as a supplier</Button>
           </p>
         </div>
@@ -251,10 +230,8 @@ function GrowSection({ suppliers }) {
         <div id="stock-credit" className="mt-14 flex scroll-mt-24 flex-col gap-5 rounded-2xl bg-amber p-6 text-navy-deep sm:flex-row sm:items-center sm:p-8">
           <HandCoins aria-hidden className="size-10 shrink-0" />
           <div className="flex-1">
-            <h2 className="text-2xl font-bold">Stock credit</h2>
-            <p className="mt-1 max-w-2xl leading-relaxed">
-              Stock up now and pay later, with credit from Topline’s lending partner based on your shop’s sales on Topline. Shop owners request it from their shop admin.
-            </p>
+            <h2 className="text-2xl font-bold">{site.creditTitle}</h2>
+            <p className="mt-1 max-w-2xl leading-relaxed">{site.creditText}</p>
           </div>
           <Link to="/dashboard/credit" className="shrink-0 rounded-lg bg-navy px-5 py-3 font-medium text-white hover:bg-navy-deep">Request stock credit</Link>
         </div>
@@ -265,23 +242,17 @@ function GrowSection({ suppliers }) {
 
 /* ---------------- How to start (a real sequence, so numbered) ---------------- */
 
-const STEPS = [
-  { title: 'Tell us about your shop', body: 'Your name, the shop name, where you are and your WhatsApp number. It takes about three minutes.' },
-  { title: 'Pick a plan and pay by M-PESA', body: 'Approve the M-PESA prompt on your phone. Your store link goes live as soon as the payment comes through.' },
-  { title: 'Add products and share your link', body: 'Add what you sell with prices per unit, then share your link with customers and fundis.' },
-]
-
-function HowToStart() {
+function HowToStart({ site }) {
   return (
     <section id="how" className="scroll-mt-20 bg-concrete">
       <div className="mx-auto max-w-6xl px-5 py-20 md:py-24">
-        <h2 className="text-3xl font-bold tracking-tight text-navy sm:text-4xl">Open your store today</h2>
+        <h2 className="text-3xl font-bold tracking-tight text-navy sm:text-4xl">{site.stepsTitle}</h2>
         <ol className="mt-12 grid gap-10 md:grid-cols-3 md:gap-8">
-          {STEPS.map((s, i) => (
-            <li key={s.title} className="border-t-2 border-navy pt-5">
-              <span className="text-4xl font-bold text-amber-deep tabular">{i + 1}</span>
-              <h3 className="mt-3 text-lg font-bold">{s.title}</h3>
-              <p className="mt-2 leading-relaxed text-muted">{s.body}</p>
+          {[1, 2, 3].map((n) => (
+            <li key={n} className="border-t-2 border-navy pt-5">
+              <span className="text-4xl font-bold text-amber-deep tabular">{n}</span>
+              <h3 className="mt-3 text-lg font-bold">{site[`step${n}Title`]}</h3>
+              <p className="mt-2 leading-relaxed text-muted">{site[`step${n}Text`]}</p>
             </li>
           ))}
         </ol>
@@ -292,15 +263,15 @@ function HowToStart() {
 
 /* ---------------- Pricing ---------------- */
 
-function Pricing({ plans }) {
+function Pricing({ site, plans }) {
   const [yearly, setYearly] = useState(false)
   return (
     <section id="pricing" className="scroll-mt-20 bg-white">
       <div className="mx-auto max-w-6xl px-5 py-20 md:py-28">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div>
-            <h2 className="text-3xl font-bold tracking-tight text-navy sm:text-4xl">Pricing</h2>
-            <p className="mt-3 max-w-xl text-muted">Pay monthly or yearly by M-PESA or card. No setup fee, and you can change plan at any time.</p>
+            <h2 className="text-3xl font-bold tracking-tight text-navy sm:text-4xl">{site.pricingTitle}</h2>
+            <p className="mt-3 max-w-xl text-muted">{site.pricingText}</p>
           </div>
           <div role="radiogroup" aria-label="Billing period" className="inline-flex rounded-lg bg-concrete p-1">
             {[
@@ -354,9 +325,11 @@ function Pricing({ plans }) {
             </article>
           ))}
         </div>
-        <p className="mt-6 flex items-center gap-2 text-sm text-muted">
-          <ShieldCheck aria-hidden className="size-4" /> Prices are placeholders until Topline confirms final pricing.
-        </p>
+        {site.pricingNote && (
+          <p className="mt-6 flex items-center gap-2 text-sm text-muted">
+            <ShieldCheck aria-hidden className="size-4" /> {site.pricingNote}
+          </p>
+        )}
       </div>
     </section>
   )
@@ -364,27 +337,28 @@ function Pricing({ plans }) {
 
 /* ---------------- FAQ ---------------- */
 
-const FAQS = [
-  ['Do I need a computer?', 'No. Topline works on any smartphone browser. A tablet or laptop at the counter is handy for busy shops, and you can connect a receipt printer.'],
-  ['How do customers pay me?', 'By M-PESA on your store page. The money goes to your account, not to Topline. You can also record cash, bank and credit sales at the counter.'],
-  ['What happens if I stop paying?', 'You get reminders and a 7-day grace period. After that your store shows as closed to customers, but your records stay safe and come back the moment you pay.'],
-  ['Can my staff use it?', 'Yes. Add staff with their own login. You choose what they can see; for example, they can sell without seeing your buying prices or profit.'],
-  ['Can I use my own website address?', `Yes, on the Pro plan. Every store also gets a free link like ${storeHost('yourshop')}.`],
-  ['Does it do KRA eTIMS invoices?', 'eTIMS support is on the way for VAT-registered shops. Tell us if you need it and we will put you on the early list.'],
-]
+/** The questions list from Site content; a broken value shows no questions rather than breaking the page. */
+function parseFaqs(json) {
+  try {
+    const list = JSON.parse(json || '[]')
+    return Array.isArray(list) ? list.filter((f) => f?.q) : []
+  } catch {
+    return []
+  }
+}
 
 function Faq({ site }) {
   return (
     <section id="faq" className="scroll-mt-20 bg-concrete">
       <div className="mx-auto grid max-w-6xl gap-10 px-5 py-20 md:grid-cols-[1fr_2fr] md:py-24">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-navy sm:text-4xl">Questions shop owners ask</h2>
+          <h2 className="text-3xl font-bold tracking-tight text-navy sm:text-4xl">{site.faqTitle}</h2>
           <p className="mt-4 text-muted">
             Something else? <a href={`https://wa.me/${site.supportWhatsapp}`} className="inline-flex items-center gap-1 font-medium text-navy underline underline-offset-4"><MessageCircle className="size-4" />WhatsApp us</a>
           </p>
         </div>
         <div className="divide-y divide-line border-y border-line">
-          {FAQS.map(([q, a]) => (
+          {parseFaqs(site.faqs).map(({ q, a }) => (
             <details key={q} className="group py-5">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-lg font-medium [&::-webkit-details-marker]:hidden">
                 {q}
@@ -399,15 +373,15 @@ function Faq({ site }) {
   )
 }
 
-function ClosingCta() {
+function ClosingCta({ site }) {
   return (
     <section className="bg-amber">
       <div className="mx-auto flex max-w-6xl flex-col items-start gap-6 px-5 py-14 md:flex-row md:items-center md:justify-between">
         <div className="flex items-start gap-4">
           <Package aria-hidden className="mt-1 size-8 shrink-0 text-navy-deep" />
           <div>
-            <h2 className="text-2xl font-bold text-navy-deep sm:text-3xl">Your customers are already on their phones.</h2>
-            <p className="mt-1 text-navy-deep/80">Give them a link to your shop.</p>
+            <h2 className="text-2xl font-bold text-navy-deep sm:text-3xl">{site.closingTitle}</h2>
+            <p className="mt-1 text-navy-deep/80">{site.closingText}</p>
           </div>
         </div>
         <Button to="/start" variant="navy" size="lg">Open your store</Button>

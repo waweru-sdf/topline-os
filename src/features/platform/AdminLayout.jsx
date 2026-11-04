@@ -1,5 +1,5 @@
 import { useLoaderData } from 'react-router'
-import { Activity, Calculator, CreditCard, Factory, HandCoins, History, Image, KeyRound, LayoutDashboard, LogOut, Store } from 'lucide-react'
+import { Activity, Calculator, CreditCard, Factory, HandCoins, History, Image, KeyRound, LayoutDashboard, LogOut, MessageSquareText, Store } from 'lucide-react'
 import { api } from '@/services/api'
 import { clearSession } from '@/services/session'
 import { AppShell } from '@/components/layout/AppShell'
@@ -8,26 +8,23 @@ import { requirePlatformAdmin } from '@/features/vendor/guard'
 export async function loader() {
   const user = requirePlatformAdmin()
   // Counts for the menu badges; a failing count never blocks the admin.
-  const [incidents, suppliers, credit] = await Promise.all([
-    api.listIncidents('open').catch(() => []),
-    api.adminSuppliers().catch(() => ({ pendingSignUps: 0 })),
-    api.adminCreditRequests().catch(() => ({ open: 0 })),
-  ])
-  return { user, openIncidents: incidents.length, pendingSignUps: suppliers.pendingSignUps, openCredit: credit.open }
+  const badges = await api.adminBadges().catch(() => ({}))
+  return { user, badges }
 }
 
 function AdminLayout() {
-  const { user, openIncidents, pendingSignUps, openCredit } = useLoaderData()
+  const { user, badges } = useLoaderData()
   const nav = [
     { to: '/admin', label: 'Overview', icon: LayoutDashboard, end: true },
     { to: '/admin/stores', label: 'Stores', icon: Store },
     { to: '/admin/activity', label: 'Activity', icon: History },
     { to: '/admin/payments', label: 'Payments', icon: CreditCard },
-    { to: '/admin/suppliers', label: 'Suppliers', icon: Factory, badge: pendingSignUps || null },
-    { to: '/admin/credit', label: 'Credit requests', icon: HandCoins, badge: openCredit || null },
+    { to: '/admin/suppliers', label: 'Suppliers', icon: Factory, badge: badges.pendingSignUps || null },
+    { to: '/admin/credit', label: 'Credit requests', icon: HandCoins, badge: badges.openCredit || null },
+    { to: '/admin/reviews', label: 'Reviews', icon: MessageSquareText, badge: badges.newReviews || null },
     { to: '/admin/accounting', label: 'Accounting', icon: Calculator },
     { to: '/admin/site', label: 'Site content', icon: Image },
-    { to: '/admin/health', label: 'System health', icon: Activity, badge: openIncidents || null },
+    { to: '/admin/health', label: 'System health', icon: Activity, badge: badges.openIncidents || null },
   ]
   return (
     <AppShell
