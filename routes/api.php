@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AdminFinanceController;
+use App\Http\Controllers\Api\AdminReviewsController;
 use App\Http\Controllers\Api\AdminSuppliersController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BillingController;
@@ -36,6 +37,8 @@ Route::get('uploads/{name}', [MediaController::class, 'show'])->where('name', '[
 Route::post('auth/login', [AuthController::class, 'login']);
 Route::post('stores', [AuthController::class, 'openStore']);
 Route::post('supplier-signups', [AuthController::class, 'applyAsSupplier']);
+Route::get('review-stores', [PublicController::class, 'reviewStores']);
+Route::post('reviews', [PublicController::class, 'createReview']);
 Route::middleware('topline.user')->group(function () {
     Route::get('auth/me', [AuthController::class, 'me'])->name('auth.me');
     Route::post('auth/password', [AuthController::class, 'changePassword'])->name('auth.password');
@@ -111,6 +114,7 @@ Route::prefix('supplier')->middleware(['topline.user', 'topline.supplier'])->con
 // Topline admin
 Route::prefix('admin')->middleware(['topline.user', 'topline.admin'])->controller(AdminController::class)->group(function () {
     Route::get('overview', 'overview');
+    Route::get('badges', 'badges');
     Route::get('stores', 'stores');
     Route::patch('stores/{storeId}', 'updateStore');
     Route::post('stores/{storeId}/reset-password', 'resetOwnerPassword');
@@ -119,6 +123,7 @@ Route::prefix('admin')->middleware(['topline.user', 'topline.admin'])->controlle
     Route::get('payouts', 'payouts');
     Route::post('payouts/{payoutId}/retry', 'retryPayout')->whereNumber('payoutId');
     Route::get('plans', 'plans');
+    Route::put('plans/{planId}', 'updatePlan');
     Route::put('site', 'updateSite');
     Route::get('incidents', 'incidents');
     Route::patch('incidents/{incidentId}', 'resolveIncident')->whereNumber('incidentId');
@@ -130,6 +135,9 @@ Route::prefix('admin')->middleware(['topline.user', 'topline.admin'])->group(fun
     Route::post('suppliers/{supplierId}/review', [AdminSuppliersController::class, 'review']);
     Route::post('suppliers/{supplierId}/reset-password', [AdminSuppliersController::class, 'resetPassword']);
     Route::get('supplier-orders', [AdminSuppliersController::class, 'orders']);
+    Route::get('reviews', [AdminReviewsController::class, 'index']);
+    Route::patch('reviews/{reviewId}', [AdminReviewsController::class, 'update']);
+    Route::delete('reviews/{reviewId}', [AdminReviewsController::class, 'destroy']);
     Route::get('accounting', [AdminFinanceController::class, 'accounting']);
     Route::get('accounting/export', [AdminFinanceController::class, 'export']);
     Route::get('credit-requests', [AdminFinanceController::class, 'creditRequests']);

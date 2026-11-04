@@ -6,12 +6,15 @@ use App\Http\Presenters\Json;
 use App\Models\Plan;
 use App\Models\Store;
 use App\Services\Monitoring;
+use App\Services\Reviews;
 use App\Services\Site;
 use App\Services\Stores;
+use App\Support\ApiError;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\RateLimiter;
 
-/** Open endpoints: health, plans, link availability, site content, browser error reports. */
+/** Open endpoints: health, plans, link availability, site content, suppliers, reviews, browser error reports. */
 class PublicController extends ApiController
 {
     public function health()
@@ -74,5 +77,24 @@ class PublicController extends ApiController
         $slug = str_ends_with($host, ".{$root}") ? substr($host, 0, -strlen(".{$root}")) : null;
 
         return response('', $slug && ! str_contains($slug, '.') && Store::where('slug', $slug)->exists() ? 200 : 404);
+    }
+
+    /** Shops a review can be about, for the Reviews page. */
+    public function reviewStores()
+    {
+        return $this->json(Reviews::reviewableStores());
+    }
+
+    /** Someone reviews a shop. Only Topline admins see it. At most 5 per device per day. */
+    public function createReview(Request $request)
+    {
+        $key = 'review:'.$request->ip();
+        if (RateLimiter::tooManyAttempts($key, 5)) {
+            throw new ApiError('You’ve sent several reviews today. Thank you! Try again tomorrow.', 429);
+        }
+        Reviews::create($this->body($request));
+        RateLimiter::hit($key, 86400);
+
+        return $this->json(['received' => true], 201);
     }
 }
