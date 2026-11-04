@@ -39,17 +39,17 @@ function Reviews() {
 
       {stores.length > 0 && (
         <div className="mb-5 flex flex-wrap items-center gap-3">
-          <label htmlFor="store-filter" className="text-sm font-medium">Shop</label>
+          <label htmlFor="store-filter" className="text-sm font-medium">Topline shop</label>
           <select id="store-filter" value={storeId} onChange={(e) => setParams(e.target.value ? { store: e.target.value } : {})}
             className="h-10 rounded-lg border border-line bg-white px-3 text-sm">
-            <option value="">All shops ({stores.reduce((n, s) => n + s.count, 0)})</option>
+            <option value="">All reviews</option>
             {stores.map((s) => <option key={s.id} value={s.id}>{s.name}: {s.average} ★ from {s.count}</option>)}
           </select>
         </div>
       )}
 
       {reviews.length === 0 ? (
-        <EmptyState icon={MessageSquareText} title="No reviews yet">Customers can review a shop from the Reviews page on the home page, or from the link at the bottom of every store.</EmptyState>
+        <EmptyState icon={MessageSquareText} title="No reviews yet">Customers can review a shop from the Reviews page in the main menu, or from the link at the bottom of every store.</EmptyState>
       ) : (
         <ul className="space-y-4">
           {reviews.map((r) => <ReviewCard key={r.id} review={r} />)}
@@ -67,7 +67,8 @@ function ReviewCard({ review: r }) {
     <li className={cn('rounded-card bg-white p-5 ring-1 ring-line', done && 'opacity-70')}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="font-bold">{r.store?.name ?? 'Shop removed'}</p>
+          <p className="font-bold">{r.storeName}</p>
+          <p className="text-xs text-muted">{r.store ? `Topline shop: ${r.store.name}` : 'Not matched to a Topline shop'}</p>
           <p className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted">
             <Stars rating={r.rating} />
             <span>Dealt with the shop on {formatDate(r.visitedOn)}</span>

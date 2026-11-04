@@ -130,7 +130,7 @@ function StoreFooter() {
           <p className="text-muted">Online store by</p>
           <Logo className="mt-1" to="/" />
           <p className="mt-2 text-xs text-muted">{storeHost(store.slug)}</p>
-          <a href={`https://${ROOT_DOMAIN}/reviews?store=${encodeURIComponent(store.slug)}`} className="mt-2 inline-block text-xs text-navy underline underline-offset-2">
+          <a href={`https://${ROOT_DOMAIN}/reviews?${new URLSearchParams({ store: store.slug, name: store.name })}`} className="mt-2 inline-block text-xs text-navy underline underline-offset-2">
             Tell Topline how this shop treated you
           </a>
         </div>

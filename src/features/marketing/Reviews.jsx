@@ -1,25 +1,20 @@
 import { useState } from 'react'
-import { useLoaderData, useRouteLoaderData, useSearchParams } from 'react-router'
+import { useRouteLoaderData, useSearchParams } from 'react-router'
 import { CircleCheck, Lock, Star } from 'lucide-react'
 import { api } from '@/services/api'
 import { cn } from '@/lib/cn'
 import { Button } from '@/components/ui/Button'
 import { Field } from '@/components/ui/Field'
 
-export async function loader() {
-  return { stores: await api.getReviewStores() }
-}
-
 const RATING_WORDS = ['', 'Very poor', 'Poor', 'Okay', 'Good', 'Excellent']
 const today = () => new Date().toLocaleDateString('en-CA', { timeZone: 'Africa/Nairobi' }) // YYYY-MM-DD
 
 /** /reviews: anyone tells Topline how a hardware shop treated them. Only Topline admins read it. */
 function Reviews() {
-  const { stores } = useLoaderData()
   const { site } = useRouteLoaderData('marketing')
+  // From a store's "review this shop" link: its slug (sent along, never shown) and its name to start with.
   const [params] = useSearchParams()
-  const preset = stores.some((s) => s.slug === params.get('store')) ? params.get('store') : ''
-  const empty = { store: preset, rating: 0, body: '', visitedOn: today(), name: '', phone: '' }
+  const empty = { store: params.get('store') ?? '', storeName: (params.get('name') ?? '').slice(0, 120), rating: 0, body: '', visitedOn: today(), name: '', phone: '' }
   const [form, setForm] = useState(empty)
   const [error, setError] = useState(null)
   const [busy, setBusy] = useState(false)
@@ -52,7 +47,7 @@ function Reviews() {
             <h1 className="mt-4 text-2xl font-bold text-navy">Thank you for your review</h1>
             <p className="mt-3 leading-relaxed text-muted">The Topline team will read it. If you left your number, we may call you about it.</p>
             <div className="mt-6 flex flex-wrap justify-center gap-3">
-              <Button variant="outline" onClick={() => { setForm({ ...empty, store: '' }); setSent(false) }}>Review another shop</Button>
+              <Button variant="outline" onClick={() => { setForm({ ...empty, store: '', storeName: '' }); setSent(false) }}>Review another shop</Button>
               <Button to="/" variant="navy">Back to the home page</Button>
             </div>
           </div>
@@ -63,10 +58,8 @@ function Reviews() {
             <p className="mt-3 flex items-center gap-2 text-sm text-muted"><Lock className="size-4" />Only the Topline team sees your review and your details.</p>
 
             <form onSubmit={submit} noValidate className="mt-8 space-y-5 rounded-card bg-white p-6 shadow-lift sm:p-7">
-              <Field as="select" label="Which shop?" value={form.store} onChange={(e) => update({ store: e.target.value })} error={err('store')} required>
-                <option value="">Choose the shop</option>
-                {stores.map((s) => <option key={s.slug} value={s.slug}>{s.name}{s.county ? ` (${s.county})` : ''}</option>)}
-              </Field>
+              <Field label="Shop name" value={form.storeName} onChange={(e) => update({ storeName: e.target.value, store: '' })} error={err('storeName')} maxLength={120}
+                placeholder="e.g. Mjengo Hardware" hint="As it appears on the shop’s signboard or Topline link. Add the town if you know it." required />
 
               <fieldset>
                 <legend className="text-sm font-medium">How was it?</legend>
@@ -93,7 +86,7 @@ function Reviews() {
                 <Field label="Phone (optional)" type="tel" value={form.phone} onChange={(e) => update({ phone: e.target.value })} error={err('phone')}
                   placeholder="0712 345 678" hint="So we can follow up if needed." autoComplete="tel" />
               </div>
-              {error && !['store', 'rating', 'body', 'visitedOn', 'name', 'phone'].includes(error.field) && <p className="text-sm text-bad" role="alert">{error.message}</p>}
+              {error && !['storeName', 'rating', 'body', 'visitedOn', 'name', 'phone'].includes(error.field) && <p className="text-sm text-bad" role="alert">{error.message}</p>}
               <Button type="submit" variant="navy" className="w-full" pending={busy}>Send review</Button>
             </form>
           </>

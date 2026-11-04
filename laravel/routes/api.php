@@ -37,7 +37,6 @@ Route::get('uploads/{name}', [MediaController::class, 'show'])->where('name', '[
 Route::post('auth/login', [AuthController::class, 'login']);
 Route::post('stores', [AuthController::class, 'openStore']);
 Route::post('supplier-signups', [AuthController::class, 'applyAsSupplier']);
-Route::get('review-stores', [PublicController::class, 'reviewStores']);
 Route::post('reviews', [PublicController::class, 'createReview']);
 Route::middleware('topline.user')->group(function () {
     Route::get('auth/me', [AuthController::class, 'me'])->name('auth.me');

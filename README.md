@@ -141,7 +141,7 @@ Shop owners request credit under **Stock credit** (amount, purpose, repayment pe
 
 ### Reviews of shops
 
-Anyone can review a hardware shop at `/reviews` (in the main menu, the footer, and a link at the bottom of every store, which picks that shop for them): the shop, 1–5 stars, the review, when they dealt with the shop, their name and an optional phone. At most 5 per device per day. Reviews are **only** visible to Topline admins (admin → **Reviews**, with a count of new ones): filter by shop to see its average, call the reviewer, mark reviews done, or delete spam. Shops never see them.
+Anyone can review a hardware shop at `/reviews` (in the main menu, the footer, and a link at the bottom of every store, which fills in that shop for them). Shop names are never listed publicly: the reviewer types the name, and it's matched to a Topline shop when it's exactly one shop's name (or came from the store's link). The form asks for the shop name, 1–5 stars, the review, when they dealt with the shop, their name and an optional phone. At most 5 per device per day. Reviews are **only** visible to Topline admins (admin → **Reviews**, with a count of new ones): see the typed name and which Topline shop it matched, filter by shop to see its average, call the reviewer, mark reviews done, or delete spam. Shops never see them.
 
 ### Site content and plans
 

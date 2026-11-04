@@ -290,9 +290,8 @@ Errors use the same `{message, field}` shape. Money is whole KES. Phones are sho
 
 | Who | Endpoint | Notes |
 |---|---|---|
-| Anyone | `GET /review-stores` | `[{slug, name, county}]` of every shop that has opened. Cached 10 minutes. |
-| | `POST /reviews` | `{store (slug), rating 1–5, body (10–2000 chars), visitedOn (YYYY-MM-DD, Nairobi date, not future, within 2 years), name, phone?}` → 201 `{received: true}`. 5 per IP per day (429). |
-| Topline admin | `GET /admin/reviews?storeId=` | `{newCount, stores: [{id, name, count, average}], reviews: [{id, store{id,name,slug}, rating, body, visitedOn, name, phone, status, createdAt}]}`. Shops get 403. |
+| Anyone | `POST /reviews` | `{storeName (typed, 2–120), store? (slug, sent by a store's own review link), rating 1–5, body (10–2000 chars), visitedOn (YYYY-MM-DD, Nairobi date, not future, within 2 years), name, phone?}` → 201 `{received: true}`. 5 per IP per day (429). |
+| Topline admin | `GET /admin/reviews?storeId=` | `{newCount, stores: [{id, name, count, average}] (matched shops only), reviews: [{id, store{id,name,slug}, rating, body, visitedOn, name, phone, status, createdAt}]}`. Shops get 403. |
 | | `PATCH /admin/reviews/:id {status: new\|done}`, `DELETE /admin/reviews/:id` | |
 | | `GET /admin/badges` | `{openIncidents, pendingSignUps, openCredit, newReviews}` for the menu. |
 | | `PUT /admin/plans/:id` | `{name, priceMonthly, priceYearly, blurb, features[], productLimit (empty = unlimited), popular}` → the plan. Only one plan is `popular`. |

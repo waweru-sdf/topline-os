@@ -77,7 +77,6 @@ export const api = {
   health: () => http('GET', '/health'),
   getPlans: () => http('GET', '/plans'),
   getSite: (params) => http('GET', `/site${q(params)}`),
-  getReviewStores: () => http('GET', '/review-stores'),
   sendReview: (body) => http('POST', '/reviews', body),
   checkSlug: (slug) => http('GET', `/stores/check-slug${q({ slug })}`),
   reportError: (error) => http('POST', '/telemetry/error', error).catch(() => {}),
