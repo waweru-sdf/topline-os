@@ -8,9 +8,11 @@ use App\Support\ApiError;
 use Illuminate\Support\Facades\Cache;
 
 /**
- * A shop's own domain (e.g. mjengohardware.co.ke), on plans that include it.
- * The owner enters it; a Topline admin adds it to the hosting (hPanel → Domains) and marks it
- * connected; from then on, visiting that domain opens the shop. Same app, same server.
+ * A shop's own address, on plans that include it: either a Topline subdomain named after the shop
+ * (kamandes.toplinehub.co.ke) or a domain the shop owns (kamandeshardware.co.ke).
+ * The owner picks it; a Topline admin adds it to the hosting (hPanel: a subdomain, or a parked domain)
+ * and marks it connected; from then on that address opens the shop. Same app, same server.
+ * (Shared hosting can't serve every subdomain automatically with https, so each is added by hand.)
  */
 class Domains
 {
@@ -22,6 +24,10 @@ class Domains
     public static function set(Store $store, mixed $domain, User $by): Store
     {
         $domain = self::normalize($domain);
+        $root = self::root();
+        if ($domain && $root && str_ends_with($domain, ".{$root}") && $domain !== "{$store->slug}.{$root}") {
+            throw ApiError::invalid("Your Topline address can only be {$store->slug}.{$root}.", 'domain');
+        }
         if ($domain !== null && ! Plans::limit($store, 'customDomain')) {
             throw ApiError::invalid('Your plan doesn’t include your own domain. Change plan under Plan & billing.', 'domain');
         }
@@ -79,6 +85,11 @@ class Domains
         return Store::whereNotNull('custom_domain')->where('domain_status', self::PENDING)->count();
     }
 
+    private static function root(): string
+    {
+        return strtolower((string) config('topline.root_domain'));
+    }
+
     private static function forget(?string $domain): void
     {
         if ($domain) {
@@ -100,8 +111,10 @@ class Domains
             return null;
         }
         $valid = strlen($domain) <= 120 && preg_match('/^(?=.{4,120}$)([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}$/', $domain);
-        $root = strtolower((string) config('topline.root_domain'));
-        if (! $valid || ($root && ($domain === $root || str_ends_with($domain, ".{$root}")))) {
+        $root = self::root();
+        $reserved = $root && ($domain === $root || in_array($domain, array_map(fn ($s) => "{$s}.{$root}", ['www', 'app', 'admin', 'api', 'mail']), true)
+            || substr_count(substr($domain, 0, -strlen($root) - 1), '.') > 0 && str_ends_with($domain, ".{$root}")); // only one level: name.root
+        if (! $valid || $reserved) {
             if ($strict) {
                 throw ApiError::invalid('Enter a domain like yourshop.co.ke', 'domain');
             }
