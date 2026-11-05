@@ -56,7 +56,7 @@ class PaymentsController extends ApiController
             if ($kind === 'charge') {
                 $payment = PaymentRecords::record($reference, $result);
                 Log::info("Charge webhook {$reference} -> ".($payment?->status ?? 'unknown reference'));
-            } elseif ($kind === 'transfer' && ($payout = Payout::where('reference', $reference)->first()) && $payout->status !== 'paid') {
+            } elseif ($kind === 'transfer' && ($payout = Payout::where('reference', strtoupper((string) $reference))->first()) && $payout->status !== 'paid') {
                 Payouts::applyResult($payout, $result);
             }
         }

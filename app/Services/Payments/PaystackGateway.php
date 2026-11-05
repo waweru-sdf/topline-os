@@ -25,13 +25,14 @@ class PaystackGateway implements Gateway
     public const BASE_URL = 'https://api.paystack.co';
     public const TIMEOUT = 20;
 
-    // How Paystack identifies M-PESA destinations for transfer recipients in Kenya: [type, bank_code].
-    // Confirm with Paystack support for your account before going live.
+    // How Paystack identifies M-PESA destinations for transfer recipients in Kenya: [type, bank_code]
+    // (Paystack docs, "Creating Transfer Recipients", Kenya). The Paybill account number goes on the
+    // transfer itself as account_reference (Paystack "Initiate Transfer": required in Kenya for Paybill and Till).
     public const RECIPIENT = [
         'send_money' => ['mobile_money', 'MPESA'],              // M-PESA wallet (phone number)
         'pochi' => ['mobile_money', 'MPESA'],                   // Pochi la Biashara is paid like a wallet number
         'till' => ['mobile_money_business', 'MPTILL'],          // Buy Goods till
-        'paybill' => ['mobile_money_business', 'MPPAYBILL'],    // Paybill + account number
+        'paybill' => ['mobile_money_business', 'MPPAYBILL'],    // Paybill (+ account number on the transfer)
     ];
 
     // Charge statuses that mean "the customer has the prompt, keep waiting".
@@ -108,22 +109,28 @@ class PaystackGateway implements Gateway
     {
         [$type, $bankCode] = self::RECIPIENT[$request->method];
         $accountNumber = in_array($request->method, ['till', 'paybill'], true) ? $request->number : '0'.substr($request->number, 3);
-        $recipient = $this->request('POST', '/transferrecipient', array_filter([
+        $recipient = $this->request('POST', '/transferrecipient', [
             'type' => $type,
             'name' => $request->name ?: 'Topline shop',
             'account_number' => $accountNumber,
             'bank_code' => $bankCode,
             'currency' => 'KES',
-            'account_reference' => $request->method === 'paybill' ? $request->account : null,
-        ], fn ($v) => $v !== null));
-        $data = $this->request('POST', '/transfer', [
+        ]);
+        $data = $this->request('POST', '/transfer', array_filter([
             'source' => 'balance',
             'amount' => $request->amount * 100,
             'recipient' => $recipient['recipient_code'] ?? null,
-            'reference' => $request->reference,
+            // Transfer references: lowercase letters, digits, - and _ only. Webhooks come back lowercase;
+            // PaymentsController looks payouts up without caring about case.
+            'reference' => strtolower($request->reference),
             'reason' => mb_substr($request->reason, 0, 100),
             'currency' => 'KES',
-        ]);
+            'account_reference' => match ($request->method) {
+                'paybill' => $request->account,
+                'till' => strtolower($request->reference),
+                default => null,
+            },
+        ], fn ($v) => $v !== null && $v !== ''));
         $status = strtolower((string) ($data['status'] ?? ''));
         if ($status === 'success') {
             return new ChargeResult(ChargeResult::PAID, $data['transfer_code'] ?? null);

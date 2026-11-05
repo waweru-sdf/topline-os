@@ -11,21 +11,28 @@ use App\Models\User;
 use App\Support\ApiError;
 use App\Support\Ctx;
 use App\Support\Input;
+use App\Support\Phone;
+use App\Support\Text;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 /**
- * A shop's branches (up to the plan's limit). Each branch has its own stock and sales.
- * The main branch's stock is products.stock (the online store sells from it); other branches'
- * stock is in branch_stock. Staff can be tied to one branch.
+ * A shop's branches (up to the plan's limit). Each branch has its own stock, sales and store page:
+ * the shop's address + /<branch slug> (e.g. mjengo.co.ke/kitsuru), with its own contacts, hours and
+ * cover photo; the shop's address itself is the main branch's page. Products are shared.
+ * The main branch's stock is products.stock; other branches' stock is in branch_stock.
+ * Staff can be tied to one branch. One shop admin for all branches: pick the branch in the top bar.
  */
 class Branches
 {
+    /** Store-page paths a branch can't be called. */
+    private const RESERVED_SLUGS = ['p', 'cart', 'checkout'];
+
     /** The store's main branch, created the first time it's needed. */
     public static function main(Store $store): Branch
     {
         return Branch::where('store_id', $store->id)->where('is_main', true)->first()
-            ?? Branch::create(['store_id' => $store->id, 'name' => 'Main shop', 'location' => $store->town ?? '', 'is_main' => true]);
+            ?? Branch::create(['store_id' => $store->id, 'name' => 'Main shop', 'slug' => 'main-shop', 'location' => $store->town ?? '', 'is_main' => true]);
     }
 
     /** @return Collection<int, Branch> main branch first */
@@ -70,7 +77,8 @@ class Branches
     public static function create(Store $store, array $data, User $by): Branch
     {
         Plans::checkLimit($store, 'branches', self::all($store)->count(), 'branches', 'name');
-        $branch = Branch::create(['store_id' => $store->id, ...self::fields($store, $data)]);
+        $fields = self::fields($store, $data);
+        $branch = Branch::create(['store_id' => $store->id, ...$fields, 'slug' => self::uniqueSlug($store, $fields['name'])]);
         Activity::record('branch_added', "{$by->name} added the branch {$branch->name}", $store->id, $by);
 
         return $branch;
@@ -78,7 +86,9 @@ class Branches
 
     public static function update(Store $store, Branch $branch, array $data): Branch
     {
-        $branch->fill(self::fields($store, $data, $branch))->save();
+        $current = ['name' => $branch->name, 'location' => $branch->location, 'phone' => $branch->phone, 'whatsapp' => $branch->whatsapp,
+            'hours' => $branch->hours, 'cover' => $branch->cover]; // fields not sent stay as they are
+        $branch->fill(self::fields($store, [...$current, ...$data], $branch))->save();
 
         return $branch;
     }
@@ -111,7 +121,51 @@ class Branches
             throw ApiError::invalid('You already have a branch with that name.', 'name');
         }
 
-        return ['name' => $name, 'location' => Input::text($data, 'location', false, 160)];
+        $phone = trim((string) ($data['phone'] ?? ''));
+        $phone = $phone === '' ? '' : Phone::display(Phone::normalize($phone) ?? throw ApiError::invalid('Enter a number like 0712 345 678, or leave it empty.', 'phone'));
+        $whatsapp = trim((string) ($data['whatsapp'] ?? ''));
+        $whatsapp = $whatsapp === '' ? '' : (Phone::normalize($whatsapp) ?? throw ApiError::invalid('Enter a number like 0712 345 678, or leave it empty.', 'whatsapp'));
+        $cover = Input::text($data, 'cover', false, 300);
+        if ($cover !== '' && ! preg_match('#^https?://[^\s<>"]+$#i', $cover)) {
+            throw ApiError::invalid('Upload the photo again.', 'cover');
+        }
+
+        return ['name' => $name, 'location' => Input::text($data, 'location', false, 160), 'phone' => $phone, 'whatsapp' => $whatsapp,
+            'hours' => Input::text($data, 'hours', false, 120), 'cover' => $cover];
+    }
+
+    /** Set once, when the branch is added, so links already shared keep working after a rename. */
+    private static function uniqueSlug(Store $store, string $name): string
+    {
+        $base = Text::slugify($name, 50) ?: 'branch';
+        if (in_array($base, self::RESERVED_SLUGS, true)) {
+            $base .= '-branch';
+        }
+        $slug = $base;
+        for ($i = 2; Branch::where('store_id', $store->id)->where('slug', $slug)->exists(); $i++) {
+            $slug = "{$base}-{$i}";
+        }
+
+        return $slug;
+    }
+
+    /** The branch whose store page this is: ?branch=<slug>; empty = the main branch. */
+    public static function forPage(Store $store, mixed $slug): Branch
+    {
+        if ($slug === null || $slug === '') {
+            return self::main($store);
+        }
+        $branch = is_string($slug) ? Branch::where('store_id', $store->id)->where('slug', $slug)->first() : null;
+
+        return $branch ?? throw ApiError::notFound("{$store->name} has no branch called \"{$slug}\".");
+    }
+
+    /** For the store page: every branch, so customers can switch. Empty when there's only one. */
+    public static function publicList(Store $store): array
+    {
+        $all = self::all($store);
+
+        return $all->count() < 2 ? [] : $all->map(fn ($b) => ['slug' => $b->is_main ? null : $b->slug, 'name' => $b->name, 'location' => $b->location])->values()->all();
     }
 
     // ---------------------------------------------------------------- stock per branch
@@ -145,7 +199,8 @@ class Branches
 
     public static function json(Branch $b, array $staffCounts = []): array
     {
-        return ['id' => $b->id, 'name' => $b->name, 'location' => $b->location, 'isMain' => $b->is_main, 'staff' => $staffCounts[$b->id] ?? 0];
+        return ['id' => $b->id, 'slug' => $b->slug, 'name' => $b->name, 'location' => $b->location, 'isMain' => $b->is_main,
+            'phone' => $b->phone, 'whatsapp' => $b->whatsapp, 'hours' => $b->hours, 'cover' => $b->cover ?: null, 'staff' => $staffCounts[$b->id] ?? 0];
     }
 
     /** For the shop admin: the branches, which one the caller is tied to, and the plan's limit. */
