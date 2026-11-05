@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * Stock levels, with a log of every change. Main-branch stock is products.stock; other branches'
- * stock is in branch_stock (see Branches). Online orders always use the main branch.
+ * stock is in branch_stock (see Branches). An online order takes stock from the branch whose store page it came from.
  *
  * reserve() is how two customers buying the last items at the same moment is handled:
  * one conditional UPDATE ... WHERE stock >= qty. The database lets exactly one of them
@@ -52,25 +52,27 @@ class Stock
     }
 
     /** Take stock for an online order, atomically. Throws 409 with how many are left. */
-    public static function reserve(Product $product, int $qty, string $reference): void
+    public static function reserve(Product $product, int $qty, string $reference, ?Branch $branch = null): void
     {
-        $taken = DB::table('products')->where('id', $product->id)->where('stock', '>=', $qty)
-            ->update(['stock' => DB::raw('stock - '.(int) $qty)]);
+        $atBranch = $branch && ! $branch->is_main;
+        $row = $atBranch ? DB::table('branch_stock')->where('branch_id', $branch->id)->where('product_id', $product->id)
+            : DB::table('products')->where('id', $product->id);
+        $column = $atBranch ? 'qty' : 'stock';
+        $taken = (clone $row)->where($column, '>=', $qty)->update([$column => DB::raw("{$column} - ".(int) $qty)]);
         if ($taken === 0) {
-            $left = max((int) DB::table('products')->where('id', $product->id)->value('stock'), 0);
+            $left = max((int) (clone $row)->value($column), 0);
             throw new ApiError($left === 0
                 ? "{$product->name} just sold out."
                 : "Only {$left} left of {$product->name}. Lower the quantity and try again.", 409, 'qty');
         }
         $product->refresh();
-        self::log($product, -$qty, 'online_order', $reference);
+        self::log($product, -$qty, 'online_order', $reference, null, $atBranch ? $branch->id : null);
     }
 
-    /** Put held stock back (unpaid, declined or cancelled order). */
-    public static function release(Product $product, int $qty, string $reference, string $reason = 'released'): void
+    /** Put held stock back (unpaid, declined or cancelled order), at the branch it was taken from. */
+    public static function release(Product $product, int $qty, string $reference, string $reason = 'released', ?Branch $branch = null): void
     {
-        DB::table('products')->where('id', $product->id)->update(['stock' => DB::raw('stock + '.(int) $qty)]);
-        self::log($product, $qty, $reason, $reference);
+        self::adjust($product, $qty, $reason, $reference, null, $branch);
     }
 
     private static function log(Product $product, int $delta, string $reason, string $reference, ?string $userId = null, ?string $branchId = null): void

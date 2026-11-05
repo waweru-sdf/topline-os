@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useLoaderData, useRevalidator } from 'react-router'
-import { KeyRound, MapPin, Pencil, Plus, Trash2, UserPlus } from 'lucide-react'
+import { ExternalLink, KeyRound, MapPin, Pencil, Plus, Trash2, UserPlus } from 'lucide-react'
 import { api } from '@/services/api'
 import { formatDate } from '@/lib/format'
 import { STAFF_ROLE } from '@/lib/labels'
@@ -10,6 +10,8 @@ import { Button } from '@/components/ui/Button'
 import { Dialog } from '@/components/ui/Dialog'
 import { Field } from '@/components/ui/Field'
 import { TempPasswordCard } from '@/components/TempPasswordCard'
+import { PhotoUpload } from '@/components/PhotoUpload'
+import { shopLink } from '@/lib/tenant'
 import { useVendor } from './VendorLayout'
 import { requireStoreId } from './guard'
 
@@ -89,7 +91,7 @@ function Team() {
           <div>
             <h2 id="branches-h" className="text-lg font-bold">Branches</h2>
             <p className="text-sm text-muted">
-              Each branch has its own stock and sales. Pick the branch you’re working at from the top bar. Online orders come from the main branch.
+              Each branch has its own stock, sales and store page; one shop admin runs them all. Pick the branch you’re working at from the top bar, then update its stock, prices and orders as usual.
               {' '}{branchLimit === null ? '' : `Your plan includes ${branchLimit} ${branchLimit === 1 ? 'branch' : 'branches'}.`}
             </p>
           </div>
@@ -102,6 +104,9 @@ function Team() {
               <div className="min-w-0 flex-1">
                 <p className="font-medium">{b.name} {b.isMain && <Badge className="ml-1">Main</Badge>}</p>
                 <p className="text-sm text-muted">{b.location || 'No location'} · {b.staff} staff tied to it</p>
+                <a href={b.isMain ? shopLink(store) : `${shopLink(store)}/${b.slug}`} target="_blank" rel="noreferrer" className="mt-0.5 inline-flex items-center gap-1 text-xs text-navy hover:underline">
+                  {(b.isMain ? shopLink(store) : `${shopLink(store)}/${b.slug}`).replace(/^https:\/\//, '')} <ExternalLink className="size-3" />
+                </a>
               </div>
               <div className="flex gap-1">
                 <button type="button" onClick={() => setBranchEdit(b)} className="rounded-lg p-2 text-muted hover:bg-concrete hover:text-ink" aria-label={`Rename ${b.name}`}><Pencil className="size-4" /></button>
@@ -185,7 +190,10 @@ function StaffDialog({ member, store, onClose, onSaved }) {
 
 function BranchDialog({ branch, store, onClose, onSaved }) {
   const isNew = !branch.id
-  const [form, setForm] = useState({ name: branch.name ?? '', location: branch.location ?? '' })
+  const [form, setForm] = useState({ name: branch.name ?? '', location: branch.location ?? '', phone: branch.phone ?? '',
+    whatsapp: branch.whatsapp ?? '', hours: branch.hours ?? '', cover: branch.cover ?? '' })
+  const set = (patch) => setForm((f) => ({ ...f, ...patch }))
+  const err = (f) => (error?.field === f ? error.message : undefined)
   const [error, setError] = useState(null)
   const [busy, setBusy] = useState(false)
   async function save(e) {
@@ -203,10 +211,22 @@ function BranchDialog({ branch, store, onClose, onSaved }) {
   return (
     <Dialog open onClose={onClose} title={isNew ? 'Add branch' : `Rename ${branch.name}`}>
       <form onSubmit={save} className="space-y-4">
-        <Field label="Branch name" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} error={error?.field === 'name' ? error.message : undefined} placeholder="e.g. Kitengela" required />
-        <Field label="Location (optional)" value={form.location} onChange={(e) => setForm((f) => ({ ...f, location: e.target.value }))} placeholder="Street or landmark" />
+        <Field label="Branch name" value={form.name} onChange={(e) => set({ name: e.target.value })} error={err('name')} placeholder="e.g. Kitsuru" required
+          hint={isNew ? `Its store page will be ${shopLink(store).replace(/^https:\/\//, '')}/${(form.name || 'name').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}` : undefined} />
+        <Field label="Location" value={form.location} onChange={(e) => set({ location: e.target.value })} error={err('location')} placeholder="Street or landmark" />
+        {!branch.isMain && (
+          <>
+            <p className="text-sm text-muted">Shown on this branch’s store page. Leave empty to show the shop’s own.</p>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Phone" type="tel" value={form.phone} onChange={(e) => set({ phone: e.target.value })} error={err('phone')} />
+              <Field label="WhatsApp for orders" type="tel" value={form.whatsapp} onChange={(e) => set({ whatsapp: e.target.value })} error={err('whatsapp')} />
+            </div>
+            <Field label="Opening hours" value={form.hours} onChange={(e) => set({ hours: e.target.value })} error={err('hours')} placeholder="Mon–Sat 7:30–18:00" />
+            <PhotoUpload label="Cover photo (top of the branch’s page)" value={form.cover} onChange={(url) => set({ cover: url })} storeId={store.id} aspect="aspect-[3/1]" />
+          </>
+        )}
         {isNew && <p className="text-sm text-muted">The new branch starts with no stock. Move stock to it from Products & stock, or count it in.</p>}
-        {error && error.field !== 'name' && <p className="text-sm text-bad" role="alert">{error.message}</p>}
+        {error && !['name', 'location', 'phone', 'whatsapp', 'hours'].includes(error.field) && <p className="text-sm text-bad" role="alert">{error.message}</p>}
         <div className="flex justify-end gap-2">
           <Button type="button" variant="ghost" onClick={onClose}>Cancel</Button>
           <Button type="submit" variant="navy" pending={busy}>Save</Button>

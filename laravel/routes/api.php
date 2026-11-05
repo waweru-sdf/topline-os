@@ -107,7 +107,6 @@ Route::prefix('vendor/stores/{storeId}')->middleware(['topline.user', 'topline.s
     Route::post('branches', [TeamController::class, 'addBranch']);
     Route::patch('branches/{branchId}', [TeamController::class, 'updateBranch']);
     Route::delete('branches/{branchId}', [TeamController::class, 'removeBranch']);
-    Route::put('domain', [TeamController::class, 'setDomain']);
     Route::get('supplier-accounts', [SupplierAccountsController::class, 'index']);
     Route::post('supplier-accounts', [SupplierAccountsController::class, 'create']);
     Route::get('supplier-accounts/{accountId}', [SupplierAccountsController::class, 'show']);

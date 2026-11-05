@@ -13,7 +13,7 @@ import { useStore } from './useStore'
 
 export async function loader({ params }) {
   try {
-    return await api.getStoreProduct(params.slug ?? getTenantSlugFromHost(), params.productSlug)
+    return await api.getStoreProduct(params.slug ?? getTenantSlugFromHost(), params.productSlug, params.branch)
   } catch (e) {
     throw data({ message: e.message }, { status: e.status ?? 500 })
   }

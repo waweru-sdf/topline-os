@@ -202,8 +202,11 @@ class Json
     }
 
     /** What customers see on the storefront. */
-    public static function storePublic(Store $store): array
+    /** $branch: on a branch's own store page, its contacts, hours and cover photo replace the shop's where it has them. */
+    public static function storePublic(Store $store, ?\App\Models\Branch $branch = null): array
     {
+        $own = fn (string $field) => $branch && ! $branch->is_main && $branch->{$field} !== '' ? $branch->{$field} : null;
+
         return [
             'id' => $store->id,
             'slug' => $store->slug,
@@ -212,12 +215,13 @@ class Json
             'logo' => $store->logo,
             'county' => $store->county,
             'town' => $store->town,
-            'address' => $store->address,
-            'phone' => $store->phone,
-            'whatsapp' => $store->whatsapp,
-            'hours' => $store->hours,
+            'address' => $own('location') ?? $store->address,
+            'phone' => $own('phone') ?? $store->phone,
+            'whatsapp' => $own('whatsapp') ?? $store->whatsapp,
+            'hours' => $own('hours') ?? $store->hours,
             'accent' => $store->accent,
-            'cover' => $store->cover,
+            'cover' => $own('cover') ?? $store->cover,
+            'branch' => $branch && ! $branch->is_main ? ['slug' => $branch->slug, 'name' => $branch->name] : null,
             'delivery' => [
                 'enabled' => (bool) $store->delivery_enabled,
                 'mode' => $store->delivery_mode,

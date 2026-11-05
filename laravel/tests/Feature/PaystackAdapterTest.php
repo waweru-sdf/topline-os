@@ -68,8 +68,10 @@ class PaystackAdapterTest extends TestCase
         $sent = Http::recorded()->map(fn ($pair) => $pair[0]->data())->all();
         [$recipient, $transfer] = $sent;
         $this->assertSame($expected, [$recipient['type'], $recipient['bank_code'], $recipient['account_number']]);
-        $this->assertSame($account ?: null, $recipient['account_reference'] ?? null);
-        $this->assertSame([65000, 'RCP_1'], [$transfer['amount'], $transfer['recipient']]);
+        $this->assertArrayNotHasKey('account_reference', $recipient);
+        // Paystack "Initiate Transfer": lowercase reference; account_reference for Paybill (the account) and Till.
+        $this->assertSame([65000, 'RCP_1', 'po_1'], [$transfer['amount'], $transfer['recipient'], $transfer['reference']]);
+        $this->assertSame(['paybill' => '0733444555', 'till' => 'po_1'][$method] ?? null, $transfer['account_reference'] ?? null);
     }
 
     public function test_paystack_errors_are_raised_cleanly(): void

@@ -88,7 +88,10 @@ class AdminController extends ApiController
             }
             $store->save();
         });
-        if (array_key_exists('domainStatus', $data)) { // after adding the shop's domain in hPanel
+        if (array_key_exists('customDomain', $data)) { // the domain Topline bought for the shop; empty removes it
+            Domains::set($store, $data['customDomain'], $admin);
+        }
+        if (array_key_exists('domainStatus', $data)) { // connected once it's added in hPanel
             Domains::setStatus($store, (string) $data['domainStatus'], $admin);
         }
 

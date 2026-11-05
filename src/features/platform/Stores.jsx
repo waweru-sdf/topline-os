@@ -1,7 +1,9 @@
 import { useState } from 'react'
-import { Link, useFetcher, useLoaderData, useNavigate } from 'react-router'
+import { Link, useFetcher, useLoaderData, useNavigate, useRevalidator } from 'react-router'
 import { Activity, Copy, ExternalLink, Globe, KeyRound, LayoutDashboard, MoreHorizontal, Search } from 'lucide-react'
+import { Button } from '@/components/ui/Button'
 import { Dialog } from '@/components/ui/Dialog'
+import { Field } from '@/components/ui/Field'
 import { api } from '@/services/api'
 import { formatDate, formatKES } from '@/lib/format'
 import { storeHost } from '@/lib/tenant'
@@ -21,7 +23,6 @@ export async function action({ request }) {
   const fd = await request.formData()
   try {
     if (fd.get('intent') === 'reset-password') return { reset: await api.resetOwnerPassword(fd.get('storeId')) }
-    if (fd.get('domainStatus')) return { store: await api.setStoreDomainStatus(fd.get('storeId'), fd.get('domainStatus')) }
     return { store: await api.setStoreStatus(fd.get('storeId'), fd.get('status')) }
   } catch (e) {
     return { error: e.message }
@@ -109,6 +110,7 @@ function StoreRow({ store }) {
   const status = fetcher.formData?.get('status') ?? store.status
   const reset = fetcher.data?.reset
   const [showReset, setShowReset] = useState(false)
+  const [showDomain, setShowDomain] = useState(false)
   return (
     <tr>
       <td className="px-4 py-3">
@@ -145,12 +147,9 @@ function StoreRow({ store }) {
               <Link to={`/admin/activity?storeId=${store.id}`} className="flex items-center gap-2 rounded-md px-3 py-2 hover:bg-concrete">
                 <Activity className="size-4 text-steel" /> See activity
               </Link>
-              {store.customDomain && (
-                <button name="domainStatus" value={store.domainStatus === 'connected' ? 'pending' : 'connected'}
-                  className="flex w-full items-center gap-2 rounded-md px-3 py-2 hover:bg-concrete">
-                  <Globe className="size-4 text-steel" /> {store.domainStatus === 'connected' ? 'Mark domain as not connected' : `Mark ${store.customDomain} as connected`}
-                </button>
-              )}
+              <button type="button" onClick={() => setShowDomain(true)} className="flex w-full items-center gap-2 rounded-md px-3 py-2 hover:bg-concrete">
+                <Globe className="size-4 text-steel" /> {store.customDomain ? 'Own domain…' : 'Connect a domain…'}
+              </button>
               <button
                 name="intent"
                 value="reset-password"
@@ -178,6 +177,7 @@ function StoreRow({ store }) {
           )}
         </fetcher.Form>
         {fetcher.data?.error && <p className="mt-1 text-xs text-bad" role="alert">{fetcher.data.error}</p>}
+        {showDomain && <DomainDialog store={store} onClose={() => setShowDomain(false)} />}
         <Dialog open={showReset && Boolean(reset)} onClose={() => setShowReset(false)} title="Temporary password">
           {reset && <TempPassword reset={reset} store={store} />}
         </Dialog>
@@ -228,6 +228,53 @@ function Total({ label, value, note, tone }) {
       <p className={cn('mt-1 text-2xl font-bold tabular', tone ?? 'text-ink')}>{value}</p>
       <p className="mt-1 text-sm text-muted">{note}</p>
     </div>
+  )
+}
+
+/**
+ * The domain Topline bought for this shop. Steps outside Topline: buy it (e.g. Truehost), point its DNS
+ * to the hosting, add it in hPanel as a parked domain and install SSL. Then save it here as connected.
+ */
+function DomainDialog({ store, onClose }) {
+  const revalidator = useRevalidator()
+  const [domain, setDomain] = useState(store.customDomain ?? '')
+  const [connected, setConnected] = useState(store.domainStatus === 'connected' || !store.customDomain)
+  const [error, setError] = useState(null)
+  const [busy, setBusy] = useState(false)
+  async function save(e) {
+    e.preventDefault()
+    setBusy(true)
+    setError(null)
+    try {
+      await api.setStoreDomain(store.id, { customDomain: domain, ...(domain.trim() ? { domainStatus: connected ? 'connected' : 'pending' } : {}) })
+      revalidator.revalidate()
+      onClose()
+    } catch (e2) {
+      setError(e2.message)
+      setBusy(false)
+    }
+  }
+  return (
+    <Dialog open onClose={onClose} title={`${store.name}: own domain`}>
+      <form onSubmit={save} className="space-y-4">
+        <ol className="list-decimal space-y-1 pl-5 text-sm text-muted">
+          <li>Buy the domain (e.g. at Truehost) and point it to the hosting: A records for <em>@</em> and <em>www</em> to the IP in hPanel → Websites → Dashboard.</li>
+          <li>In hPanel, add it as a <strong>parked domain</strong> of toplinehub.co.ke, then install SSL for it (Security → SSL).</li>
+          <li>Save it here. From then on it opens this shop.</li>
+        </ol>
+        <Field label="Domain" value={domain} onChange={(e) => setDomain(e.target.value)} placeholder="mjengohardware.co.ke" hint="Leave empty to remove the shop’s domain." error={error ?? undefined} />
+        {domain.trim() && (
+          <label className="flex items-center gap-2 text-sm">
+            <input type="checkbox" checked={connected} onChange={(e) => setConnected(e.target.checked)} className="size-4 accent-navy" />
+            Set up in hPanel with SSL: connect it now
+          </label>
+        )}
+        <div className="flex justify-end gap-2">
+          <Button type="button" variant="ghost" onClick={onClose}>Cancel</Button>
+          <Button type="submit" variant="navy" pending={busy}>Save</Button>
+        </div>
+      </form>
+    </Dialog>
   )
 }
 

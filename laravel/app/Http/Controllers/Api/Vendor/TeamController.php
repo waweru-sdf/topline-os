@@ -3,16 +3,14 @@
 namespace App\Http\Controllers\Api\Vendor;
 
 use App\Http\Controllers\Api\ApiController;
-use App\Http\Presenters\Json;
 use App\Services\Access;
 use App\Services\Branches;
-use App\Services\Domains;
 use App\Services\Permissions as P;
 use App\Services\Staff;
 use App\Support\Ctx;
 use Illuminate\Http\Request;
 
-/** /api/vendor/stores/{storeId}/...: staff logins, branches and the shop's own domain. Owners only. */
+/** /api/vendor/stores/{storeId}/...: staff logins and branches. Owners only. */
 class TeamController extends ApiController
 {
     public function staff()
@@ -77,13 +75,5 @@ class TeamController extends ApiController
         Branches::delete($store, Branches::find($store, $branchId), Access::currentUser());
 
         return response()->noContent();
-    }
-
-    /** {domain}: empty removes it. */
-    public function setDomain(Request $request)
-    {
-        Ctx::require(P::MANAGE_SETTINGS);
-
-        return $this->json(Json::storePrivate(Domains::set(Ctx::store(), $this->body($request)['domain'] ?? null, Access::currentUser())));
     }
 }

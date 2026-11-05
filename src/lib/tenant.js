@@ -38,8 +38,6 @@ export function mayBeShopAddress(hostname = window.location.hostname) {
   return true
 }
 
-/** The shop's Topline subdomain, offered as its own address: kamandes.toplinehub.co.ke */
-export const toplineSubdomain = (slug) => `${slug}.${ROOT_DOMAIN}`
 
 export function getTenantSlugFromHost(hostname = window.location.hostname) {
   if (ownDomainSlug && hostname === window.location.hostname) return ownDomainSlug

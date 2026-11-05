@@ -3,7 +3,7 @@ import { useRevalidator } from 'react-router'
 import { CircleCheck, Clock, Globe, Plus, Trash2 } from 'lucide-react'
 import { api } from '@/services/api'
 import { COUNTIES } from '@/lib/counties'
-import { storeHost, toplineSubdomain } from '@/lib/tenant'
+import { storeHost } from '@/lib/tenant'
 import { cn } from '@/lib/cn'
 import { displayPhone, formatKES } from '@/lib/format'
 import { PAYOUT_METHODS, payoutMethod } from '@/lib/payments'
@@ -192,61 +192,22 @@ function ZonesEditor({ zones, onChange, error }) {
   )
 }
 
-/** The shop's own domain, on plans that include it. Topline connects it on the hosting, then marks it connected. */
+/** The shop's own domain: Topline buys it and connects it; the owner sees where things stand. */
 function OwnDomain({ store }) {
-  const revalidator = useRevalidator()
-  const [domain, setDomain] = useState(store.customDomain ?? '')
-  const [status, setStatus] = useState(null)
-  if (!store.limits?.customDomain && !store.customDomain) {
-    return (
-      <section className="rounded-card bg-white p-5 ring-1 ring-line sm:p-6">
-        <h2 className="flex items-center gap-2 font-bold"><Globe className="size-5" />Your own address</h2>
-        <p className="mt-2 text-sm text-muted">Use {toplineSubdomain(store.slug)} or a domain like yourshop.co.ke for your store. Your plan doesn’t include it; see Plan & billing.</p>
-      </section>
-    )
-  }
-  const subdomain = toplineSubdomain(store.slug)
-  async function save(e, value = domain) {
-    e.preventDefault()
-    setStatus({ saving: true })
-    try {
-      const saved = await api.setDomain(store.id, value)
-      setDomain(saved.customDomain ?? '')
-      setStatus({ saved: true })
-      revalidator.revalidate()
-    } catch (e2) {
-      setStatus({ error: e2.message })
-    }
-  }
+  const included = store.limits?.customDomain
   return (
-    <form onSubmit={save} className="rounded-card bg-white p-5 ring-1 ring-line sm:p-6">
-      <h2 className="flex items-center gap-2 font-bold"><Globe className="size-5" />Your own address</h2>
-      <div className="mt-3 rounded-lg border border-line p-4">
-        <p className="font-medium">Quickest: {subdomain}</p>
-        <p className="mt-1 text-sm text-muted">A short Topline address with your shop’s name. Nothing to buy or set up; Topline connects it, usually within one working day.</p>
-        {store.customDomain !== subdomain && (
-          <Button type="button" variant="outline" size="sm" className="mt-3" onClick={(e) => { setDomain(subdomain); save(e, subdomain) }}>Use {subdomain}</Button>
-        )}
-      </div>
-      <p className="mt-5 font-medium">Or a domain you own</p>
-      <ol className="mt-2 list-decimal space-y-1 pl-5 text-sm text-muted">
-        <li>Buy a domain (e.g. from a .co.ke registrar) if you don’t have one.</li>
-        <li>WhatsApp Topline for the server address, and ask your registrar to point the domain (both <em>@</em> and <em>www</em>) to it.</li>
-        <li>Enter it below. Topline connects it and adds a secure (https) certificate, usually within one working day.</li>
-      </ol>
-      <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end">
-        <Field className="flex-1" label="Domain" value={domain} onChange={(e) => { setStatus(null); setDomain(e.target.value) }} placeholder="yourshop.co.ke" error={status?.error} />
-        <Button type="submit" variant="navy" pending={status?.saving}>{domain ? 'Save domain' : 'Remove domain'}</Button>
-      </div>
-      {store.customDomain && (
-        <p className={cn('mt-3 flex items-center gap-1.5 text-sm', store.domainStatus === 'connected' ? 'text-good' : 'text-[#7a4f00]')} role="status">
-          {store.domainStatus === 'connected'
-            ? <><CircleCheck className="size-4" />Connected: your store opens at https://{store.customDomain}</>
-            : <><Clock className="size-4" />Waiting for Topline to connect {store.customDomain}</>}
-        </p>
+    <section className="rounded-card bg-white p-5 ring-1 ring-line sm:p-6">
+      <h2 className="flex items-center gap-2 font-bold"><Globe className="size-5" />Your own domain</h2>
+      {store.customDomain && store.domainStatus === 'connected' ? (
+        <p className="mt-2 flex items-center gap-1.5 text-sm text-good" role="status"><CircleCheck className="size-4" />Your store opens at https://{store.customDomain}. Topline manages it for you.</p>
+      ) : store.customDomain ? (
+        <p className="mt-2 flex items-center gap-1.5 text-sm text-[#7a4f00]" role="status"><Clock className="size-4" />Topline is setting up {store.customDomain}. It usually takes a day or two.</p>
+      ) : included ? (
+        <p className="mt-2 text-sm text-muted">Your plan includes your own domain, like yourshop.co.ke. Tell Topline the name you’d like; Topline buys it and sets it up for you.</p>
+      ) : (
+        <p className="mt-2 text-sm text-muted">With the Pro plan, Topline buys and sets up your own domain, like yourshop.co.ke. See Plan & billing.</p>
       )}
-      {status?.saved && !store.customDomain && <p className="mt-3 text-sm text-good" role="status">Saved.</p>}
-    </form>
+    </section>
   )
 }
 

@@ -105,45 +105,75 @@ class PlanFeaturesTest extends TestCase
         $this->patchJson("{$base}/branches/{$kit['id']}", ['name' => 'Kitengela Town'], $o['headers'])->assertOk()->assertJson(['name' => 'Kitengela Town']);
     }
 
-    public function test_own_domain_on_plans_that_include_it(): void
+    public function test_each_branch_has_its_own_store_page(): void
     {
-        $starter = $this->owner(); // Business: no own domain
-        $this->putJson($this->base($starter).'/domain', ['domain' => 'mjengo.co.ke'], $starter['headers'])->assertStatus(422)->assertJson(['field' => 'domain']);
+        $o = $this->owner();
+        $base = $this->base($o);
+        $hammer = $this->product('claw-hammer-16-oz');
+        $kit = $this->postJson("{$base}/branches", ['name' => 'Kitsuru', 'location' => 'Kitsuru Rd', 'phone' => '0722 100 100',
+            'whatsapp' => '0722 100 100', 'hours' => 'Mon–Sat 8–6'], $o['headers'])->assertStatus(201)->json();
+        $this->assertSame(['kitsuru', '0722 100 100', '254722100100'], [$kit['slug'], $kit['phone'], $kit['whatsapp']]);
+        $this->patchJson("{$base}/branches/{$kit['id']}", ['name' => 'Kitsuru Branch'], $o['headers'])->assertOk()->assertJson(['slug' => 'kitsuru']); // links keep working
+        $this->postJson("{$base}/products/{$hammer->id}/stock", ['delta' => 3, 'branchId' => $kit['id']], $o['headers'])->assertOk();
 
-        $pro = $this->login('0733 444 555'); // Mwamba, Pro
-        $base = $this->base($pro);
-        $this->putJson("{$base}/domain", ['domain' => 'baraka.toplinehub.co.ke'], $pro['headers'])->assertStatus(422); // another shop's name
-        $this->putJson("{$base}/domain", ['domain' => 'www.toplinehub.co.ke'], $pro['headers'])->assertStatus(422);
-        $this->putJson("{$base}/domain", ['domain' => 'a.mwamba.toplinehub.co.ke'], $pro['headers'])->assertStatus(422);
-        $this->putJson("{$base}/domain", ['domain' => 'not a domain'], $pro['headers'])->assertStatus(422);
-        $this->putJson("{$base}/domain", ['domain' => 'https://www.MwambaHardware.co.ke/'], $pro['headers'])->assertOk()
+        $main = $this->getJson('/api/storefront/mjengo')->assertOk()->json();
+        $this->assertSame([null, 2], [$main['store']['branch'], count($main['branches'])]);
+        $this->assertSame([null, 'kitsuru'], array_column($main['branches'], 'slug'));
+        $page = $this->getJson('/api/storefront/mjengo?branch=kitsuru')->assertOk()->json();
+        $this->assertSame(['kitsuru', 'Kitsuru Branch', '0722 100 100', 'Kitsuru Rd', 'Mon–Sat 8–6'],
+            [$page['store']['branch']['slug'], $page['store']['branch']['name'], $page['store']['phone'], $page['store']['address'], $page['store']['hours']]);
+        $this->assertSame(3, collect($page['products'])->firstWhere('id', $hammer->id)['stock']);
+        $this->assertSame(3, $this->getJson('/api/storefront/mjengo/products/claw-hammer-16-oz?branch=kitsuru')->json('product.stock'));
+        $this->getJson('/api/storefront/mjengo?branch=nowhere')->assertStatus(404);
+
+        // An order on Kitsuru's page holds Kitsuru's stock, not the main shop's.
+        $mainStock = $hammer->stock;
+        $order = ['customer' => ['name' => 'Akinyi', 'phone' => '0711 222 333'], 'items' => [['productId' => $hammer->id, 'qty' => 4]], 'branch' => 'kitsuru'];
+        $this->postJson('/api/storefront/mjengo/orders', $order)->assertStatus(409)->assertJson(['message' => 'Only 3 left of Claw hammer, 16 oz. Lower the quantity and try again.']);
+        $placed = $this->postJson('/api/storefront/mjengo/orders', [...$order, 'items' => [['productId' => $hammer->id, 'qty' => 2]]])->assertStatus(201)->json();
+        $this->assertSame([1, $mainStock], [$this->getJson('/api/storefront/mjengo?branch=kitsuru')->json('products.'.collect($page['products'])->search(fn ($p) => $p['id'] === $hammer->id).'.stock'), $hammer->refresh()->stock]);
+        $this->assertSame($kit['id'], $placed['branchId']);
+        $this->assertSame(1, \App\Models\Sale::where('branch_id', $kit['id'])->where('channel', 'online')->count());
+
+        $cart = $this->postJson("{$base}/branches", ['name' => 'Cart'], $this->owner()['headers']); // a reserved page name
+        $cart->assertStatus(422); // Business: 2 branches already
+    }
+
+    public function test_topline_connects_a_domain_it_bought_for_a_shop(): void
+    {
+        $admin = $this->admin();
+        $set = fn (string $slug, array $body) => $this->patchJson('/api/admin/stores/'.$this->store($slug)->id, $body, $admin['headers']);
+        $mjengo = $this->owner();
+        $this->putJson($this->base($mjengo).'/domain', ['domain' => 'mjengo.co.ke'], $mjengo['headers'])->assertStatus(404); // owners don't set it
+        $set('mjengo', ['customDomain' => 'mjengo.co.ke'])->assertStatus(422)->assertJson(['field' => 'customDomain']); // Business: no own domain
+
+        $set('mwamba', ['customDomain' => 'baraka-builders.toplinehub.co.ke'])->assertStatus(422); // another shop's name
+        $set('mwamba', ['customDomain' => 'www.toplinehub.co.ke'])->assertStatus(422);
+        $set('mwamba', ['customDomain' => 'not a domain'])->assertStatus(422);
+        $set('mwamba', ['customDomain' => 'https://www.MwambaHardware.co.ke/'])->assertOk()
             ->assertJson(['customDomain' => 'mwambahardware.co.ke', 'domainStatus' => 'pending']);
         $this->getJson('/api/domains/resolve?host=mwambahardware.co.ke')->assertStatus(404); // not connected yet
-
-        $admin = $this->admin();
         $this->assertSame(1, $this->getJson('/api/admin/badges', $admin['headers'])->json('pendingDomains'));
-        $mwamba = $this->store('mwamba');
-        $this->patchJson("/api/admin/stores/{$mwamba->id}", ['domainStatus' => 'connected'], $admin['headers'])->assertOk()->assertJson(['domainStatus' => 'connected']);
+
+        $set('mwamba', ['domainStatus' => 'connected'])->assertOk()->assertJson(['domainStatus' => 'connected']);
         $this->getJson('/api/domains/resolve?host=mwambahardware.co.ke')->assertOk()->assertExactJson(['slug' => 'mwamba']);
         $this->getJson('/api/domains/resolve?host=www.mwambahardware.co.ke')->assertOk()->assertJson(['slug' => 'mwamba']);
         $this->getJson('/api/domains/resolve?host=elsewhere.co.ke')->assertStatus(404);
+        $pro = $this->login('0733 444 555');
+        $this->assertSame(['mwambahardware.co.ke', 'connected'], array_values(array_intersect_key(
+            $this->getJson($this->base($pro), $pro['headers'])->json(), ['customDomain' => 1, 'domainStatus' => 1])));
+        $set('baraka-builders', ['customDomain' => 'mwambahardware.co.ke'])->assertStatus(422); // taken
 
-        // Or a Topline subdomain named after the shop.
-        $this->putJson("{$base}/domain", ['domain' => 'mwamba.toplinehub.co.ke'], $pro['headers'])->assertOk()->assertJson(['customDomain' => 'mwamba.toplinehub.co.ke', 'domainStatus' => 'pending']);
+        // In one step: domain + connected, e.g. a Topline subdomain named after the shop.
+        $set('mwamba', ['customDomain' => 'mwamba.toplinehub.co.ke', 'domainStatus' => 'connected'])->assertOk();
         $this->getJson('/api/domains/resolve?host=mwambahardware.co.ke')->assertStatus(404); // the old one stopped
-        $this->getJson('/api/domains/resolve?host=mwamba.toplinehub.co.ke')->assertStatus(404);
-        $this->patchJson("/api/admin/stores/{$mwamba->id}", ['domainStatus' => 'connected'], $admin['headers'])->assertOk();
         $this->getJson('/api/domains/resolve?host=mwamba.toplinehub.co.ke')->assertOk()->assertExactJson(['slug' => 'mwamba']);
         $this->getJson('/api/domains/resolve?host=new.toplinehub.co.ke')->assertStatus(404); // a test site stays the main site
-        $this->putJson("{$base}/domain", ['domain' => 'mwambahardware.co.ke'], $pro['headers'])->assertOk();
-        $this->patchJson("/api/admin/stores/{$mwamba->id}", ['domainStatus' => 'connected'], $admin['headers'])->assertOk();
 
-        $other = $this->login('0722 118 404'); // Baraka, also Pro
-        $this->putJson($this->base($other).'/domain', ['domain' => 'mwambahardware.co.ke'], $other['headers'])->assertStatus(422); // taken
-
-        Store::whereKey($mwamba->id)->update(['plan_id' => 'business']); // downgraded: the domain stops working
+        Store::where('slug', 'mwamba')->update(['plan_id' => 'business']); // downgraded: the domain stops working
         \Illuminate\Support\Facades\Cache::flush();
-        $this->getJson('/api/domains/resolve?host=mwambahardware.co.ke')->assertStatus(404);
+        $this->getJson('/api/domains/resolve?host=mwamba.toplinehub.co.ke')->assertStatus(404);
+        $set('mwamba', ['customDomain' => ''])->assertOk()->assertJson(['customDomain' => null, 'domainStatus' => null]);
     }
 
     public function test_supplier_balances(): void

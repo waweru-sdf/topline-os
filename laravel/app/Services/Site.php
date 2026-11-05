@@ -59,8 +59,8 @@ class Site
         'faqs' => '[{"q":"Do I need a computer?","a":"No. Topline works on any smartphone browser. A tablet or laptop at the counter is handy for busy shops."},'
             .'{"q":"How do customers pay me?","a":"By M-PESA on your store page. The money goes to your account, not to Topline. You can also record cash, bank and credit sales at the counter."},'
             .'{"q":"What happens if I stop paying?","a":"You get reminders and a 7-day grace period. After that your store shows as closed to customers, but your records stay safe and come back the moment you pay."},'
-            .'{"q":"Can I use my own website address?","a":"Every store gets a free link like yourshop.toplinehub.co.ke. Using your own domain is coming soon."},'
-            .'{"q":"Does it do KRA eTIMS invoices?","a":"eTIMS support is on the way for VAT-registered shops. Tell us if you need it and we will put you on the early list."}]',
+            .'{"q":"Can I use my own website address?","a":"Every store gets a free link like toplinehub.co.ke/s/yourshop. On the Pro plan, Topline buys and sets up your own domain (yourshop.co.ke) for you."},'
+            .'{"q":"Can I have more than one branch?","a":"Yes. Business includes 2 branches and Pro up to 5. Each branch has its own stock, sales and store page, all run from one shop admin."}]',
 
         'closingTitle' => 'Your customers are already on their phones.',
         'closingText' => 'Give them a link to your shop.',

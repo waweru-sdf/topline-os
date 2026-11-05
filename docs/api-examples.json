@@ -169,17 +169,17 @@
     "status": 200,
     "response": {
       "user": {
-        "id": "u_92ypcVpTxPo6",
+        "id": "u_cnSIjrNcqtXc",
         "name": "Peter Kamau",
         "phone": "254712345678",
         "email": "peter@mjengo.example.com",
         "role": "vendor",
         "mustChangePassword": false,
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeRole": "owner",
         "branchId": null
       },
-      "token": "1|azFhoIdisNH9Z6rCqXO2BFnGpSVTijZKCDywS7sib02f4d24"
+      "token": "1|zoaSyumZ1qu5wKBOoxTuZkcN5eYnGQXofAi73mIB6ef0b58b"
     },
     "note": "login = phone (any Kenyan format) or email"
   },
@@ -204,13 +204,13 @@
     "status": 200,
     "response": {
       "user": {
-        "id": "u_92ypcVpTxPo6",
+        "id": "u_cnSIjrNcqtXc",
         "name": "Peter Kamau",
         "phone": "254712345678",
         "email": "peter@mjengo.example.com",
         "role": "vendor",
         "mustChangePassword": false,
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeRole": "owner",
         "branchId": null
       }
@@ -224,7 +224,7 @@
     "status": 200,
     "response": {
       "store": {
-        "id": "st_K5Npfjr3lZOH",
+        "id": "st_YywAJ-0ZKexE",
         "slug": "mjengo",
         "name": "Mjengo Hardware",
         "tagline": "Building materials for Kitengela and beyond",
@@ -237,6 +237,7 @@
         "hours": "Mon–Sat 7:00–18:30, Sun 9:00–14:00",
         "accent": "#F5A623",
         "cover": "heroShelves",
+        "branch": null,
         "delivery": {
           "enabled": true,
           "mode": "zones",
@@ -317,7 +318,7 @@
       ],
       "products": [
         {
-          "id": "prd_34ijhh7Oc1CB",
+          "id": "prd_hx9HHtRmUQrB",
           "slug": "bamburi-tembo-cement-32-5r",
           "name": "Bamburi Tembo cement 32.5R",
           "categoryId": "cement",
@@ -344,7 +345,7 @@
           "published": true
         },
         {
-          "id": "prd_vlQ8lLNgWEcB",
+          "id": "prd_7LUB48Jq6LFr",
           "slug": "savannah-cement-42-5r",
           "name": "Savannah cement 42.5R",
           "categoryId": "cement",
@@ -367,7 +368,7 @@
           "published": true
         },
         {
-          "id": "prd_5paqnEORNmxW",
+          "id": "prd_VBkTVySDOP1w",
           "slug": "simba-cement-42-5n",
           "name": "Simba cement 42.5N",
           "categoryId": "cement",
@@ -394,7 +395,7 @@
           "published": true
         },
         {
-          "id": "prd_bn54_807Ei8v",
+          "id": "prd_DjuIuiuHD3_J",
           "slug": "tile-adhesive",
           "name": "Tile adhesive",
           "categoryId": "cement",
@@ -412,7 +413,7 @@
           "published": true
         },
         {
-          "id": "prd_YrtMdq_UCvUg",
+          "id": "prd_r4wrzBB0Kr7F",
           "slug": "twin-earth-cable-2-5-mm",
           "name": "Twin & earth cable 2.5 mm",
           "categoryId": "electrical",
@@ -435,7 +436,7 @@
           "published": true
         },
         {
-          "id": "prd_cejHEUnzEZWw",
+          "id": "prd_9CtdtkXJh0Jl",
           "slug": "gloss-enamel-brilliant-white",
           "name": "Gloss enamel, brilliant white",
           "categoryId": "paint",
@@ -453,7 +454,7 @@
           "published": true
         },
         {
-          "id": "prd_Jtlwlc2Qe5ov",
+          "id": "prd_iY-niQ9syRQI",
           "slug": "vinyl-silk-emulsion-white",
           "name": "Vinyl silk emulsion, white",
           "categoryId": "paint",
@@ -480,7 +481,7 @@
           "published": true
         },
         {
-          "id": "prd_EbneSgs7NBJ-",
+          "id": "prd_LN7GIGGcLOVA",
           "slug": "ppr-pipe-20-mm",
           "name": "PPR pipe 20 mm",
           "categoryId": "plumbing",
@@ -503,7 +504,7 @@
           "published": true
         },
         {
-          "id": "prd_oKuWmGVN78j3",
+          "id": "prd_QI7jUIQlMaIs",
           "slug": "pvc-pipe-4-heavy",
           "name": "PVC pipe 4\" heavy",
           "categoryId": "plumbing",
@@ -521,7 +522,7 @@
           "published": true
         },
         {
-          "id": "prd_FJ2fCTBKxIr_",
+          "id": "prd_wSQBSTy2bQu_",
           "slug": "box-profile-mabati-gauge-30",
           "name": "Box profile mabati, gauge 30",
           "categoryId": "roofing",
@@ -548,7 +549,7 @@
           "published": true
         },
         {
-          "id": "prd_HRSeF5X_StR2",
+          "id": "prd_XL2cxDTaMkdx",
           "slug": "corrugated-iron-sheet-gauge-28",
           "name": "Corrugated iron sheet, gauge 28",
           "categoryId": "roofing",
@@ -575,7 +576,7 @@
           "published": true
         },
         {
-          "id": "prd_8kUFyoQaA-VV",
+          "id": "prd_5shnLcktpeM7",
           "slug": "ridge-cap-gauge-30",
           "name": "Ridge cap, gauge 30",
           "categoryId": "roofing",
@@ -593,7 +594,7 @@
           "published": true
         },
         {
-          "id": "prd_yqajq-NSYoNR",
+          "id": "prd_1S9yD02KyTLK",
           "slug": "d10-deformed-bar-y10",
           "name": "D10 deformed bar (Y10)",
           "categoryId": "steel",
@@ -620,7 +621,7 @@
           "published": true
         },
         {
-          "id": "prd_QENI-l8_14eG",
+          "id": "prd_w-yiEa7C4yp1",
           "slug": "d12-deformed-bar-y12",
           "name": "D12 deformed bar (Y12)",
           "categoryId": "steel",
@@ -647,7 +648,7 @@
           "published": true
         },
         {
-          "id": "prd_tXXS50dGxcuo",
+          "id": "prd_SR1LmZID5V1t",
           "slug": "d16-deformed-bar-y16",
           "name": "D16 deformed bar (Y16)",
           "categoryId": "steel",
@@ -674,7 +675,7 @@
           "published": true
         },
         {
-          "id": "prd_Cm4qZ2rGf-lU",
+          "id": "prd_ljz3kBAbm98j",
           "slug": "cypress-timber-24",
           "name": "Cypress timber 2×4",
           "categoryId": "timber",
@@ -697,7 +698,7 @@
           "published": true
         },
         {
-          "id": "prd_nYa5GEyoyaty",
+          "id": "prd_cSl4AcHgsdvQ",
           "slug": "cypress-timber-32",
           "name": "Cypress timber 3×2",
           "categoryId": "timber",
@@ -715,7 +716,7 @@
           "published": true
         },
         {
-          "id": "prd_fc82Rh-WRfVS",
+          "id": "prd_ER_FDbgROU1i",
           "slug": "claw-hammer-16-oz",
           "name": "Claw hammer, 16 oz",
           "categoryId": "tools",
@@ -738,7 +739,7 @@
           "published": true
         },
         {
-          "id": "prd_h7EP7MMNRBR6",
+          "id": "prd_DcM-d9crokxa",
           "slug": "cordless-drill-18-v",
           "name": "Cordless drill 18 V",
           "categoryId": "tools",
@@ -765,7 +766,7 @@
           "published": true
         },
         {
-          "id": "prd_7uekuqo1eo6c",
+          "id": "prd_dn73ol7Dq6D_",
           "slug": "mason-trowel",
           "name": "Mason trowel",
           "categoryId": "tools",
@@ -782,7 +783,8 @@
           "vatClass": "standard",
           "published": true
         }
-      ]
+      ],
+      "branches": []
     },
     "note": ""
   },
@@ -793,7 +795,7 @@
     "status": 200,
     "response": {
       "store": {
-        "id": "st_K5Npfjr3lZOH",
+        "id": "st_YywAJ-0ZKexE",
         "slug": "mjengo",
         "name": "Mjengo Hardware",
         "tagline": "Building materials for Kitengela and beyond",
@@ -806,6 +808,7 @@
         "hours": "Mon–Sat 7:00–18:30, Sun 9:00–14:00",
         "accent": "#F5A623",
         "cover": "heroShelves",
+        "branch": null,
         "delivery": {
           "enabled": true,
           "mode": "zones",
@@ -843,7 +846,7 @@
         }
       },
       "product": {
-        "id": "prd_QENI-l8_14eG",
+        "id": "prd_w-yiEa7C4yp1",
         "slug": "d12-deformed-bar-y12",
         "name": "D12 deformed bar (Y12)",
         "categoryId": "steel",
@@ -901,7 +904,7 @@
     "status": 201,
     "response": {
       "id": "S-238",
-      "storeId": "st_K5Npfjr3lZOH",
+      "storeId": "st_YywAJ-0ZKexE",
       "channel": "online",
       "status": "awaiting_payment",
       "method": "mpesa",
@@ -909,7 +912,7 @@
       "subtotal": 1300,
       "deliveryFee": 600,
       "total": 1900,
-      "createdAt": "2026-11-04T19:22:00.000Z",
+      "createdAt": "2026-11-05T10:25:23.000Z",
       "paidAt": null,
       "staff": null,
       "branchId": null,
@@ -925,7 +928,7 @@
       "mpesaRef": null,
       "items": [
         {
-          "productId": "prd_fc82Rh-WRfVS",
+          "productId": "prd_ER_FDbgROU1i",
           "name": "Claw hammer, 16 oz",
           "unit": "piece",
           "qty": 2,
@@ -933,7 +936,7 @@
         }
       ],
       "payment": {
-        "reference": "ORD_76281785AD2A2A82",
+        "reference": "ORD_6F141B8D035AFCEC",
         "status": "pending",
         "amount": 1900,
         "payee": "MJENGO HARDWARE",
@@ -952,21 +955,21 @@
     "status": 200,
     "response": {
       "status": "paid",
-      "mpesaRef": "TCA350AE40",
+      "mpesaRef": "TFBE2D71E1",
       "failureReason": null,
       "payment": {
-        "reference": "ORD_76281785AD2A2A82",
+        "reference": "ORD_6F141B8D035AFCEC",
         "status": "paid",
         "amount": 1900,
         "payee": "MJENGO HARDWARE",
         "phone": "254711222333",
-        "mpesaRef": "TCA350AE40",
+        "mpesaRef": "TFBE2D71E1",
         "failureReason": null,
         "simulated": true
       },
       "order": {
         "id": "S-238",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "channel": "online",
         "status": "new",
         "method": "mpesa",
@@ -974,8 +977,8 @@
         "subtotal": 1300,
         "deliveryFee": 600,
         "total": 1900,
-        "createdAt": "2026-11-04T19:22:00.000Z",
-        "paidAt": "2026-11-04T19:22:00.000Z",
+        "createdAt": "2026-11-05T10:25:23.000Z",
+        "paidAt": "2026-11-05T10:25:23.000Z",
         "staff": null,
         "branchId": null,
         "customerId": null,
@@ -987,10 +990,10 @@
           "address": "EPZ gate B",
           "notes": null
         },
-        "mpesaRef": "TCA350AE40",
+        "mpesaRef": "TFBE2D71E1",
         "items": [
           {
-            "productId": "prd_fc82Rh-WRfVS",
+            "productId": "prd_ER_FDbgROU1i",
             "name": "Claw hammer, 16 oz",
             "unit": "piece",
             "qty": 2,
@@ -1043,7 +1046,7 @@
     "status": 201,
     "response": {
       "id": "S-239",
-      "storeId": "st_K5Npfjr3lZOH",
+      "storeId": "st_YywAJ-0ZKexE",
       "channel": "online",
       "status": "awaiting_confirmation",
       "method": "mpesa",
@@ -1051,7 +1054,7 @@
       "subtotal": 650,
       "deliveryFee": 0,
       "total": 650,
-      "createdAt": "2026-11-04T19:22:00.000Z",
+      "createdAt": "2026-11-05T10:25:23.000Z",
       "paidAt": null,
       "staff": null,
       "branchId": null,
@@ -1067,7 +1070,7 @@
       "mpesaRef": "TJK4H2PQ9X",
       "items": [
         {
-          "productId": "prd_fc82Rh-WRfVS",
+          "productId": "prd_ER_FDbgROU1i",
           "name": "Claw hammer, 16 oz",
           "unit": "piece",
           "qty": 1,
@@ -1090,7 +1093,7 @@
     "status": 201,
     "response": {
       "ok": true,
-      "reference": "Q-91827"
+      "reference": "Q-59338"
     },
     "note": ""
   },
@@ -1105,7 +1108,7 @@
     "auth": false,
     "status": 202,
     "response": {
-      "reference": "SUB_DB0985B45C345EAB",
+      "reference": "SUB_64E15CE5D593EEF3",
       "status": "pending",
       "amount": 3500,
       "payee": "TOPLINE",
@@ -1122,12 +1125,12 @@
     "auth": false,
     "status": 200,
     "response": {
-      "reference": "SUB_DB0985B45C345EAB",
+      "reference": "SUB_64E15CE5D593EEF3",
       "status": "paid",
       "amount": 3500,
       "payee": "TOPLINE",
       "phone": "254722111222",
-      "mpesaRef": "TD48DFEFCA",
+      "mpesaRef": "TBF950209A",
       "failureReason": null,
       "simulated": true
     },
@@ -1142,7 +1145,7 @@
     "auth": false,
     "status": 200,
     "response": {
-      "reference": "SUB_41CDDD64668C61FB",
+      "reference": "SUB_53FA00F37CFF141E",
       "status": "failed",
       "amount": 1500,
       "payee": "TOPLINE",
@@ -1182,7 +1185,7 @@
     "status": 201,
     "response": {
       "store": {
-        "id": "st_79pJ15bOGMSe",
+        "id": "st_k4tAAc4WHhHc",
         "slug": "baraka-hardware",
         "name": "Baraka Hardware",
         "tagline": "",
@@ -1195,6 +1198,7 @@
         "hours": "Mon–Sat 8:00–18:00",
         "accent": "#F5A623",
         "cover": "aisle",
+        "branch": null,
         "delivery": {
           "enabled": false,
           "mode": "zones",
@@ -1222,21 +1226,21 @@
         },
         "customDomain": null,
         "domainStatus": null,
-        "createdAt": "2026-11-04T19:22:00.000Z",
-        "nextBillingAt": "2026-12-04T19:22:00.000Z"
+        "createdAt": "2026-11-05T10:25:23.000Z",
+        "nextBillingAt": "2026-12-05T10:25:23.000Z"
       },
       "user": {
-        "id": "u_OsdZbCR-1MfB",
+        "id": "u_sBW9WwkK2uLe",
         "name": "Grace Akinyi",
         "phone": "254722111222",
         "email": "grace@example.com",
         "role": "vendor",
         "mustChangePassword": false,
-        "storeId": "st_79pJ15bOGMSe",
+        "storeId": "st_k4tAAc4WHhHc",
         "storeRole": "owner",
         "branchId": null
       },
-      "token": "4|Y5hsZS6rdiCEb0poZFsXdSPIQKUv6krl8mMgVtHCee58af0b"
+      "token": "4|YoNSdh0ZyHn0em8dtslppq71Aysyldi9fzlHzHdSbc5016cd"
     },
     "note": "sign-up: needs a paid, unclaimed plan payment"
   },
@@ -1247,7 +1251,7 @@
     "status": 200,
     "response": [
       {
-        "id": "st_K5Npfjr3lZOH",
+        "id": "st_YywAJ-0ZKexE",
         "slug": "mjengo",
         "name": "Mjengo Hardware",
         "tagline": "Building materials for Kitengela and beyond",
@@ -1260,6 +1264,7 @@
         "hours": "Mon–Sat 7:00–18:30, Sun 9:00–14:00",
         "accent": "#F5A623",
         "cover": "heroShelves",
+        "branch": null,
         "delivery": {
           "enabled": true,
           "mode": "zones",
@@ -1303,8 +1308,8 @@
         },
         "customDomain": null,
         "domainStatus": null,
-        "createdAt": "2026-08-20T19:22:00.000Z",
-        "nextBillingAt": "2026-11-20T19:22:00.000Z",
+        "createdAt": "2026-08-21T10:25:22.000Z",
+        "nextBillingAt": "2026-11-21T10:25:22.000Z",
         "myRole": "owner"
       }
     ],
@@ -1316,7 +1321,7 @@
     "auth": true,
     "status": 200,
     "response": {
-      "id": "st_K5Npfjr3lZOH",
+      "id": "st_YywAJ-0ZKexE",
       "slug": "mjengo",
       "name": "Mjengo Hardware",
       "tagline": "Building materials for Kitengela and beyond",
@@ -1329,6 +1334,7 @@
       "hours": "Mon–Sat 7:00–18:30, Sun 9:00–14:00",
       "accent": "#F5A623",
       "cover": "heroShelves",
+      "branch": null,
       "delivery": {
         "enabled": true,
         "mode": "zones",
@@ -1372,8 +1378,8 @@
       },
       "customDomain": null,
       "domainStatus": null,
-      "createdAt": "2026-08-20T19:22:00.000Z",
-      "nextBillingAt": "2026-11-20T19:22:00.000Z",
+      "createdAt": "2026-08-21T10:25:22.000Z",
+      "nextBillingAt": "2026-11-21T10:25:22.000Z",
       "myRole": "owner",
       "permissions": [
         "buy_stock",
@@ -1392,10 +1398,15 @@
       ],
       "branches": [
         {
-          "id": "br_0WpHSdojbdyq",
+          "id": "br_oY51UnZK2Ofx",
+          "slug": "main-shop",
           "name": "Main shop",
           "location": "Kitengela",
           "isMain": true,
+          "phone": "",
+          "whatsapp": "",
+          "hours": "",
+          "cover": null,
           "staff": 0
         }
       ],
@@ -1422,7 +1433,7 @@
     "auth": true,
     "status": 200,
     "response": {
-      "id": "st_K5Npfjr3lZOH",
+      "id": "st_YywAJ-0ZKexE",
       "slug": "mjengo",
       "name": "Mjengo Hardware",
       "tagline": "Building materials for Kitengela",
@@ -1435,6 +1446,7 @@
       "hours": "Mon–Sat 7:00–18:30, Sun 9:00–14:00",
       "accent": "#F5A623",
       "cover": "heroShelves",
+      "branch": null,
       "delivery": {
         "enabled": true,
         "mode": "zones",
@@ -1478,8 +1490,8 @@
       },
       "customDomain": null,
       "domainStatus": null,
-      "createdAt": "2026-08-20T19:22:00.000Z",
-      "nextBillingAt": "2026-11-20T19:22:00.000Z"
+      "createdAt": "2026-08-21T10:25:22.000Z",
+      "nextBillingAt": "2026-11-21T10:25:22.000Z"
     },
     "note": ""
   },
@@ -1491,85 +1503,85 @@
     "response": {
       "byDay": [
         {
-          "date": "2026-10-22",
+          "date": "2026-10-23",
           "revenue": 249000,
           "profit": 39030,
           "count": 7
         },
         {
-          "date": "2026-10-23",
+          "date": "2026-10-24",
           "revenue": 71155,
           "profit": 12961,
           "count": 6
         },
         {
-          "date": "2026-10-24",
+          "date": "2026-10-25",
           "revenue": 124720,
           "profit": 19450,
           "count": 6
         },
         {
-          "date": "2026-10-25",
+          "date": "2026-10-26",
           "revenue": 8840,
           "profit": 1596,
           "count": 2
         },
         {
-          "date": "2026-10-26",
+          "date": "2026-10-27",
           "revenue": 49410,
           "profit": 6464,
           "count": 4
         },
         {
-          "date": "2026-10-27",
+          "date": "2026-10-28",
           "revenue": 26265,
           "profit": 4272,
           "count": 3
         },
         {
-          "date": "2026-10-28",
+          "date": "2026-10-29",
           "revenue": 45030,
           "profit": 8120,
           "count": 6
         },
         {
-          "date": "2026-10-29",
+          "date": "2026-10-30",
           "revenue": 27475,
           "profit": 5457,
           "count": 4
         },
         {
-          "date": "2026-10-30",
+          "date": "2026-10-31",
           "revenue": 179950,
           "profit": 30708,
           "count": 8
         },
         {
-          "date": "2026-10-31",
+          "date": "2026-11-01",
           "revenue": 160430,
           "profit": 26566,
           "count": 3
         },
         {
-          "date": "2026-11-01",
+          "date": "2026-11-02",
           "revenue": 15360,
           "profit": 3930,
           "count": 2
         },
         {
-          "date": "2026-11-02",
+          "date": "2026-11-03",
           "revenue": 19755,
           "profit": 3915,
           "count": 2
         },
         {
-          "date": "2026-11-03",
+          "date": "2026-11-04",
           "revenue": 25430,
           "profit": 3630,
           "count": 4
         },
         {
-          "date": "2026-11-04",
+          "date": "2026-11-05",
           "revenue": 68410,
           "profit": 12476,
           "count": 8
@@ -1583,7 +1595,7 @@
       "overdueCustomers": 2,
       "lowStock": [
         {
-          "id": "prd_5paqnEORNmxW",
+          "id": "prd_VBkTVySDOP1w",
           "slug": "simba-cement-42-5n",
           "name": "Simba cement 42.5N",
           "categoryId": "cement",
@@ -1611,7 +1623,7 @@
           "buyPrice": 735
         },
         {
-          "id": "prd_yqajq-NSYoNR",
+          "id": "prd_1S9yD02KyTLK",
           "slug": "d10-deformed-bar-y10",
           "name": "D10 deformed bar (Y10)",
           "categoryId": "steel",
@@ -1639,7 +1651,7 @@
           "buyPrice": 950
         },
         {
-          "id": "prd_oKuWmGVN78j3",
+          "id": "prd_QI7jUIQlMaIs",
           "slug": "pvc-pipe-4-heavy",
           "name": "PVC pipe 4\" heavy",
           "categoryId": "plumbing",
@@ -1658,7 +1670,7 @@
           "buyPrice": 1380
         },
         {
-          "id": "prd_7uekuqo1eo6c",
+          "id": "prd_dn73ol7Dq6D_",
           "slug": "mason-trowel",
           "name": "Mason trowel",
           "categoryId": "tools",
@@ -1703,7 +1715,7 @@
       "recent": [
         {
           "id": "S-238",
-          "storeId": "st_K5Npfjr3lZOH",
+          "storeId": "st_YywAJ-0ZKexE",
           "channel": "online",
           "status": "new",
           "method": "mpesa",
@@ -1711,8 +1723,8 @@
           "subtotal": 1300,
           "deliveryFee": 600,
           "total": 1900,
-          "createdAt": "2026-11-04T19:22:00.000Z",
-          "paidAt": "2026-11-04T19:22:00.000Z",
+          "createdAt": "2026-11-05T10:25:23.000Z",
+          "paidAt": "2026-11-05T10:25:23.000Z",
           "staff": null,
           "branchId": null,
           "customerId": null,
@@ -1724,10 +1736,10 @@
             "address": "EPZ gate B",
             "notes": null
           },
-          "mpesaRef": "TCA350AE40",
+          "mpesaRef": "TFBE2D71E1",
           "items": [
             {
-              "productId": "prd_fc82Rh-WRfVS",
+              "productId": "prd_ER_FDbgROU1i",
               "name": "Claw hammer, 16 oz",
               "unit": "piece",
               "qty": 2,
@@ -1738,7 +1750,7 @@
         },
         {
           "id": "S-64",
-          "storeId": "st_K5Npfjr3lZOH",
+          "storeId": "st_YywAJ-0ZKexE",
           "channel": "pos",
           "status": "completed",
           "method": "mpesa",
@@ -1746,8 +1758,8 @@
           "subtotal": 4180,
           "deliveryFee": 0,
           "total": 4180,
-          "createdAt": "2026-11-04T18:22:00.000Z",
-          "paidAt": "2026-11-04T18:22:00.000Z",
+          "createdAt": "2026-11-05T09:25:22.000Z",
+          "paidAt": "2026-11-05T09:25:22.000Z",
           "staff": "Peter K.",
           "branchId": null,
           "customerId": null,
@@ -1757,7 +1769,7 @@
           "mpesaRef": null,
           "items": [
             {
-              "productId": "prd_7uekuqo1eo6c",
+              "productId": "prd_dn73ol7Dq6D_",
               "name": "Mason trowel",
               "unit": "piece",
               "qty": 11,
@@ -1768,7 +1780,7 @@
         },
         {
           "id": "S-63",
-          "storeId": "st_K5Npfjr3lZOH",
+          "storeId": "st_YywAJ-0ZKexE",
           "channel": "online",
           "status": "dispatched",
           "method": "mpesa",
@@ -1776,8 +1788,8 @@
           "subtotal": 7600,
           "deliveryFee": 0,
           "total": 7600,
-          "createdAt": "2026-11-04T17:22:00.000Z",
-          "paidAt": "2026-11-04T17:22:00.000Z",
+          "createdAt": "2026-11-05T08:25:22.000Z",
+          "paidAt": "2026-11-05T08:25:22.000Z",
           "staff": null,
           "branchId": null,
           "customerId": null,
@@ -1792,7 +1804,7 @@
           "mpesaRef": "TSD173549",
           "items": [
             {
-              "productId": "prd_bn54_807Ei8v",
+              "productId": "prd_DjuIuiuHD3_J",
               "name": "Tile adhesive",
               "unit": "bag (20 kg)",
               "qty": 8,
@@ -1803,7 +1815,7 @@
         },
         {
           "id": "S-62",
-          "storeId": "st_K5Npfjr3lZOH",
+          "storeId": "st_YywAJ-0ZKexE",
           "channel": "pos",
           "status": "completed",
           "method": "cash",
@@ -1811,8 +1823,8 @@
           "subtotal": 12680,
           "deliveryFee": 0,
           "total": 12680,
-          "createdAt": "2026-11-04T16:22:00.000Z",
-          "paidAt": "2026-11-04T16:22:00.000Z",
+          "createdAt": "2026-11-05T07:25:22.000Z",
+          "paidAt": "2026-11-05T07:25:22.000Z",
           "staff": "Esther W.",
           "branchId": null,
           "customerId": null,
@@ -1822,7 +1834,7 @@
           "mpesaRef": null,
           "items": [
             {
-              "productId": "prd_yqajq-NSYoNR",
+              "productId": "prd_1S9yD02KyTLK",
               "name": "D10 deformed bar (Y10)",
               "unit": "length (12 m)",
               "qty": 1,
@@ -1830,7 +1842,7 @@
               "cost": 950
             },
             {
-              "productId": "prd_HRSeF5X_StR2",
+              "productId": "prd_XL2cxDTaMkdx",
               "name": "Corrugated iron sheet, gauge 28",
               "unit": "sheet (3 m)",
               "qty": 8,
@@ -1841,7 +1853,7 @@
         },
         {
           "id": "S-61",
-          "storeId": "st_K5Npfjr3lZOH",
+          "storeId": "st_YywAJ-0ZKexE",
           "channel": "pos",
           "status": "completed",
           "method": "bank",
@@ -1849,8 +1861,8 @@
           "subtotal": 16500,
           "deliveryFee": 0,
           "total": 16500,
-          "createdAt": "2026-11-04T15:22:00.000Z",
-          "paidAt": "2026-11-04T15:22:00.000Z",
+          "createdAt": "2026-11-05T06:25:22.000Z",
+          "paidAt": "2026-11-05T06:25:22.000Z",
           "staff": "Peter K.",
           "branchId": null,
           "customerId": null,
@@ -1860,7 +1872,7 @@
           "mpesaRef": null,
           "items": [
             {
-              "productId": "prd_oKuWmGVN78j3",
+              "productId": "prd_QI7jUIQlMaIs",
               "name": "PVC pipe 4\" heavy",
               "unit": "length (6 m)",
               "qty": 10,
@@ -1871,7 +1883,7 @@
         },
         {
           "id": "S-58",
-          "storeId": "st_K5Npfjr3lZOH",
+          "storeId": "st_YywAJ-0ZKexE",
           "channel": "pos",
           "status": "completed",
           "method": "mpesa",
@@ -1879,8 +1891,8 @@
           "subtotal": 1950,
           "deliveryFee": 0,
           "total": 1950,
-          "createdAt": "2026-11-04T10:22:00.000Z",
-          "paidAt": "2026-11-04T10:22:00.000Z",
+          "createdAt": "2026-11-05T01:25:22.000Z",
+          "paidAt": "2026-11-05T01:25:22.000Z",
           "staff": "Peter K.",
           "branchId": null,
           "customerId": null,
@@ -1890,7 +1902,7 @@
           "mpesaRef": null,
           "items": [
             {
-              "productId": "prd_fc82Rh-WRfVS",
+              "productId": "prd_ER_FDbgROU1i",
               "name": "Claw hammer, 16 oz",
               "unit": "piece",
               "qty": 3,
@@ -1911,7 +1923,7 @@
     "response": {
       "products": [
         {
-          "id": "prd_34ijhh7Oc1CB",
+          "id": "prd_hx9HHtRmUQrB",
           "slug": "bamburi-tembo-cement-32-5r",
           "name": "Bamburi Tembo cement 32.5R",
           "categoryId": "cement",
@@ -1939,7 +1951,7 @@
           "buyPrice": 690
         },
         {
-          "id": "prd_5paqnEORNmxW",
+          "id": "prd_VBkTVySDOP1w",
           "slug": "simba-cement-42-5n",
           "name": "Simba cement 42.5N",
           "categoryId": "cement",
@@ -1967,7 +1979,7 @@
           "buyPrice": 735
         },
         {
-          "id": "prd_vlQ8lLNgWEcB",
+          "id": "prd_7LUB48Jq6LFr",
           "slug": "savannah-cement-42-5r",
           "name": "Savannah cement 42.5R",
           "categoryId": "cement",
@@ -1991,7 +2003,7 @@
           "buyPrice": 715
         },
         {
-          "id": "prd_bn54_807Ei8v",
+          "id": "prd_DjuIuiuHD3_J",
           "slug": "tile-adhesive",
           "name": "Tile adhesive",
           "categoryId": "cement",
@@ -2010,7 +2022,7 @@
           "buyPrice": 780
         },
         {
-          "id": "prd_QENI-l8_14eG",
+          "id": "prd_w-yiEa7C4yp1",
           "slug": "d12-deformed-bar-y12",
           "name": "D12 deformed bar (Y12)",
           "categoryId": "steel",
@@ -2038,7 +2050,7 @@
           "buyPrice": 1360
         },
         {
-          "id": "prd_yqajq-NSYoNR",
+          "id": "prd_1S9yD02KyTLK",
           "slug": "d10-deformed-bar-y10",
           "name": "D10 deformed bar (Y10)",
           "categoryId": "steel",
@@ -2066,7 +2078,7 @@
           "buyPrice": 950
         },
         {
-          "id": "prd_tXXS50dGxcuo",
+          "id": "prd_SR1LmZID5V1t",
           "slug": "d16-deformed-bar-y16",
           "name": "D16 deformed bar (Y16)",
           "categoryId": "steel",
@@ -2094,7 +2106,7 @@
           "buyPrice": 2440
         },
         {
-          "id": "prd_FJ2fCTBKxIr_",
+          "id": "prd_wSQBSTy2bQu_",
           "slug": "box-profile-mabati-gauge-30",
           "name": "Box profile mabati, gauge 30",
           "categoryId": "roofing",
@@ -2122,7 +2134,7 @@
           "buyPrice": 760
         },
         {
-          "id": "prd_HRSeF5X_StR2",
+          "id": "prd_XL2cxDTaMkdx",
           "slug": "corrugated-iron-sheet-gauge-28",
           "name": "Corrugated iron sheet, gauge 28",
           "categoryId": "roofing",
@@ -2150,7 +2162,7 @@
           "buyPrice": 1220
         },
         {
-          "id": "prd_8kUFyoQaA-VV",
+          "id": "prd_5shnLcktpeM7",
           "slug": "ridge-cap-gauge-30",
           "name": "Ridge cap, gauge 30",
           "categoryId": "roofing",
@@ -2169,7 +2181,7 @@
           "buyPrice": 540
         },
         {
-          "id": "prd_Cm4qZ2rGf-lU",
+          "id": "prd_ljz3kBAbm98j",
           "slug": "cypress-timber-24",
           "name": "Cypress timber 2×4",
           "categoryId": "timber",
@@ -2193,7 +2205,7 @@
           "buyPrice": 58
         },
         {
-          "id": "prd_nYa5GEyoyaty",
+          "id": "prd_cSl4AcHgsdvQ",
           "slug": "cypress-timber-32",
           "name": "Cypress timber 3×2",
           "categoryId": "timber",
@@ -2212,7 +2224,7 @@
           "buyPrice": 42
         },
         {
-          "id": "prd_EbneSgs7NBJ-",
+          "id": "prd_LN7GIGGcLOVA",
           "slug": "ppr-pipe-20-mm",
           "name": "PPR pipe 20 mm",
           "categoryId": "plumbing",
@@ -2236,7 +2248,7 @@
           "buyPrice": 360
         },
         {
-          "id": "prd_oKuWmGVN78j3",
+          "id": "prd_QI7jUIQlMaIs",
           "slug": "pvc-pipe-4-heavy",
           "name": "PVC pipe 4\" heavy",
           "categoryId": "plumbing",
@@ -2255,7 +2267,7 @@
           "buyPrice": 1380
         },
         {
-          "id": "prd_Jtlwlc2Qe5ov",
+          "id": "prd_iY-niQ9syRQI",
           "slug": "vinyl-silk-emulsion-white",
           "name": "Vinyl silk emulsion, white",
           "categoryId": "paint",
@@ -2283,7 +2295,7 @@
           "buyPrice": 1950
         },
         {
-          "id": "prd_cejHEUnzEZWw",
+          "id": "prd_9CtdtkXJh0Jl",
           "slug": "gloss-enamel-brilliant-white",
           "name": "Gloss enamel, brilliant white",
           "categoryId": "paint",
@@ -2302,7 +2314,7 @@
           "buyPrice": 790
         },
         {
-          "id": "prd_YrtMdq_UCvUg",
+          "id": "prd_r4wrzBB0Kr7F",
           "slug": "twin-earth-cable-2-5-mm",
           "name": "Twin & earth cable 2.5 mm",
           "categoryId": "electrical",
@@ -2326,7 +2338,7 @@
           "buyPrice": 92
         },
         {
-          "id": "prd_fc82Rh-WRfVS",
+          "id": "prd_ER_FDbgROU1i",
           "slug": "claw-hammer-16-oz",
           "name": "Claw hammer, 16 oz",
           "categoryId": "tools",
@@ -2350,7 +2362,7 @@
           "buyPrice": 470
         },
         {
-          "id": "prd_h7EP7MMNRBR6",
+          "id": "prd_DcM-d9crokxa",
           "slug": "cordless-drill-18-v",
           "name": "Cordless drill 18 V",
           "categoryId": "tools",
@@ -2378,7 +2390,7 @@
           "buyPrice": 8200
         },
         {
-          "id": "prd_7uekuqo1eo6c",
+          "id": "prd_dn73ol7Dq6D_",
           "slug": "mason-trowel",
           "name": "Mason trowel",
           "categoryId": "tools",
@@ -2439,7 +2451,7 @@
           "image": "hammer"
         }
       ],
-      "branchId": "br_0WpHSdojbdyq"
+      "branchId": "br_oY51UnZK2Ofx"
     },
     "note": ""
   },
@@ -2467,7 +2479,7 @@
     "auth": true,
     "status": 201,
     "response": {
-      "id": "prd_47s_47x5bexf",
+      "id": "prd_mOZR4lw2ZiIb",
       "slug": "deformed-bar-y20",
       "name": "Deformed bar Y20",
       "categoryId": "steel",
@@ -2521,7 +2533,7 @@
     "auth": true,
     "status": 200,
     "response": {
-      "id": "prd_47s_47x5bexf",
+      "id": "prd_mOZR4lw2ZiIb",
       "slug": "deformed-bar-y20",
       "name": "Deformed bar Y20",
       "categoryId": "steel",
@@ -2554,7 +2566,7 @@
     "auth": true,
     "status": 200,
     "response": {
-      "id": "prd_47s_47x5bexf",
+      "id": "prd_mOZR4lw2ZiIb",
       "slug": "deformed-bar-y20",
       "name": "Deformed bar Y20",
       "categoryId": "steel",
@@ -2595,7 +2607,7 @@
     "response": [
       {
         "id": "S-239",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "channel": "online",
         "status": "awaiting_confirmation",
         "method": "mpesa",
@@ -2603,7 +2615,7 @@
         "subtotal": 650,
         "deliveryFee": 0,
         "total": 650,
-        "createdAt": "2026-11-04T19:22:00.000Z",
+        "createdAt": "2026-11-05T10:25:23.000Z",
         "paidAt": null,
         "staff": null,
         "branchId": null,
@@ -2619,7 +2631,7 @@
         "mpesaRef": "TJK4H2PQ9X",
         "items": [
           {
-            "productId": "prd_fc82Rh-WRfVS",
+            "productId": "prd_ER_FDbgROU1i",
             "name": "Claw hammer, 16 oz",
             "unit": "piece",
             "qty": 1,
@@ -2630,7 +2642,7 @@
       },
       {
         "id": "S-238",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "channel": "online",
         "status": "new",
         "method": "mpesa",
@@ -2638,8 +2650,8 @@
         "subtotal": 1300,
         "deliveryFee": 600,
         "total": 1900,
-        "createdAt": "2026-11-04T19:22:00.000Z",
-        "paidAt": "2026-11-04T19:22:00.000Z",
+        "createdAt": "2026-11-05T10:25:23.000Z",
+        "paidAt": "2026-11-05T10:25:23.000Z",
         "staff": null,
         "branchId": null,
         "customerId": null,
@@ -2651,10 +2663,10 @@
           "address": "EPZ gate B",
           "notes": null
         },
-        "mpesaRef": "TCA350AE40",
+        "mpesaRef": "TFBE2D71E1",
         "items": [
           {
-            "productId": "prd_fc82Rh-WRfVS",
+            "productId": "prd_ER_FDbgROU1i",
             "name": "Claw hammer, 16 oz",
             "unit": "piece",
             "qty": 2,
@@ -2665,7 +2677,7 @@
       },
       {
         "id": "S-63",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "channel": "online",
         "status": "dispatched",
         "method": "mpesa",
@@ -2673,8 +2685,8 @@
         "subtotal": 7600,
         "deliveryFee": 0,
         "total": 7600,
-        "createdAt": "2026-11-04T17:22:00.000Z",
-        "paidAt": "2026-11-04T17:22:00.000Z",
+        "createdAt": "2026-11-05T08:25:22.000Z",
+        "paidAt": "2026-11-05T08:25:22.000Z",
         "staff": null,
         "branchId": null,
         "customerId": null,
@@ -2689,7 +2701,7 @@
         "mpesaRef": "TSD173549",
         "items": [
           {
-            "productId": "prd_bn54_807Ei8v",
+            "productId": "prd_DjuIuiuHD3_J",
             "name": "Tile adhesive",
             "unit": "bag (20 kg)",
             "qty": 8,
@@ -2700,7 +2712,7 @@
       },
       {
         "id": "S-59",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "channel": "online",
         "status": "completed",
         "method": "mpesa",
@@ -2708,8 +2720,8 @@
         "subtotal": 17800,
         "deliveryFee": 0,
         "total": 17800,
-        "createdAt": "2026-11-04T10:22:00.000Z",
-        "paidAt": "2026-11-04T10:22:00.000Z",
+        "createdAt": "2026-11-05T01:25:22.000Z",
+        "paidAt": "2026-11-05T01:25:22.000Z",
         "staff": null,
         "branchId": null,
         "customerId": null,
@@ -2724,7 +2736,7 @@
         "mpesaRef": "TSD749557",
         "items": [
           {
-            "productId": "prd_yqajq-NSYoNR",
+            "productId": "prd_1S9yD02KyTLK",
             "name": "D10 deformed bar (Y10)",
             "unit": "length (12 m)",
             "qty": 9,
@@ -2732,7 +2744,7 @@
             "cost": 950
           },
           {
-            "productId": "prd_7uekuqo1eo6c",
+            "productId": "prd_dn73ol7Dq6D_",
             "name": "Mason trowel",
             "unit": "piece",
             "qty": 8,
@@ -2740,7 +2752,7 @@
             "cost": 260
           },
           {
-            "productId": "prd_YrtMdq_UCvUg",
+            "productId": "prd_r4wrzBB0Kr7F",
             "name": "Twin & earth cable 2.5 mm",
             "unit": "metre",
             "qty": 42,
@@ -2751,7 +2763,7 @@
       },
       {
         "id": "S-55",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "channel": "online",
         "status": "new",
         "method": "mpesa",
@@ -2759,8 +2771,8 @@
         "subtotal": 5500,
         "deliveryFee": 0,
         "total": 5500,
-        "createdAt": "2026-11-03T10:22:00.000Z",
-        "paidAt": "2026-11-03T10:22:00.000Z",
+        "createdAt": "2026-11-04T01:25:22.000Z",
+        "paidAt": "2026-11-04T01:25:22.000Z",
         "staff": null,
         "branchId": null,
         "customerId": null,
@@ -2775,7 +2787,7 @@
         "mpesaRef": "TSD677905",
         "items": [
           {
-            "productId": "prd_tXXS50dGxcuo",
+            "productId": "prd_SR1LmZID5V1t",
             "name": "D16 deformed bar (Y16)",
             "unit": "length (12 m)",
             "qty": 2,
@@ -2786,7 +2798,7 @@
       },
       {
         "id": "S-53",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "channel": "online",
         "status": "completed",
         "method": "mpesa",
@@ -2794,8 +2806,8 @@
         "subtotal": 7800,
         "deliveryFee": 0,
         "total": 7800,
-        "createdAt": "2026-11-02T19:22:00.000Z",
-        "paidAt": "2026-11-02T19:22:00.000Z",
+        "createdAt": "2026-11-03T10:25:22.000Z",
+        "paidAt": "2026-11-03T10:25:22.000Z",
         "staff": null,
         "branchId": null,
         "customerId": null,
@@ -2810,7 +2822,7 @@
         "mpesaRef": "TSD977438",
         "items": [
           {
-            "productId": "prd_fc82Rh-WRfVS",
+            "productId": "prd_ER_FDbgROU1i",
             "name": "Claw hammer, 16 oz",
             "unit": "piece",
             "qty": 12,
@@ -2821,7 +2833,7 @@
       },
       {
         "id": "S-50",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "channel": "online",
         "status": "confirmed",
         "method": "mpesa",
@@ -2829,8 +2841,8 @@
         "subtotal": 2670,
         "deliveryFee": 600,
         "total": 3270,
-        "createdAt": "2026-11-01T12:22:00.000Z",
-        "paidAt": "2026-11-01T12:22:00.000Z",
+        "createdAt": "2026-11-02T03:25:22.000Z",
+        "paidAt": "2026-11-02T03:25:22.000Z",
         "staff": null,
         "branchId": null,
         "customerId": null,
@@ -2845,7 +2857,7 @@
         "mpesaRef": "TSD436258",
         "items": [
           {
-            "productId": "prd_FJ2fCTBKxIr_",
+            "productId": "prd_wSQBSTy2bQu_",
             "name": "Box profile mabati, gauge 30",
             "unit": "metre",
             "qty": 3,
@@ -2856,7 +2868,7 @@
       },
       {
         "id": "S-47",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "channel": "online",
         "status": "completed",
         "method": "mpesa",
@@ -2864,8 +2876,8 @@
         "subtotal": 11550,
         "deliveryFee": 0,
         "total": 11550,
-        "createdAt": "2026-10-31T14:22:00.000Z",
-        "paidAt": "2026-10-31T14:22:00.000Z",
+        "createdAt": "2026-11-01T05:25:22.000Z",
+        "paidAt": "2026-11-01T05:25:22.000Z",
         "staff": null,
         "branchId": null,
         "customerId": null,
@@ -2880,7 +2892,7 @@
         "mpesaRef": "TSD048485",
         "items": [
           {
-            "productId": "prd_oKuWmGVN78j3",
+            "productId": "prd_QI7jUIQlMaIs",
             "name": "PVC pipe 4\" heavy",
             "unit": "length (6 m)",
             "qty": 7,
@@ -2891,7 +2903,7 @@
       },
       {
         "id": "S-45",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "channel": "online",
         "status": "dispatched",
         "method": "mpesa",
@@ -2899,8 +2911,8 @@
         "subtotal": 11390,
         "deliveryFee": 0,
         "total": 11390,
-        "createdAt": "2026-10-30T17:22:00.000Z",
-        "paidAt": "2026-10-30T17:22:00.000Z",
+        "createdAt": "2026-10-31T08:25:22.000Z",
+        "paidAt": "2026-10-31T08:25:22.000Z",
         "staff": null,
         "branchId": null,
         "customerId": null,
@@ -2915,7 +2927,7 @@
         "mpesaRef": "TSD386758",
         "items": [
           {
-            "productId": "prd_YrtMdq_UCvUg",
+            "productId": "prd_r4wrzBB0Kr7F",
             "name": "Twin & earth cable 2.5 mm",
             "unit": "metre",
             "qty": 11,
@@ -2923,7 +2935,7 @@
             "cost": 92
           },
           {
-            "productId": "prd_7uekuqo1eo6c",
+            "productId": "prd_dn73ol7Dq6D_",
             "name": "Mason trowel",
             "unit": "piece",
             "qty": 4,
@@ -2931,7 +2943,7 @@
             "cost": 260
           },
           {
-            "productId": "prd_bn54_807Ei8v",
+            "productId": "prd_DjuIuiuHD3_J",
             "name": "Tile adhesive",
             "unit": "bag (20 kg)",
             "qty": 9,
@@ -2942,7 +2954,7 @@
       },
       {
         "id": "S-43",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "channel": "online",
         "status": "new",
         "method": "mpesa",
@@ -2950,8 +2962,8 @@
         "subtotal": 8720,
         "deliveryFee": 0,
         "total": 8720,
-        "createdAt": "2026-10-30T14:22:00.000Z",
-        "paidAt": "2026-10-30T14:22:00.000Z",
+        "createdAt": "2026-10-31T05:25:22.000Z",
+        "paidAt": "2026-10-31T05:25:22.000Z",
         "staff": null,
         "branchId": null,
         "customerId": null,
@@ -2966,7 +2978,7 @@
         "mpesaRef": "TSD667253",
         "items": [
           {
-            "productId": "prd_bn54_807Ei8v",
+            "productId": "prd_DjuIuiuHD3_J",
             "name": "Tile adhesive",
             "unit": "bag (20 kg)",
             "qty": 4,
@@ -2974,7 +2986,7 @@
             "cost": 780
           },
           {
-            "productId": "prd_5paqnEORNmxW",
+            "productId": "prd_VBkTVySDOP1w",
             "name": "Simba cement 42.5N",
             "unit": "bag (50 kg)",
             "qty": 6,
@@ -2985,7 +2997,7 @@
       },
       {
         "id": "S-42",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "channel": "online",
         "status": "completed",
         "method": "mpesa",
@@ -2993,8 +3005,8 @@
         "subtotal": 7150,
         "deliveryFee": 600,
         "total": 7750,
-        "createdAt": "2026-10-30T13:22:00.000Z",
-        "paidAt": "2026-10-30T13:22:00.000Z",
+        "createdAt": "2026-10-31T04:25:22.000Z",
+        "paidAt": "2026-10-31T04:25:22.000Z",
         "staff": null,
         "branchId": null,
         "customerId": null,
@@ -3009,7 +3021,7 @@
         "mpesaRef": "TSD854360",
         "items": [
           {
-            "productId": "prd_fc82Rh-WRfVS",
+            "productId": "prd_ER_FDbgROU1i",
             "name": "Claw hammer, 16 oz",
             "unit": "piece",
             "qty": 11,
@@ -3020,7 +3032,7 @@
       },
       {
         "id": "S-38",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "channel": "online",
         "status": "confirmed",
         "method": "mpesa",
@@ -3028,8 +3040,8 @@
         "subtotal": 3300,
         "deliveryFee": 300,
         "total": 3600,
-        "createdAt": "2026-10-29T19:22:00.000Z",
-        "paidAt": "2026-10-29T19:22:00.000Z",
+        "createdAt": "2026-10-30T10:25:22.000Z",
+        "paidAt": "2026-10-30T10:25:22.000Z",
         "staff": null,
         "branchId": null,
         "customerId": null,
@@ -3044,7 +3056,7 @@
         "mpesaRef": "TSD059202",
         "items": [
           {
-            "productId": "prd_Cm4qZ2rGf-lU",
+            "productId": "prd_ljz3kBAbm98j",
             "name": "Cypress timber 2×4",
             "unit": "foot",
             "qty": 44,
@@ -3055,7 +3067,7 @@
       },
       {
         "id": "S-36",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "channel": "online",
         "status": "completed",
         "method": "mpesa",
@@ -3063,8 +3075,8 @@
         "subtotal": 10680,
         "deliveryFee": 600,
         "total": 11280,
-        "createdAt": "2026-10-29T16:22:00.000Z",
-        "paidAt": "2026-10-29T16:22:00.000Z",
+        "createdAt": "2026-10-30T07:25:22.000Z",
+        "paidAt": "2026-10-30T07:25:22.000Z",
         "staff": null,
         "branchId": null,
         "customerId": null,
@@ -3079,7 +3091,7 @@
         "mpesaRef": "TSD852100",
         "items": [
           {
-            "productId": "prd_FJ2fCTBKxIr_",
+            "productId": "prd_wSQBSTy2bQu_",
             "name": "Box profile mabati, gauge 30",
             "unit": "metre",
             "qty": 12,
@@ -3090,7 +3102,7 @@
       },
       {
         "id": "S-35",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "channel": "online",
         "status": "completed",
         "method": "mpesa",
@@ -3098,8 +3110,8 @@
         "subtotal": 7895,
         "deliveryFee": 0,
         "total": 7895,
-        "createdAt": "2026-10-29T15:22:00.000Z",
-        "paidAt": "2026-10-29T15:22:00.000Z",
+        "createdAt": "2026-10-30T06:25:22.000Z",
+        "paidAt": "2026-10-30T06:25:22.000Z",
         "staff": null,
         "branchId": null,
         "customerId": null,
@@ -3114,7 +3126,7 @@
         "mpesaRef": "TSD252784",
         "items": [
           {
-            "productId": "prd_7uekuqo1eo6c",
+            "productId": "prd_dn73ol7Dq6D_",
             "name": "Mason trowel",
             "unit": "piece",
             "qty": 10,
@@ -3122,7 +3134,7 @@
             "cost": 260
           },
           {
-            "productId": "prd_nYa5GEyoyaty",
+            "productId": "prd_cSl4AcHgsdvQ",
             "name": "Cypress timber 3×2",
             "unit": "foot",
             "qty": 33,
@@ -3130,7 +3142,7 @@
             "cost": 42
           },
           {
-            "productId": "prd_7uekuqo1eo6c",
+            "productId": "prd_dn73ol7Dq6D_",
             "name": "Mason trowel",
             "unit": "piece",
             "qty": 6,
@@ -3141,7 +3153,7 @@
       },
       {
         "id": "S-31",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "channel": "online",
         "status": "new",
         "method": "mpesa",
@@ -3149,8 +3161,8 @@
         "subtotal": 13200,
         "deliveryFee": 0,
         "total": 13200,
-        "createdAt": "2026-10-28T12:22:00.000Z",
-        "paidAt": "2026-10-28T12:22:00.000Z",
+        "createdAt": "2026-10-29T03:25:22.000Z",
+        "paidAt": "2026-10-29T03:25:22.000Z",
         "staff": null,
         "branchId": null,
         "customerId": null,
@@ -3165,7 +3177,7 @@
         "mpesaRef": "TSD558823",
         "items": [
           {
-            "productId": "prd_vlQ8lLNgWEcB",
+            "productId": "prd_7LUB48Jq6LFr",
             "name": "Savannah cement 42.5R",
             "unit": "bag (50 kg)",
             "qty": 2,
@@ -3173,7 +3185,7 @@
             "cost": 715
           },
           {
-            "productId": "prd_HRSeF5X_StR2",
+            "productId": "prd_XL2cxDTaMkdx",
             "name": "Corrugated iron sheet, gauge 28",
             "unit": "sheet (3 m)",
             "qty": 8,
@@ -3184,7 +3196,7 @@
       },
       {
         "id": "S-30",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "channel": "online",
         "status": "completed",
         "method": "mpesa",
@@ -3192,8 +3204,8 @@
         "subtotal": 10280,
         "deliveryFee": 600,
         "total": 10880,
-        "createdAt": "2026-10-28T11:22:00.000Z",
-        "paidAt": "2026-10-28T11:22:00.000Z",
+        "createdAt": "2026-10-29T02:25:22.000Z",
+        "paidAt": "2026-10-29T02:25:22.000Z",
         "staff": null,
         "branchId": null,
         "customerId": null,
@@ -3208,7 +3220,7 @@
         "mpesaRef": "TSD791954",
         "items": [
           {
-            "productId": "prd_7uekuqo1eo6c",
+            "productId": "prd_dn73ol7Dq6D_",
             "name": "Mason trowel",
             "unit": "piece",
             "qty": 1,
@@ -3216,7 +3228,7 @@
             "cost": 260
           },
           {
-            "productId": "prd_oKuWmGVN78j3",
+            "productId": "prd_QI7jUIQlMaIs",
             "name": "PVC pipe 4\" heavy",
             "unit": "length (6 m)",
             "qty": 6,
@@ -3227,7 +3239,7 @@
       },
       {
         "id": "S-29",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "channel": "online",
         "status": "completed",
         "method": "mpesa",
@@ -3235,8 +3247,8 @@
         "subtotal": 7800,
         "deliveryFee": 0,
         "total": 7800,
-        "createdAt": "2026-10-28T10:22:00.000Z",
-        "paidAt": "2026-10-28T10:22:00.000Z",
+        "createdAt": "2026-10-29T01:25:22.000Z",
+        "paidAt": "2026-10-29T01:25:22.000Z",
         "staff": null,
         "branchId": null,
         "customerId": null,
@@ -3251,7 +3263,7 @@
         "mpesaRef": "TSD865875",
         "items": [
           {
-            "productId": "prd_34ijhh7Oc1CB",
+            "productId": "prd_hx9HHtRmUQrB",
             "name": "Bamburi Tembo cement 32.5R",
             "unit": "bag (50 kg)",
             "qty": 10,
@@ -3262,7 +3274,7 @@
       },
       {
         "id": "S-25",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "channel": "online",
         "status": "new",
         "method": "mpesa",
@@ -3270,8 +3282,8 @@
         "subtotal": 980,
         "deliveryFee": 0,
         "total": 980,
-        "createdAt": "2026-10-26T13:22:00.000Z",
-        "paidAt": "2026-10-26T13:22:00.000Z",
+        "createdAt": "2026-10-27T04:25:22.000Z",
+        "paidAt": "2026-10-27T04:25:22.000Z",
         "staff": null,
         "branchId": null,
         "customerId": null,
@@ -3286,7 +3298,7 @@
         "mpesaRef": "TSD131338",
         "items": [
           {
-            "productId": "prd_cejHEUnzEZWw",
+            "productId": "prd_9CtdtkXJh0Jl",
             "name": "Gloss enamel, brilliant white",
             "unit": "tin (1 L)",
             "qty": 1,
@@ -3297,7 +3309,7 @@
       },
       {
         "id": "S-23",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "channel": "online",
         "status": "completed",
         "method": "mpesa",
@@ -3305,8 +3317,8 @@
         "subtotal": 10960,
         "deliveryFee": 0,
         "total": 10960,
-        "createdAt": "2026-10-26T11:22:00.000Z",
-        "paidAt": "2026-10-26T11:22:00.000Z",
+        "createdAt": "2026-10-27T02:25:22.000Z",
+        "paidAt": "2026-10-27T02:25:22.000Z",
         "staff": null,
         "branchId": null,
         "customerId": null,
@@ -3321,7 +3333,7 @@
         "mpesaRef": "TSD318721",
         "items": [
           {
-            "productId": "prd_YrtMdq_UCvUg",
+            "productId": "prd_r4wrzBB0Kr7F",
             "name": "Twin & earth cable 2.5 mm",
             "unit": "metre",
             "qty": 38,
@@ -3329,7 +3341,7 @@
             "cost": 92
           },
           {
-            "productId": "prd_vlQ8lLNgWEcB",
+            "productId": "prd_7LUB48Jq6LFr",
             "name": "Savannah cement 42.5R",
             "unit": "bag (50 kg)",
             "qty": 8,
@@ -3340,7 +3352,7 @@
       },
       {
         "id": "S-22",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "channel": "online",
         "status": "completed",
         "method": "mpesa",
@@ -3348,8 +3360,8 @@
         "subtotal": 26730,
         "deliveryFee": 900,
         "total": 27630,
-        "createdAt": "2026-10-26T10:22:00.000Z",
-        "paidAt": "2026-10-26T10:22:00.000Z",
+        "createdAt": "2026-10-27T01:25:22.000Z",
+        "paidAt": "2026-10-27T01:25:22.000Z",
         "staff": null,
         "branchId": null,
         "customerId": null,
@@ -3364,7 +3376,7 @@
         "mpesaRef": "TSD951830",
         "items": [
           {
-            "productId": "prd_QENI-l8_14eG",
+            "productId": "prd_w-yiEa7C4yp1",
             "name": "D12 deformed bar (Y12)",
             "unit": "length (12 m)",
             "qty": 12,
@@ -3372,7 +3384,7 @@
             "cost": 1360
           },
           {
-            "productId": "prd_oKuWmGVN78j3",
+            "productId": "prd_QI7jUIQlMaIs",
             "name": "PVC pipe 4\" heavy",
             "unit": "length (6 m)",
             "qty": 5,
@@ -3383,7 +3395,7 @@
       },
       {
         "id": "S-21",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "channel": "online",
         "status": "dispatched",
         "method": "mpesa",
@@ -3391,8 +3403,8 @@
         "subtotal": 7490,
         "deliveryFee": 0,
         "total": 7490,
-        "createdAt": "2026-10-25T16:22:00.000Z",
-        "paidAt": "2026-10-25T16:22:00.000Z",
+        "createdAt": "2026-10-26T07:25:22.000Z",
+        "paidAt": "2026-10-26T07:25:22.000Z",
         "staff": null,
         "branchId": null,
         "customerId": null,
@@ -3407,7 +3419,7 @@
         "mpesaRef": "TSD262775",
         "items": [
           {
-            "productId": "prd_Cm4qZ2rGf-lU",
+            "productId": "prd_ljz3kBAbm98j",
             "name": "Cypress timber 2×4",
             "unit": "foot",
             "qty": 30,
@@ -3415,7 +3427,7 @@
             "cost": 58
           },
           {
-            "productId": "prd_vlQ8lLNgWEcB",
+            "productId": "prd_7LUB48Jq6LFr",
             "name": "Savannah cement 42.5R",
             "unit": "bag (50 kg)",
             "qty": 4,
@@ -3423,7 +3435,7 @@
             "cost": 715
           },
           {
-            "productId": "prd_YrtMdq_UCvUg",
+            "productId": "prd_r4wrzBB0Kr7F",
             "name": "Twin & earth cable 2.5 mm",
             "unit": "metre",
             "qty": 17,
@@ -3434,7 +3446,7 @@
       },
       {
         "id": "S-19",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "channel": "online",
         "status": "new",
         "method": "mpesa",
@@ -3442,8 +3454,8 @@
         "subtotal": 52020,
         "deliveryFee": 0,
         "total": 52020,
-        "createdAt": "2026-10-24T19:22:00.000Z",
-        "paidAt": "2026-10-24T19:22:00.000Z",
+        "createdAt": "2026-10-25T10:25:22.000Z",
+        "paidAt": "2026-10-25T10:25:22.000Z",
         "staff": null,
         "branchId": null,
         "customerId": null,
@@ -3458,7 +3470,7 @@
         "mpesaRef": "TSD463155",
         "items": [
           {
-            "productId": "prd_h7EP7MMNRBR6",
+            "productId": "prd_DcM-d9crokxa",
             "name": "Cordless drill 18 V",
             "unit": "piece",
             "qty": 4,
@@ -3466,7 +3478,7 @@
             "cost": 8200
           },
           {
-            "productId": "prd_bn54_807Ei8v",
+            "productId": "prd_DjuIuiuHD3_J",
             "name": "Tile adhesive",
             "unit": "bag (20 kg)",
             "qty": 6,
@@ -3474,7 +3486,7 @@
             "cost": 780
           },
           {
-            "productId": "prd_FJ2fCTBKxIr_",
+            "productId": "prd_wSQBSTy2bQu_",
             "name": "Box profile mabati, gauge 30",
             "unit": "metre",
             "qty": 8,
@@ -3485,7 +3497,7 @@
       },
       {
         "id": "S-17",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "channel": "online",
         "status": "completed",
         "method": "mpesa",
@@ -3493,8 +3505,8 @@
         "subtotal": 14300,
         "deliveryFee": 0,
         "total": 14300,
-        "createdAt": "2026-10-24T15:22:00.000Z",
-        "paidAt": "2026-10-24T15:22:00.000Z",
+        "createdAt": "2026-10-25T06:25:22.000Z",
+        "paidAt": "2026-10-25T06:25:22.000Z",
         "staff": null,
         "branchId": null,
         "customerId": null,
@@ -3509,7 +3521,7 @@
         "mpesaRef": "TSD191493",
         "items": [
           {
-            "productId": "prd_EbneSgs7NBJ-",
+            "productId": "prd_LN7GIGGcLOVA",
             "name": "PPR pipe 20 mm",
             "unit": "length (4 m)",
             "qty": 10,
@@ -3517,7 +3529,7 @@
             "cost": 360
           },
           {
-            "productId": "prd_h7EP7MMNRBR6",
+            "productId": "prd_DcM-d9crokxa",
             "name": "Cordless drill 18 V",
             "unit": "piece",
             "qty": 1,
@@ -3528,7 +3540,7 @@
       },
       {
         "id": "S-10",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "channel": "online",
         "status": "completed",
         "method": "mpesa",
@@ -3536,8 +3548,8 @@
         "subtotal": 8840,
         "deliveryFee": 300,
         "total": 9140,
-        "createdAt": "2026-10-23T15:22:00.000Z",
-        "paidAt": "2026-10-23T15:22:00.000Z",
+        "createdAt": "2026-10-24T06:25:22.000Z",
+        "paidAt": "2026-10-24T06:25:22.000Z",
         "staff": null,
         "branchId": null,
         "customerId": null,
@@ -3552,7 +3564,7 @@
         "mpesaRef": "TSD294495",
         "items": [
           {
-            "productId": "prd_7uekuqo1eo6c",
+            "productId": "prd_dn73ol7Dq6D_",
             "name": "Mason trowel",
             "unit": "piece",
             "qty": 8,
@@ -3560,7 +3572,7 @@
             "cost": 260
           },
           {
-            "productId": "prd_HRSeF5X_StR2",
+            "productId": "prd_XL2cxDTaMkdx",
             "name": "Corrugated iron sheet, gauge 28",
             "unit": "sheet (3 m)",
             "qty": 4,
@@ -3571,7 +3583,7 @@
       },
       {
         "id": "S-6",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "channel": "online",
         "status": "completed",
         "method": "mpesa",
@@ -3579,8 +3591,8 @@
         "subtotal": 79110,
         "deliveryFee": 0,
         "total": 79110,
-        "createdAt": "2026-10-22T18:22:00.000Z",
-        "paidAt": "2026-10-22T18:22:00.000Z",
+        "createdAt": "2026-10-23T09:25:22.000Z",
+        "paidAt": "2026-10-23T09:25:22.000Z",
         "staff": null,
         "branchId": null,
         "customerId": null,
@@ -3595,7 +3607,7 @@
         "mpesaRef": "TSD522146",
         "items": [
           {
-            "productId": "prd_cejHEUnzEZWw",
+            "productId": "prd_9CtdtkXJh0Jl",
             "name": "Gloss enamel, brilliant white",
             "unit": "tin (1 L)",
             "qty": 8,
@@ -3603,7 +3615,7 @@
             "cost": 790
           },
           {
-            "productId": "prd_h7EP7MMNRBR6",
+            "productId": "prd_DcM-d9crokxa",
             "name": "Cordless drill 18 V",
             "unit": "piece",
             "qty": 7,
@@ -3611,7 +3623,7 @@
             "cost": 8200
           },
           {
-            "productId": "prd_FJ2fCTBKxIr_",
+            "productId": "prd_wSQBSTy2bQu_",
             "name": "Box profile mabati, gauge 30",
             "unit": "metre",
             "qty": 3,
@@ -3622,7 +3634,7 @@
       },
       {
         "id": "S-3",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "channel": "online",
         "status": "dispatched",
         "method": "mpesa",
@@ -3630,8 +3642,8 @@
         "subtotal": 86400,
         "deliveryFee": 0,
         "total": 86400,
-        "createdAt": "2026-10-22T14:22:00.000Z",
-        "paidAt": "2026-10-22T14:22:00.000Z",
+        "createdAt": "2026-10-23T05:25:22.000Z",
+        "paidAt": "2026-10-23T05:25:22.000Z",
         "staff": null,
         "branchId": null,
         "customerId": null,
@@ -3646,7 +3658,7 @@
         "mpesaRef": "TSD190407",
         "items": [
           {
-            "productId": "prd_vlQ8lLNgWEcB",
+            "productId": "prd_7LUB48Jq6LFr",
             "name": "Savannah cement 42.5R",
             "unit": "bag (50 kg)",
             "qty": 10,
@@ -3654,7 +3666,7 @@
             "cost": 715
           },
           {
-            "productId": "prd_h7EP7MMNRBR6",
+            "productId": "prd_DcM-d9crokxa",
             "name": "Cordless drill 18 V",
             "unit": "piece",
             "qty": 8,
@@ -3665,7 +3677,7 @@
       },
       {
         "id": "S-2",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "channel": "online",
         "status": "confirmed",
         "method": "mpesa",
@@ -3673,8 +3685,8 @@
         "subtotal": 5520,
         "deliveryFee": 300,
         "total": 5820,
-        "createdAt": "2026-10-22T14:22:00.000Z",
-        "paidAt": "2026-10-22T14:22:00.000Z",
+        "createdAt": "2026-10-23T05:25:22.000Z",
+        "paidAt": "2026-10-23T05:25:22.000Z",
         "staff": null,
         "branchId": null,
         "customerId": null,
@@ -3689,7 +3701,7 @@
         "mpesaRef": "TSD477355",
         "items": [
           {
-            "productId": "prd_YrtMdq_UCvUg",
+            "productId": "prd_r4wrzBB0Kr7F",
             "name": "Twin & earth cable 2.5 mm",
             "unit": "metre",
             "qty": 46,
@@ -3700,7 +3712,7 @@
       },
       {
         "id": "S-1",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "channel": "online",
         "status": "new",
         "method": "mpesa",
@@ -3708,8 +3720,8 @@
         "subtotal": 10330,
         "deliveryFee": 0,
         "total": 10330,
-        "createdAt": "2026-10-22T11:22:00.000Z",
-        "paidAt": "2026-10-22T11:22:00.000Z",
+        "createdAt": "2026-10-23T02:25:22.000Z",
+        "paidAt": "2026-10-23T02:25:22.000Z",
         "staff": null,
         "branchId": null,
         "customerId": null,
@@ -3724,7 +3736,7 @@
         "mpesaRef": "TSD192576",
         "items": [
           {
-            "productId": "prd_FJ2fCTBKxIr_",
+            "productId": "prd_wSQBSTy2bQu_",
             "name": "Box profile mabati, gauge 30",
             "unit": "metre",
             "qty": 3,
@@ -3732,7 +3744,7 @@
             "cost": 760
           },
           {
-            "productId": "prd_YrtMdq_UCvUg",
+            "productId": "prd_r4wrzBB0Kr7F",
             "name": "Twin & earth cable 2.5 mm",
             "unit": "metre",
             "qty": 18,
@@ -3740,7 +3752,7 @@
             "cost": 92
           },
           {
-            "productId": "prd_tXXS50dGxcuo",
+            "productId": "prd_SR1LmZID5V1t",
             "name": "D16 deformed bar (Y16)",
             "unit": "length (12 m)",
             "qty": 2,
@@ -3767,7 +3779,7 @@
     "status": 201,
     "response": {
       "id": "S-240",
-      "storeId": "st_K5Npfjr3lZOH",
+      "storeId": "st_YywAJ-0ZKexE",
       "channel": "pos",
       "status": "completed",
       "method": "cash",
@@ -3775,10 +3787,10 @@
       "subtotal": 650,
       "deliveryFee": 0,
       "total": 650,
-      "createdAt": "2026-11-04T19:22:00.000Z",
-      "paidAt": "2026-11-04T19:22:00.000Z",
+      "createdAt": "2026-11-05T10:25:23.000Z",
+      "paidAt": "2026-11-05T10:25:23.000Z",
       "staff": "Peter Kamau",
-      "branchId": "br_0WpHSdojbdyq",
+      "branchId": "br_oY51UnZK2Ofx",
       "customerId": null,
       "customerName": null,
       "customerPhone": null,
@@ -3786,7 +3798,7 @@
       "mpesaRef": null,
       "items": [
         {
-          "productId": "prd_fc82Rh-WRfVS",
+          "productId": "prd_ER_FDbgROU1i",
           "name": "Claw hammer, 16 oz",
           "unit": "piece",
           "qty": 1,
@@ -3806,7 +3818,7 @@
     "status": 200,
     "response": {
       "id": "S-239",
-      "storeId": "st_K5Npfjr3lZOH",
+      "storeId": "st_YywAJ-0ZKexE",
       "channel": "online",
       "status": "new",
       "method": "mpesa",
@@ -3814,8 +3826,8 @@
       "subtotal": 650,
       "deliveryFee": 0,
       "total": 650,
-      "createdAt": "2026-11-04T19:22:00.000Z",
-      "paidAt": "2026-11-04T19:22:00.000Z",
+      "createdAt": "2026-11-05T10:25:23.000Z",
+      "paidAt": "2026-11-05T10:25:23.000Z",
       "staff": null,
       "branchId": null,
       "customerId": null,
@@ -3830,7 +3842,7 @@
       "mpesaRef": "TJK4H2PQ9X",
       "items": [
         {
-          "productId": "prd_fc82Rh-WRfVS",
+          "productId": "prd_ER_FDbgROU1i",
           "name": "Claw hammer, 16 oz",
           "unit": "piece",
           "qty": 1,
@@ -3848,39 +3860,39 @@
     "status": 200,
     "response": [
       {
-        "id": "cu_L69M2SvQ_q17",
+        "id": "cu_rMdf-T2KQn_S",
         "name": "Otieno Contractors",
         "phone": "0723 441 902",
         "creditLimit": 250000,
         "balance": 184500,
-        "dueAt": "2026-10-31T19:22:00.000Z"
+        "dueAt": "2026-11-01T10:25:22.000Z"
       },
       {
-        "id": "cu_Dx3mJw0h60_3",
+        "id": "cu_mWZS6CHZAbG7",
         "name": "Mutua Welding",
         "phone": "0716 552 804",
         "creditLimit": 60000,
         "balance": 58200,
-        "dueAt": "2026-10-24T19:22:00.000Z"
+        "dueAt": "2026-10-25T10:25:22.000Z"
       },
       {
-        "id": "cu_tU0vvNGunGNe",
+        "id": "cu_gazySnf7mP1B",
         "name": "Kitengela Primary School",
         "phone": "0729 104 655",
         "creditLimit": 150000,
         "balance": 36000,
-        "dueAt": "2026-12-06T19:22:00.000Z"
+        "dueAt": "2026-12-07T10:25:22.000Z"
       },
       {
-        "id": "cu_ZNG0N0iqNED7",
+        "id": "cu_OI9YPZRum9Hu",
         "name": "Jane Njeri (fundi)",
         "phone": "0745 220 118",
         "creditLimit": 40000,
         "balance": 12800,
-        "dueAt": "2026-11-11T19:22:00.000Z"
+        "dueAt": "2026-11-12T10:25:22.000Z"
       },
       {
-        "id": "cu_MCEZofn3lXm9",
+        "id": "cu_UujvPoxtqFXX",
         "name": "Sunrise Apartments site",
         "phone": "0701 993 270",
         "creditLimit": 500000,
@@ -3896,12 +3908,12 @@
     "auth": true,
     "status": 200,
     "response": {
-      "id": "cu_L69M2SvQ_q17",
+      "id": "cu_rMdf-T2KQn_S",
       "name": "Otieno Contractors",
       "phone": "0723 441 902",
       "creditLimit": 250000,
       "balance": 184500,
-      "dueAt": "2026-10-31T19:22:00.000Z"
+      "dueAt": "2026-11-01T10:25:22.000Z"
     },
     "note": ""
   },
@@ -3915,7 +3927,7 @@
     "auth": true,
     "status": 201,
     "response": {
-      "id": "cu_6lQgExBCAedd",
+      "id": "cu_kpZmQPh1dM04",
       "name": "Fundi Otieno",
       "phone": "0700 123 456",
       "creditLimit": 50000,
@@ -3932,12 +3944,12 @@
     "auth": true,
     "status": 200,
     "response": {
-      "id": "cu_L69M2SvQ_q17",
+      "id": "cu_rMdf-T2KQn_S",
       "name": "Otieno Contractors",
       "phone": "0723 441 902",
       "creditLimit": 250000,
       "balance": 183500,
-      "dueAt": "2026-10-31T19:22:00.000Z"
+      "dueAt": "2026-11-01T10:25:22.000Z"
     },
     "note": ""
   },
@@ -3948,8 +3960,8 @@
     "status": 200,
     "response": [
       {
-        "id": "q_mvTA6IuLE5O-",
-        "reference": "Q-91827",
+        "id": "q_p4nfXrQs4lyz",
+        "reference": "Q-59338",
         "name": "Site manager",
         "phone": "254711000111",
         "items": "200 bags cement",
@@ -3959,7 +3971,7 @@
         "lines": [],
         "total": null,
         "saleId": null,
-        "createdAt": "2026-11-04T19:22:00.000Z"
+        "createdAt": "2026-11-05T10:25:23.000Z"
       }
     ],
     "note": ""
@@ -3972,8 +3984,8 @@
     "auth": true,
     "status": 200,
     "response": {
-      "id": "q_mvTA6IuLE5O-",
-      "reference": "Q-91827",
+      "id": "q_p4nfXrQs4lyz",
+      "reference": "Q-59338",
       "name": "Site manager",
       "phone": "254711000111",
       "items": "200 bags cement",
@@ -3983,7 +3995,7 @@
       "lines": [],
       "total": null,
       "saleId": null,
-      "createdAt": "2026-11-04T19:22:00.000Z"
+      "createdAt": "2026-11-05T10:25:23.000Z"
     },
     "note": ""
   },
@@ -3995,7 +4007,7 @@
     "response": [
       {
         "id": 81,
-        "reference": "PO_7DA3EA90ECB83A33",
+        "reference": "PO_E610714349C43D9F",
         "orderId": "S-238",
         "gross": 1900,
         "commission": 0,
@@ -4003,10 +4015,10 @@
         "method": "till",
         "destination": "Till 5123456",
         "status": "paid",
-        "providerRef": "TRF_347FD0BC",
+        "providerRef": "TRF_A4E9DE41",
         "failureReason": null,
-        "createdAt": "2026-11-04T19:22:00.000Z",
-        "paidAt": "2026-11-04T19:22:00.000Z"
+        "createdAt": "2026-11-05T10:25:23.000Z",
+        "paidAt": "2026-11-05T10:25:23.000Z"
       },
       {
         "id": 26,
@@ -4020,8 +4032,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED63",
         "failureReason": null,
-        "createdAt": "2026-11-04T17:22:00.000Z",
-        "paidAt": "2026-11-04T17:22:00.000Z"
+        "createdAt": "2026-11-05T08:25:22.000Z",
+        "paidAt": "2026-11-05T08:25:22.000Z"
       },
       {
         "id": 25,
@@ -4035,8 +4047,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED59",
         "failureReason": null,
-        "createdAt": "2026-11-04T10:22:00.000Z",
-        "paidAt": "2026-11-04T10:22:00.000Z"
+        "createdAt": "2026-11-05T01:25:22.000Z",
+        "paidAt": "2026-11-05T01:25:22.000Z"
       },
       {
         "id": 24,
@@ -4050,8 +4062,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED55",
         "failureReason": null,
-        "createdAt": "2026-11-03T10:22:00.000Z",
-        "paidAt": "2026-11-03T10:22:00.000Z"
+        "createdAt": "2026-11-04T01:25:22.000Z",
+        "paidAt": "2026-11-04T01:25:22.000Z"
       },
       {
         "id": 23,
@@ -4065,8 +4077,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED53",
         "failureReason": null,
-        "createdAt": "2026-11-02T19:22:00.000Z",
-        "paidAt": "2026-11-02T19:22:00.000Z"
+        "createdAt": "2026-11-03T10:25:22.000Z",
+        "paidAt": "2026-11-03T10:25:22.000Z"
       },
       {
         "id": 22,
@@ -4080,8 +4092,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED50",
         "failureReason": null,
-        "createdAt": "2026-11-01T12:22:00.000Z",
-        "paidAt": "2026-11-01T12:22:00.000Z"
+        "createdAt": "2026-11-02T03:25:22.000Z",
+        "paidAt": "2026-11-02T03:25:22.000Z"
       },
       {
         "id": 21,
@@ -4095,8 +4107,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED47",
         "failureReason": null,
-        "createdAt": "2026-10-31T14:22:00.000Z",
-        "paidAt": "2026-10-31T14:22:00.000Z"
+        "createdAt": "2026-11-01T05:25:22.000Z",
+        "paidAt": "2026-11-01T05:25:22.000Z"
       },
       {
         "id": 20,
@@ -4110,8 +4122,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED45",
         "failureReason": null,
-        "createdAt": "2026-10-30T17:22:00.000Z",
-        "paidAt": "2026-10-30T17:22:00.000Z"
+        "createdAt": "2026-10-31T08:25:22.000Z",
+        "paidAt": "2026-10-31T08:25:22.000Z"
       },
       {
         "id": 19,
@@ -4125,8 +4137,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED43",
         "failureReason": null,
-        "createdAt": "2026-10-30T14:22:00.000Z",
-        "paidAt": "2026-10-30T14:22:00.000Z"
+        "createdAt": "2026-10-31T05:25:22.000Z",
+        "paidAt": "2026-10-31T05:25:22.000Z"
       },
       {
         "id": 18,
@@ -4140,8 +4152,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED42",
         "failureReason": null,
-        "createdAt": "2026-10-30T13:22:00.000Z",
-        "paidAt": "2026-10-30T13:22:00.000Z"
+        "createdAt": "2026-10-31T04:25:22.000Z",
+        "paidAt": "2026-10-31T04:25:22.000Z"
       },
       {
         "id": 17,
@@ -4155,8 +4167,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED38",
         "failureReason": null,
-        "createdAt": "2026-10-29T19:22:00.000Z",
-        "paidAt": "2026-10-29T19:22:00.000Z"
+        "createdAt": "2026-10-30T10:25:22.000Z",
+        "paidAt": "2026-10-30T10:25:22.000Z"
       },
       {
         "id": 16,
@@ -4170,8 +4182,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED36",
         "failureReason": null,
-        "createdAt": "2026-10-29T16:22:00.000Z",
-        "paidAt": "2026-10-29T16:22:00.000Z"
+        "createdAt": "2026-10-30T07:25:22.000Z",
+        "paidAt": "2026-10-30T07:25:22.000Z"
       },
       {
         "id": 15,
@@ -4185,8 +4197,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED35",
         "failureReason": null,
-        "createdAt": "2026-10-29T15:22:00.000Z",
-        "paidAt": "2026-10-29T15:22:00.000Z"
+        "createdAt": "2026-10-30T06:25:22.000Z",
+        "paidAt": "2026-10-30T06:25:22.000Z"
       },
       {
         "id": 14,
@@ -4200,8 +4212,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED31",
         "failureReason": null,
-        "createdAt": "2026-10-28T12:22:00.000Z",
-        "paidAt": "2026-10-28T12:22:00.000Z"
+        "createdAt": "2026-10-29T03:25:22.000Z",
+        "paidAt": "2026-10-29T03:25:22.000Z"
       },
       {
         "id": 13,
@@ -4215,8 +4227,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED30",
         "failureReason": null,
-        "createdAt": "2026-10-28T11:22:00.000Z",
-        "paidAt": "2026-10-28T11:22:00.000Z"
+        "createdAt": "2026-10-29T02:25:22.000Z",
+        "paidAt": "2026-10-29T02:25:22.000Z"
       },
       {
         "id": 12,
@@ -4230,8 +4242,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED29",
         "failureReason": null,
-        "createdAt": "2026-10-28T10:22:00.000Z",
-        "paidAt": "2026-10-28T10:22:00.000Z"
+        "createdAt": "2026-10-29T01:25:22.000Z",
+        "paidAt": "2026-10-29T01:25:22.000Z"
       },
       {
         "id": 11,
@@ -4245,8 +4257,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED25",
         "failureReason": null,
-        "createdAt": "2026-10-26T13:22:00.000Z",
-        "paidAt": "2026-10-26T13:22:00.000Z"
+        "createdAt": "2026-10-27T04:25:22.000Z",
+        "paidAt": "2026-10-27T04:25:22.000Z"
       },
       {
         "id": 10,
@@ -4260,8 +4272,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED23",
         "failureReason": null,
-        "createdAt": "2026-10-26T11:22:00.000Z",
-        "paidAt": "2026-10-26T11:22:00.000Z"
+        "createdAt": "2026-10-27T02:25:22.000Z",
+        "paidAt": "2026-10-27T02:25:22.000Z"
       },
       {
         "id": 9,
@@ -4275,8 +4287,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED22",
         "failureReason": null,
-        "createdAt": "2026-10-26T10:22:00.000Z",
-        "paidAt": "2026-10-26T10:22:00.000Z"
+        "createdAt": "2026-10-27T01:25:22.000Z",
+        "paidAt": "2026-10-27T01:25:22.000Z"
       },
       {
         "id": 8,
@@ -4290,8 +4302,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED21",
         "failureReason": null,
-        "createdAt": "2026-10-25T16:22:00.000Z",
-        "paidAt": "2026-10-25T16:22:00.000Z"
+        "createdAt": "2026-10-26T07:25:22.000Z",
+        "paidAt": "2026-10-26T07:25:22.000Z"
       },
       {
         "id": 7,
@@ -4305,8 +4317,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED19",
         "failureReason": null,
-        "createdAt": "2026-10-24T19:22:00.000Z",
-        "paidAt": "2026-10-24T19:22:00.000Z"
+        "createdAt": "2026-10-25T10:25:22.000Z",
+        "paidAt": "2026-10-25T10:25:22.000Z"
       },
       {
         "id": 6,
@@ -4320,8 +4332,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED17",
         "failureReason": null,
-        "createdAt": "2026-10-24T15:22:00.000Z",
-        "paidAt": "2026-10-24T15:22:00.000Z"
+        "createdAt": "2026-10-25T06:25:22.000Z",
+        "paidAt": "2026-10-25T06:25:22.000Z"
       },
       {
         "id": 5,
@@ -4335,8 +4347,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED10",
         "failureReason": null,
-        "createdAt": "2026-10-23T15:22:00.000Z",
-        "paidAt": "2026-10-23T15:22:00.000Z"
+        "createdAt": "2026-10-24T06:25:22.000Z",
+        "paidAt": "2026-10-24T06:25:22.000Z"
       },
       {
         "id": 4,
@@ -4350,8 +4362,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED6",
         "failureReason": null,
-        "createdAt": "2026-10-22T18:22:00.000Z",
-        "paidAt": "2026-10-22T18:22:00.000Z"
+        "createdAt": "2026-10-23T09:25:22.000Z",
+        "paidAt": "2026-10-23T09:25:22.000Z"
       },
       {
         "id": 3,
@@ -4365,8 +4377,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED3",
         "failureReason": null,
-        "createdAt": "2026-10-22T14:22:00.000Z",
-        "paidAt": "2026-10-22T14:22:00.000Z"
+        "createdAt": "2026-10-23T05:25:22.000Z",
+        "paidAt": "2026-10-23T05:25:22.000Z"
       },
       {
         "id": 2,
@@ -4380,8 +4392,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED2",
         "failureReason": null,
-        "createdAt": "2026-10-22T14:22:00.000Z",
-        "paidAt": "2026-10-22T14:22:00.000Z"
+        "createdAt": "2026-10-23T05:25:22.000Z",
+        "paidAt": "2026-10-23T05:25:22.000Z"
       },
       {
         "id": 1,
@@ -4395,8 +4407,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED1",
         "failureReason": null,
-        "createdAt": "2026-10-22T11:22:00.000Z",
-        "paidAt": "2026-10-22T11:22:00.000Z"
+        "createdAt": "2026-10-23T02:25:22.000Z",
+        "paidAt": "2026-10-23T02:25:22.000Z"
       }
     ],
     "note": ""
@@ -4412,603 +4424,603 @@
         "kind": "order_status",
         "summary": "S-239: awaiting confirmation → new",
         "actor": "Peter Kamau",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
           "order": "S-239",
           "before": "awaiting_confirmation",
           "after": "new"
         },
-        "createdAt": "2026-11-04T19:22:00.000Z"
+        "createdAt": "2026-11-05T10:25:23.000Z"
       },
       {
         "id": 259,
         "kind": "counter_sale",
         "summary": "Counter sale S-240: 1 × Claw hammer, 16 oz — KSh 650 (cash)",
         "actor": "Peter Kamau",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
           "sale": "S-240",
           "total": 650,
           "method": "cash"
         },
-        "createdAt": "2026-11-04T19:22:00.000Z"
+        "createdAt": "2026-11-05T10:25:23.000Z"
       },
       {
         "id": 258,
         "kind": "product_deleted",
         "summary": "Deleted Deformed bar Y20",
         "actor": "Peter Kamau",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": [],
-        "createdAt": "2026-11-04T19:22:00.000Z"
+        "createdAt": "2026-11-05T10:25:23.000Z"
       },
       {
         "id": 257,
         "kind": "stock_adjusted",
         "summary": "Stock of Deformed bar Y20 changed 80 → 75",
         "actor": "Peter Kamau",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
-          "productId": "prd_47s_47x5bexf",
+          "productId": "prd_mOZR4lw2ZiIb",
           "before": 80,
           "after": 75,
-          "branchId": "br_0WpHSdojbdyq"
+          "branchId": "br_oY51UnZK2Ofx"
         },
-        "createdAt": "2026-11-04T19:22:00.000Z"
+        "createdAt": "2026-11-05T10:25:23.000Z"
       },
       {
         "id": 256,
         "kind": "product_updated",
         "summary": "Edited Deformed bar Y20",
         "actor": "Peter Kamau",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
-          "productId": "prd_47s_47x5bexf"
+          "productId": "prd_mOZR4lw2ZiIb"
         },
-        "createdAt": "2026-11-04T19:22:00.000Z"
+        "createdAt": "2026-11-05T10:25:23.000Z"
       },
       {
         "id": 255,
         "kind": "product_added",
         "summary": "Added Deformed bar Y20 (20 mm × 12 m), 80 length (12 m) in stock",
         "actor": "Peter Kamau",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
-          "productId": "prd_47s_47x5bexf"
+          "productId": "prd_mOZR4lw2ZiIb"
         },
-        "createdAt": "2026-11-04T19:22:00.000Z"
+        "createdAt": "2026-11-05T10:25:23.000Z"
       },
       {
         "id": 254,
         "kind": "settings_updated",
         "summary": "Updated how they get paid",
         "actor": "Peter Kamau",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": [],
-        "createdAt": "2026-11-04T19:22:00.000Z"
+        "createdAt": "2026-11-05T10:25:23.000Z"
       },
       {
         "id": 252,
         "kind": "order_placed",
         "summary": "Kevin ordered 1 × Claw hammer, 16 oz — KSh 650 (paid to shop directly, waiting for check)",
         "actor": "Customer Kevin",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
           "order": "S-239",
           "total": 650
         },
-        "createdAt": "2026-11-04T19:22:00.000Z"
+        "createdAt": "2026-11-05T10:25:23.000Z"
       },
       {
         "id": 251,
         "kind": "payout_sent",
         "summary": "Sent KSh 1,900 for S-238 to Till 5123456",
         "actor": "System",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
           "order": "S-238",
           "amount": 1900
         },
-        "createdAt": "2026-11-04T19:22:00.000Z"
+        "createdAt": "2026-11-05T10:25:23.000Z"
       },
       {
         "id": 250,
         "kind": "order_paid",
-        "summary": "S-238 paid by M-PESA (KSh 1,900, ref TCA350AE40)",
+        "summary": "S-238 paid by M-PESA (KSh 1,900, ref TFBE2D71E1)",
         "actor": "Customer Daniel K",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
           "order": "S-238",
           "total": 1900
         },
-        "createdAt": "2026-11-04T19:22:00.000Z"
+        "createdAt": "2026-11-05T10:25:23.000Z"
       },
       {
         "id": 249,
         "kind": "order_placed",
         "summary": "Daniel K ordered 2 × Claw hammer, 16 oz — KSh 1,900 (waiting for M-PESA)",
         "actor": "Customer Daniel K",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
           "order": "S-238",
           "total": 1900
         },
-        "createdAt": "2026-11-04T19:22:00.000Z"
+        "createdAt": "2026-11-05T10:25:23.000Z"
       },
       {
         "id": 247,
         "kind": "login",
         "summary": "Peter Kamau logged in",
         "actor": "Peter Kamau",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": [],
-        "createdAt": "2026-11-04T19:22:00.000Z"
+        "createdAt": "2026-11-05T10:25:23.000Z"
       },
       {
         "id": 246,
         "kind": "login",
         "summary": "Peter Kamau logged in",
         "actor": "Peter Kamau",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": [],
-        "createdAt": "2026-11-04T19:22:00.000Z"
+        "createdAt": "2026-11-05T10:25:23.000Z"
       },
       {
         "id": 65,
         "kind": "counter_sale",
         "summary": "Counter sale S-64: 11 × Mason trowel — KSh 4,180 (mpesa)",
         "actor": "Peter K.",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
           "sale": "S-64"
         },
-        "createdAt": "2026-11-04T18:22:00.000Z"
+        "createdAt": "2026-11-05T09:25:22.000Z"
       },
       {
         "id": 64,
         "kind": "order_placed",
         "summary": "Achieng O. ordered 8 × Tile adhesive — KSh 7,600",
         "actor": "Customer Achieng O.",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
           "order": "S-63"
         },
-        "createdAt": "2026-11-04T17:22:00.000Z"
+        "createdAt": "2026-11-05T08:25:22.000Z"
       },
       {
         "id": 63,
         "kind": "counter_sale",
         "summary": "Counter sale S-62: 1 × D10 deformed bar (Y10) and 1 more — KSh 12,680 (cash)",
         "actor": "Esther W.",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
           "sale": "S-62"
         },
-        "createdAt": "2026-11-04T16:22:00.000Z"
+        "createdAt": "2026-11-05T07:25:22.000Z"
       },
       {
         "id": 62,
         "kind": "counter_sale",
         "summary": "Counter sale S-61: 10 × PVC pipe 4\" heavy — KSh 16,500 (bank)",
         "actor": "Peter K.",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
           "sale": "S-61"
         },
-        "createdAt": "2026-11-04T15:22:00.000Z"
+        "createdAt": "2026-11-05T06:25:22.000Z"
       },
       {
         "id": 61,
         "kind": "counter_sale",
         "summary": "Counter sale S-60: 4 × Corrugated iron sheet, gauge 28 — KSh 5,800 (cash)",
         "actor": "Brian O.",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
           "sale": "S-60"
         },
-        "createdAt": "2026-11-04T10:22:00.000Z"
+        "createdAt": "2026-11-05T01:25:22.000Z"
       },
       {
         "id": 60,
         "kind": "order_placed",
         "summary": "Mercy W. ordered 9 × D10 deformed bar (Y10) and 2 more — KSh 17,800",
         "actor": "Customer Mercy W.",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
           "order": "S-59"
         },
-        "createdAt": "2026-11-04T10:22:00.000Z"
+        "createdAt": "2026-11-05T01:25:22.000Z"
       },
       {
         "id": 59,
         "kind": "counter_sale",
         "summary": "Counter sale S-58: 3 × Claw hammer, 16 oz — KSh 1,950 (mpesa)",
         "actor": "Peter K.",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
           "sale": "S-58"
         },
-        "createdAt": "2026-11-04T10:22:00.000Z"
+        "createdAt": "2026-11-05T01:25:22.000Z"
       },
       {
         "id": 58,
         "kind": "counter_sale",
         "summary": "Counter sale S-57: 1 × Ridge cap, gauge 30 and 1 more — KSh 5,200 (cash)",
         "actor": "Brian O.",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
           "sale": "S-57"
         },
-        "createdAt": "2026-11-03T17:22:00.000Z"
+        "createdAt": "2026-11-04T08:25:22.000Z"
       },
       {
         "id": 57,
         "kind": "counter_sale",
         "summary": "Counter sale S-56: 10 × Savannah cement 42.5R — KSh 8,000 (bank)",
         "actor": "Esther W.",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
           "sale": "S-56"
         },
-        "createdAt": "2026-11-03T13:22:00.000Z"
+        "createdAt": "2026-11-04T04:25:22.000Z"
       },
       {
         "id": 56,
         "kind": "order_placed",
         "summary": "Wanjiku M. ordered 2 × D16 deformed bar (Y16) — KSh 5,500",
         "actor": "Customer Wanjiku M.",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
           "order": "S-55"
         },
-        "createdAt": "2026-11-03T10:22:00.000Z"
+        "createdAt": "2026-11-04T01:25:22.000Z"
       },
       {
         "id": 55,
         "kind": "counter_sale",
         "summary": "Counter sale S-54: 1 × PPR pipe 20 mm and 2 more — KSh 6,730 (cash)",
         "actor": "Brian O.",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
           "sale": "S-54"
         },
-        "createdAt": "2026-11-03T10:22:00.000Z"
+        "createdAt": "2026-11-04T01:25:22.000Z"
       },
       {
         "id": 54,
         "kind": "order_placed",
         "summary": "Mercy W. ordered 12 × Claw hammer, 16 oz — KSh 7,800",
         "actor": "Customer Mercy W.",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
           "order": "S-53"
         },
-        "createdAt": "2026-11-02T19:22:00.000Z"
+        "createdAt": "2026-11-03T10:25:22.000Z"
       },
       {
         "id": 53,
         "kind": "counter_sale",
         "summary": "Counter sale S-52: 45 × Cypress timber 2×4 and 1 more — KSh 11,955 (mpesa)",
         "actor": "Peter K.",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
           "sale": "S-52"
         },
-        "createdAt": "2026-11-02T19:22:00.000Z"
+        "createdAt": "2026-11-03T10:25:22.000Z"
       },
       {
         "id": 52,
         "kind": "counter_sale",
         "summary": "Counter sale S-51: 2 × Mason trowel and 2 more — KSh 12,090 (bank)",
         "actor": "Brian O.",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
           "sale": "S-51"
         },
-        "createdAt": "2026-11-01T16:22:00.000Z"
+        "createdAt": "2026-11-02T07:25:22.000Z"
       },
       {
         "id": 51,
         "kind": "order_placed",
         "summary": "Daniel K. ordered 3 × Box profile mabati, gauge 30 — KSh 3,270",
         "actor": "Customer Daniel K.",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
           "order": "S-50"
         },
-        "createdAt": "2026-11-01T12:22:00.000Z"
+        "createdAt": "2026-11-02T03:25:22.000Z"
       },
       {
         "id": 50,
         "kind": "counter_sale",
         "summary": "Counter sale S-49: 8 × Tile adhesive and 1 more — KSh 10,460 (mpesa)",
         "actor": "Peter K.",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
           "sale": "S-49"
         },
-        "createdAt": "2026-10-31T19:22:00.000Z"
+        "createdAt": "2026-11-01T10:25:22.000Z"
       },
       {
         "id": 49,
         "kind": "counter_sale",
         "summary": "Counter sale S-48: 11 × Cordless drill 18 V and 2 more — KSh 138,420 (mpesa)",
         "actor": "Brian O.",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
           "sale": "S-48"
         },
-        "createdAt": "2026-10-31T15:22:00.000Z"
+        "createdAt": "2026-11-01T06:25:22.000Z"
       },
       {
         "id": 48,
         "kind": "order_placed",
         "summary": "Mercy W. ordered 7 × PVC pipe 4\" heavy — KSh 11,550",
         "actor": "Customer Mercy W.",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
           "order": "S-47"
         },
-        "createdAt": "2026-10-31T14:22:00.000Z"
+        "createdAt": "2026-11-01T05:25:22.000Z"
       },
       {
         "id": 47,
         "kind": "counter_sale",
         "summary": "Counter sale S-46: 7 × Mason trowel and 2 more — KSh 12,440 (bank)",
         "actor": "Peter K.",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
           "sale": "S-46"
         },
-        "createdAt": "2026-10-30T18:22:00.000Z"
+        "createdAt": "2026-10-31T09:25:22.000Z"
       },
       {
         "id": 46,
         "kind": "order_placed",
         "summary": "Achieng O. ordered 11 × Twin & earth cable 2.5 mm and 2 more — KSh 11,390",
         "actor": "Customer Achieng O.",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
           "order": "S-45"
         },
-        "createdAt": "2026-10-30T17:22:00.000Z"
+        "createdAt": "2026-10-31T08:25:22.000Z"
       },
       {
         "id": 45,
         "kind": "counter_sale",
         "summary": "Counter sale S-44: 3 × Bamburi Tembo cement 32.5R and 1 more — KSh 10,350 (cash)",
         "actor": "Esther W.",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
           "sale": "S-44"
         },
-        "createdAt": "2026-10-30T15:22:00.000Z"
+        "createdAt": "2026-10-31T06:25:22.000Z"
       },
       {
         "id": 44,
         "kind": "order_placed",
         "summary": "Wanjiku M. ordered 4 × Tile adhesive and 1 more — KSh 8,720",
         "actor": "Customer Wanjiku M.",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
           "order": "S-43"
         },
-        "createdAt": "2026-10-30T14:22:00.000Z"
+        "createdAt": "2026-10-31T05:25:22.000Z"
       },
       {
         "id": 43,
         "kind": "order_placed",
         "summary": "Kevin O. ordered 11 × Claw hammer, 16 oz — KSh 7,750",
         "actor": "Customer Kevin O.",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
           "order": "S-42"
         },
-        "createdAt": "2026-10-30T13:22:00.000Z"
+        "createdAt": "2026-10-31T04:25:22.000Z"
       },
       {
         "id": 42,
         "kind": "counter_sale",
         "summary": "Counter sale S-41: 7 × Tile adhesive — KSh 6,650 (cash)",
         "actor": "Esther W.",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
           "sale": "S-41"
         },
-        "createdAt": "2026-10-30T12:22:00.000Z"
+        "createdAt": "2026-10-31T03:25:22.000Z"
       },
       {
         "id": 41,
         "kind": "counter_sale",
         "summary": "Counter sale S-40: 11 × Cordless drill 18 V — KSh 107,800 (mpesa)",
         "actor": "Peter K.",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
           "sale": "S-40"
         },
-        "createdAt": "2026-10-30T12:22:00.000Z"
+        "createdAt": "2026-10-31T03:25:22.000Z"
       },
       {
         "id": 40,
         "kind": "counter_sale",
         "summary": "Counter sale S-39: 9 × PVC pipe 4\" heavy — KSh 14,850 (cash)",
         "actor": "Brian O.",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
           "sale": "S-39"
         },
-        "createdAt": "2026-10-30T10:22:00.000Z"
+        "createdAt": "2026-10-31T01:25:22.000Z"
       },
       {
         "id": 39,
         "kind": "order_placed",
         "summary": "Daniel K. ordered 44 × Cypress timber 2×4 — KSh 3,600",
         "actor": "Customer Daniel K.",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
           "order": "S-38"
         },
-        "createdAt": "2026-10-29T19:22:00.000Z"
+        "createdAt": "2026-10-30T10:25:22.000Z"
       },
       {
         "id": 38,
         "kind": "counter_sale",
         "summary": "Counter sale S-37: 2 × Vinyl silk emulsion, white — KSh 4,700 (mpesa)",
         "actor": "Peter K.",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
           "sale": "S-37"
         },
-        "createdAt": "2026-10-29T18:22:00.000Z"
+        "createdAt": "2026-10-30T09:25:22.000Z"
       },
       {
         "id": 37,
         "kind": "order_placed",
         "summary": "Kevin O. ordered 12 × Box profile mabati, gauge 30 — KSh 11,280",
         "actor": "Customer Kevin O.",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
           "order": "S-36"
         },
-        "createdAt": "2026-10-29T16:22:00.000Z"
+        "createdAt": "2026-10-30T07:25:22.000Z"
       },
       {
         "id": 36,
         "kind": "order_placed",
         "summary": "Mercy W. ordered 10 × Mason trowel and 2 more — KSh 7,895",
         "actor": "Customer Mercy W.",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
           "order": "S-35"
         },
-        "createdAt": "2026-10-29T15:22:00.000Z"
+        "createdAt": "2026-10-30T06:25:22.000Z"
       },
       {
         "id": 35,
         "kind": "counter_sale",
         "summary": "Counter sale S-34: 8 × Claw hammer, 16 oz — KSh 5,200 (mpesa)",
         "actor": "Peter K.",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
           "sale": "S-34"
         },
-        "createdAt": "2026-10-28T18:22:00.000Z"
+        "createdAt": "2026-10-29T09:25:22.000Z"
       },
       {
         "id": 34,
         "kind": "counter_sale",
         "summary": "Counter sale S-33: 1 × Corrugated iron sheet, gauge 28 — KSh 1,450 (cash)",
         "actor": "Brian O.",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
           "sale": "S-33"
         },
-        "createdAt": "2026-10-28T15:22:00.000Z"
+        "createdAt": "2026-10-29T06:25:22.000Z"
       },
       {
         "id": 33,
         "kind": "counter_sale",
         "summary": "Counter sale S-32: 10 × Claw hammer, 16 oz — KSh 6,500 (cash)",
         "actor": "Esther W.",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
           "sale": "S-32"
         },
-        "createdAt": "2026-10-28T15:22:00.000Z"
+        "createdAt": "2026-10-29T06:25:22.000Z"
       },
       {
         "id": 32,
         "kind": "order_placed",
         "summary": "Wanjiku M. ordered 2 × Savannah cement 42.5R and 1 more — KSh 13,200",
         "actor": "Customer Wanjiku M.",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
           "order": "S-31"
         },
-        "createdAt": "2026-10-28T12:22:00.000Z"
+        "createdAt": "2026-10-29T03:25:22.000Z"
       },
       {
         "id": 31,
         "kind": "order_placed",
         "summary": "Kevin O. ordered 1 × Mason trowel and 1 more — KSh 10,880",
         "actor": "Customer Kevin O.",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
           "order": "S-30"
         },
-        "createdAt": "2026-10-28T11:22:00.000Z"
+        "createdAt": "2026-10-29T02:25:22.000Z"
       },
       {
         "id": 30,
         "kind": "order_placed",
         "summary": "Mercy W. ordered 10 × Bamburi Tembo cement 32.5R — KSh 7,800",
         "actor": "Customer Mercy W.",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
           "order": "S-29"
         },
-        "createdAt": "2026-10-28T10:22:00.000Z"
+        "createdAt": "2026-10-29T01:25:22.000Z"
       },
       {
         "id": 29,
         "kind": "counter_sale",
         "summary": "Counter sale S-28: 50 × Cypress timber 3×2 and 1 more — KSh 5,870 (cash)",
         "actor": "Peter K.",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": null,
         "data": {
           "sale": "S-28"
         },
-        "createdAt": "2026-10-27T12:22:00.000Z"
+        "createdAt": "2026-10-28T03:25:22.000Z"
       }
     ],
     "note": ""
@@ -5019,8 +5031,8 @@
     "auth": true,
     "status": 201,
     "response": {
-      "id": "9adb6cf2c7eaecc6496d5eaa.png",
-      "url": "http://127.0.0.1:8000/api/uploads/9adb6cf2c7eaecc6496d5eaa.png"
+      "id": "7d5e7d38017f121f1c2fe4c9.png",
+      "url": "http://127.0.0.1:8000/api/uploads/7d5e7d38017f121f1c2fe4c9.png"
     },
     "note": ""
   },
@@ -5034,17 +5046,17 @@
     "status": 200,
     "response": {
       "user": {
-        "id": "u_92ypcVpTxPo6",
+        "id": "u_cnSIjrNcqtXc",
         "name": "Peter Kamau",
         "phone": "254712345678",
         "email": "peter@mjengo.example.com",
         "role": "vendor",
         "mustChangePassword": false,
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeRole": "owner",
         "branchId": null
       },
-      "token": "5|RL0aBp8y9aNItOxhLK6P8WK3PB8D9z4v8F89Ps2Ae2607117"
+      "token": "5|S1J4XmQsIveu5K8WJantLWQpel6cggSyc3RDLt3O4a8c7725"
     },
     "note": "returns a new token; older tokens stop working"
   },
@@ -5064,10 +5076,6 @@
         },
         "monthlyRevenue": 25500,
         "signupsByDay": [
-          {
-            "date": "2026-10-06",
-            "count": 0
-          },
           {
             "date": "2026-10-07",
             "count": 0
@@ -5174,14 +5182,18 @@
           },
           {
             "date": "2026-11-02",
-            "count": 1
-          },
-          {
-            "date": "2026-11-03",
             "count": 0
           },
           {
+            "date": "2026-11-03",
+            "count": 1
+          },
+          {
             "date": "2026-11-04",
+            "count": 0
+          },
+          {
+            "date": "2026-11-05",
             "count": 1
           }
         ]
@@ -5217,206 +5229,206 @@
       "traffic": {
         "byDay": [
           {
-            "date": "2026-10-06",
+            "date": "2026-10-07",
             "site": 235,
             "stores": 273
           },
           {
-            "date": "2026-10-07",
+            "date": "2026-10-08",
             "site": 166,
             "stores": 278
           },
           {
-            "date": "2026-10-08",
+            "date": "2026-10-09",
             "site": 202,
             "stores": 288
           },
           {
-            "date": "2026-10-09",
-            "site": 144,
-            "stores": 276
+            "date": "2026-10-10",
+            "site": 86,
+            "stores": 165
           },
           {
-            "date": "2026-10-10",
+            "date": "2026-10-11",
             "site": 102,
             "stores": 159
           },
           {
-            "date": "2026-10-11",
-            "site": 96,
-            "stores": 182
+            "date": "2026-10-12",
+            "site": 161,
+            "stores": 306
           },
           {
-            "date": "2026-10-12",
+            "date": "2026-10-13",
             "site": 141,
             "stores": 321
           },
           {
-            "date": "2026-10-13",
+            "date": "2026-10-14",
             "site": 174,
             "stores": 292
           },
           {
-            "date": "2026-10-14",
+            "date": "2026-10-15",
             "site": 207,
             "stores": 340
           },
           {
-            "date": "2026-10-15",
+            "date": "2026-10-16",
             "site": 242,
             "stores": 265
           },
           {
-            "date": "2026-10-16",
-            "site": 255,
-            "stores": 298
+            "date": "2026-10-17",
+            "site": 153,
+            "stores": 176
           },
           {
-            "date": "2026-10-17",
+            "date": "2026-10-18",
             "site": 133,
             "stores": 181
           },
           {
-            "date": "2026-10-18",
-            "site": 156,
-            "stores": 185
+            "date": "2026-10-19",
+            "site": 260,
+            "stores": 310
           },
           {
-            "date": "2026-10-19",
+            "date": "2026-10-20",
             "site": 155,
             "stores": 340
           },
           {
-            "date": "2026-10-20",
+            "date": "2026-10-21",
             "site": 179,
             "stores": 350
           },
           {
-            "date": "2026-10-21",
+            "date": "2026-10-22",
             "site": 283,
             "stores": 387
           },
           {
-            "date": "2026-10-22",
+            "date": "2026-10-23",
             "site": 264,
             "stores": 361
           },
           {
-            "date": "2026-10-23",
-            "site": 195,
-            "stores": 354
+            "date": "2026-10-24",
+            "site": 117,
+            "stores": 211
           },
           {
-            "date": "2026-10-24",
+            "date": "2026-10-25",
             "site": 128,
             "stores": 206
           },
           {
-            "date": "2026-10-25",
-            "site": 171,
-            "stores": 204
+            "date": "2026-10-26",
+            "site": 286,
+            "stores": 342
           },
           {
-            "date": "2026-10-26",
+            "date": "2026-10-27",
             "site": 188,
             "stores": 362
           },
           {
-            "date": "2026-10-27",
+            "date": "2026-10-28",
             "site": 172,
             "stores": 393
           },
           {
-            "date": "2026-10-28",
+            "date": "2026-10-29",
             "site": 297,
             "stores": 301
           },
           {
-            "date": "2026-10-29",
+            "date": "2026-10-30",
             "site": 309,
             "stores": 357
           },
           {
-            "date": "2026-10-30",
-            "site": 182,
-            "stores": 348
+            "date": "2026-10-31",
+            "site": 109,
+            "stores": 209
           },
           {
-            "date": "2026-10-31",
+            "date": "2026-11-01",
             "site": 151,
             "stores": 231
           },
           {
-            "date": "2026-11-01",
-            "site": 191,
-            "stores": 229
+            "date": "2026-11-02",
+            "site": 319,
+            "stores": 383
           },
           {
-            "date": "2026-11-02",
+            "date": "2026-11-03",
             "site": 337,
             "stores": 379
           },
           {
-            "date": "2026-11-03",
+            "date": "2026-11-04",
             "site": 328,
             "stores": 380
           },
           {
-            "date": "2026-11-04",
+            "date": "2026-11-05",
             "site": 331,
             "stores": 398
           }
         ],
         "topStores": [
           {
-            "storeId": "st_QuAIksZF9sM9",
+            "storeId": "st_kMGHkq0wXlAq",
             "name": "Coast Steel Mart",
             "slug": "coast-steel",
-            "views": 2029
+            "views": 2049
           },
           {
-            "storeId": "st_pPckELlvbnzC",
+            "storeId": "st_nUGECKPEp1z4",
             "name": "Mwamba Hardware",
             "slug": "mwamba",
-            "views": 2008
+            "views": 2024
           },
           {
-            "storeId": "st_K5Npfjr3lZOH",
-            "name": "Mjengo Hardware",
-            "slug": "mjengo",
-            "views": 1936
-          },
-          {
-            "storeId": "st_PA56r3ksNA90",
+            "storeId": "st_wY1V9Su_njCU",
             "name": "Baraka Builders Centre",
             "slug": "baraka-builders",
-            "views": 1927
+            "views": 1935
           },
           {
-            "storeId": "st_FwoYatPw4bey",
+            "storeId": "st_YywAJ-0ZKexE",
+            "name": "Mjengo Hardware",
+            "slug": "mjengo",
+            "views": 1916
+          },
+          {
+            "storeId": "st_LWyFeTJq3i1l",
             "name": "Rift Timber Yard",
             "slug": "rift-timber",
-            "views": 513
+            "views": 514
           },
           {
-            "storeId": "st_deDPyQ1k3L44",
+            "storeId": "st_Tk6hd0cTprOn",
             "name": "Kilimani Paints & Tools",
             "slug": "kilimani-paints",
-            "views": 505
+            "views": 506
           }
         ],
-        "total30": 15032
+        "total30": 15159
       },
       "health": {
         "requests24": 43,
         "serverErrors24": 0,
         "clientErrors24": 2,
         "avgMs": 4,
-        "slowestMs": 15,
+        "slowestMs": 14,
         "openIncidents": 0,
         "byHour": [
           {
-            "hour": "2026-11-04T19:00:00+00:00",
+            "hour": "2026-11-05T10:00:00+00:00",
             "requests": 43,
             "errors": 0
           }
@@ -5432,7 +5444,7 @@
     "status": 200,
     "response": [
       {
-        "id": "st_79pJ15bOGMSe",
+        "id": "st_k4tAAc4WHhHc",
         "slug": "baraka-hardware",
         "name": "Baraka Hardware",
         "tagline": "",
@@ -5445,6 +5457,7 @@
         "hours": "Mon–Sat 8:00–18:00",
         "accent": "#F5A623",
         "cover": "aisle",
+        "branch": null,
         "delivery": {
           "enabled": false,
           "mode": "zones",
@@ -5472,8 +5485,8 @@
         },
         "customDomain": null,
         "domainStatus": null,
-        "createdAt": "2026-11-04T19:22:00.000Z",
-        "nextBillingAt": "2026-12-04T19:22:00.000Z",
+        "createdAt": "2026-11-05T10:25:23.000Z",
+        "nextBillingAt": "2026-12-05T10:25:23.000Z",
         "products": 0,
         "gmv30": 0,
         "plan": {
@@ -5498,7 +5511,7 @@
         }
       },
       {
-        "id": "st_Z90asmOberdL",
+        "id": "st_7r-V5PM_3x-u",
         "slug": "nyeri-plumb",
         "name": "Nyeri Plumb Centre",
         "tagline": "Pipes, tanks and fittings",
@@ -5511,6 +5524,7 @@
         "hours": "Mon–Sat 8:00–17:00",
         "accent": "#1E88E5",
         "cover": "pipes",
+        "branch": null,
         "delivery": {
           "enabled": false,
           "mode": "zones",
@@ -5538,7 +5552,7 @@
         },
         "customDomain": null,
         "domainStatus": null,
-        "createdAt": "2026-11-02T19:22:00.000Z",
+        "createdAt": "2026-11-03T10:25:22.000Z",
         "nextBillingAt": null,
         "products": 5,
         "gmv30": 0,
@@ -5564,7 +5578,7 @@
         }
       },
       {
-        "id": "st_deDPyQ1k3L44",
+        "id": "st_Tk6hd0cTprOn",
         "slug": "kilimani-paints",
         "name": "Kilimani Paints & Tools",
         "tagline": "Paint, colour mixing and tools",
@@ -5577,6 +5591,7 @@
         "hours": "Mon–Sat 8:30–18:00",
         "accent": "#8E44AD",
         "cover": "paintShelf",
+        "branch": null,
         "delivery": {
           "enabled": true,
           "mode": "zones",
@@ -5615,8 +5630,8 @@
         },
         "customDomain": null,
         "domainStatus": null,
-        "createdAt": "2026-09-25T19:22:00.000Z",
-        "nextBillingAt": "2026-11-01T19:22:00.000Z",
+        "createdAt": "2026-09-26T10:25:22.000Z",
+        "nextBillingAt": "2026-11-02T10:25:22.000Z",
         "products": 11,
         "gmv30": 993720,
         "plan": {
@@ -5642,7 +5657,7 @@
         }
       },
       {
-        "id": "st_pPckELlvbnzC",
+        "id": "st_nUGECKPEp1z4",
         "slug": "mwamba",
         "name": "Mwamba Hardware",
         "tagline": "Strong materials for strong homes",
@@ -5655,6 +5670,7 @@
         "hours": "Mon–Sat 7:30–19:00",
         "accent": "#2E9E5B",
         "cover": "toolWall",
+        "branch": null,
         "delivery": {
           "enabled": true,
           "mode": "zones",
@@ -5698,8 +5714,8 @@
         },
         "customDomain": null,
         "domainStatus": null,
-        "createdAt": "2026-09-24T19:22:00.000Z",
-        "nextBillingAt": "2026-11-23T19:22:00.000Z",
+        "createdAt": "2026-09-25T10:25:22.000Z",
+        "nextBillingAt": "2026-11-24T10:25:22.000Z",
         "products": 15,
         "gmv30": 895778,
         "plan": {
@@ -5725,7 +5741,7 @@
         }
       },
       {
-        "id": "st_K5Npfjr3lZOH",
+        "id": "st_YywAJ-0ZKexE",
         "slug": "mjengo",
         "name": "Mjengo Hardware",
         "tagline": "Building materials for Kitengela",
@@ -5738,6 +5754,7 @@
         "hours": "Mon–Sat 7:00–18:30, Sun 9:00–14:00",
         "accent": "#F5A623",
         "cover": "heroShelves",
+        "branch": null,
         "delivery": {
           "enabled": true,
           "mode": "zones",
@@ -5781,8 +5798,8 @@
         },
         "customDomain": null,
         "domainStatus": null,
-        "createdAt": "2026-08-20T19:22:00.000Z",
-        "nextBillingAt": "2026-11-20T19:22:00.000Z",
+        "createdAt": "2026-08-21T10:25:22.000Z",
+        "nextBillingAt": "2026-11-21T10:25:22.000Z",
         "products": 20,
         "gmv30": 1072530,
         "plan": {
@@ -5807,7 +5824,7 @@
         }
       },
       {
-        "id": "st_PA56r3ksNA90",
+        "id": "st_wY1V9Su_njCU",
         "slug": "baraka-builders",
         "name": "Baraka Builders Centre",
         "tagline": "Nakuru's one-stop building yard",
@@ -5820,6 +5837,7 @@
         "hours": "Mon–Sat 8:00–18:00",
         "accent": "#1E88E5",
         "cover": "storefront",
+        "branch": null,
         "delivery": {
           "enabled": true,
           "mode": "quote",
@@ -5847,8 +5865,8 @@
         },
         "customDomain": null,
         "domainStatus": null,
-        "createdAt": "2026-07-07T19:22:00.000Z",
-        "nextBillingAt": "2026-11-08T19:22:00.000Z",
+        "createdAt": "2026-07-08T10:25:22.000Z",
+        "nextBillingAt": "2026-11-09T10:25:22.000Z",
         "products": 15,
         "gmv30": 696372,
         "plan": {
@@ -5874,7 +5892,7 @@
         }
       },
       {
-        "id": "st_QuAIksZF9sM9",
+        "id": "st_kMGHkq0wXlAq",
         "slug": "coast-steel",
         "name": "Coast Steel Mart",
         "tagline": "Steel, roofing and tools for the coast",
@@ -5887,6 +5905,7 @@
         "hours": "Mon–Sat 8:00–17:30",
         "accent": "#E4572E",
         "cover": "aisle",
+        "branch": null,
         "delivery": {
           "enabled": true,
           "mode": "zones",
@@ -5930,8 +5949,8 @@
         },
         "customDomain": null,
         "domainStatus": null,
-        "createdAt": "2026-06-17T19:22:00.000Z",
-        "nextBillingAt": "2026-11-17T19:22:00.000Z",
+        "createdAt": "2026-06-18T10:25:22.000Z",
+        "nextBillingAt": "2026-11-18T10:25:22.000Z",
         "products": 14,
         "gmv30": 971160,
         "plan": {
@@ -5956,7 +5975,7 @@
         }
       },
       {
-        "id": "st_FwoYatPw4bey",
+        "id": "st_LWyFeTJq3i1l",
         "slug": "rift-timber",
         "name": "Rift Timber Yard",
         "tagline": "Timber and boards, cut to size",
@@ -5969,6 +5988,7 @@
         "hours": "Mon–Sat 7:00–17:00",
         "accent": "#0B3A6E",
         "cover": "timber",
+        "branch": null,
         "delivery": {
           "enabled": true,
           "mode": "quote",
@@ -5996,8 +6016,8 @@
         },
         "customDomain": null,
         "domainStatus": null,
-        "createdAt": "2026-06-07T19:22:00.000Z",
-        "nextBillingAt": "2026-10-06T19:22:00.000Z",
+        "createdAt": "2026-06-08T10:25:22.000Z",
+        "nextBillingAt": "2026-10-07T10:25:22.000Z",
         "products": 5,
         "gmv30": 847549,
         "plan": {
@@ -6103,7 +6123,7 @@
     "status": 200,
     "response": [
       {
-        "reference": "SUB_41CDDD64668C61FB",
+        "reference": "SUB_53FA00F37CFF141E",
         "kind": "subscription",
         "status": "failed",
         "provider": "simulation",
@@ -6114,12 +6134,12 @@
         "storeName": null,
         "planId": "starter",
         "mpesaRef": null,
-        "createdAt": "2026-11-04T19:22:00.000Z",
+        "createdAt": "2026-11-05T10:25:23.000Z",
         "paidAt": null,
         "failureReason": "The M-PESA payment failed: not enough balance."
       },
       {
-        "reference": "SUB_DB0985B45C345EAB",
+        "reference": "SUB_64E15CE5D593EEF3",
         "kind": "subscription",
         "status": "paid",
         "provider": "simulation",
@@ -6129,25 +6149,25 @@
         "storeId": null,
         "storeName": null,
         "planId": "business",
-        "mpesaRef": "TD48DFEFCA",
-        "createdAt": "2026-11-04T19:22:00.000Z",
-        "paidAt": "2026-11-04T19:22:00.000Z",
+        "mpesaRef": "TBF950209A",
+        "createdAt": "2026-11-05T10:25:23.000Z",
+        "paidAt": "2026-11-05T10:25:23.000Z",
         "failureReason": null
       },
       {
-        "reference": "ORD_76281785AD2A2A82",
+        "reference": "ORD_6F141B8D035AFCEC",
         "kind": "order",
         "status": "paid",
         "provider": "simulation",
         "amount": 1900,
         "phone": "254711222333",
         "payee": "MJENGO HARDWARE",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": "Mjengo Hardware",
         "planId": null,
-        "mpesaRef": "TCA350AE40",
-        "createdAt": "2026-11-04T19:22:00.000Z",
-        "paidAt": "2026-11-04T19:22:00.000Z",
+        "mpesaRef": "TFBE2D71E1",
+        "createdAt": "2026-11-05T10:25:23.000Z",
+        "paidAt": "2026-11-05T10:25:23.000Z",
         "failureReason": null
       }
     ],
@@ -6161,7 +6181,7 @@
     "response": [
       {
         "id": 81,
-        "reference": "PO_7DA3EA90ECB83A33",
+        "reference": "PO_E610714349C43D9F",
         "orderId": "S-238",
         "gross": 1900,
         "commission": 0,
@@ -6169,10 +6189,10 @@
         "method": "till",
         "destination": "Till 5123456",
         "status": "paid",
-        "providerRef": "TRF_347FD0BC",
+        "providerRef": "TRF_A4E9DE41",
         "failureReason": null,
-        "createdAt": "2026-11-04T19:22:00.000Z",
-        "paidAt": "2026-11-04T19:22:00.000Z",
+        "createdAt": "2026-11-05T10:25:23.000Z",
+        "paidAt": "2026-11-05T10:25:23.000Z",
         "storeName": "Mjengo Hardware"
       },
       {
@@ -6187,8 +6207,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED200",
         "failureReason": null,
-        "createdAt": "2026-11-04T18:22:00.000Z",
-        "paidAt": "2026-11-04T18:22:00.000Z",
+        "createdAt": "2026-11-05T09:25:22.000Z",
+        "paidAt": "2026-11-05T09:25:22.000Z",
         "storeName": "Kilimani Paints & Tools"
       },
       {
@@ -6203,8 +6223,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED199",
         "failureReason": null,
-        "createdAt": "2026-11-04T17:22:00.000Z",
-        "paidAt": "2026-11-04T17:22:00.000Z",
+        "createdAt": "2026-11-05T08:25:22.000Z",
+        "paidAt": "2026-11-05T08:25:22.000Z",
         "storeName": "Kilimani Paints & Tools"
       },
       {
@@ -6219,8 +6239,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED102",
         "failureReason": null,
-        "createdAt": "2026-11-04T17:22:00.000Z",
-        "paidAt": "2026-11-04T17:22:00.000Z",
+        "createdAt": "2026-11-05T08:25:22.000Z",
+        "paidAt": "2026-11-05T08:25:22.000Z",
         "storeName": "Mwamba Hardware"
       },
       {
@@ -6235,8 +6255,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED63",
         "failureReason": null,
-        "createdAt": "2026-11-04T17:22:00.000Z",
-        "paidAt": "2026-11-04T17:22:00.000Z",
+        "createdAt": "2026-11-05T08:25:22.000Z",
+        "paidAt": "2026-11-05T08:25:22.000Z",
         "storeName": "Mjengo Hardware"
       },
       {
@@ -6251,8 +6271,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED165",
         "failureReason": null,
-        "createdAt": "2026-11-04T15:22:00.000Z",
-        "paidAt": "2026-11-04T15:22:00.000Z",
+        "createdAt": "2026-11-05T06:25:22.000Z",
+        "paidAt": "2026-11-05T06:25:22.000Z",
         "storeName": "Coast Steel Mart"
       },
       {
@@ -6267,8 +6287,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED196",
         "failureReason": null,
-        "createdAt": "2026-11-04T11:22:00.000Z",
-        "paidAt": "2026-11-04T11:22:00.000Z",
+        "createdAt": "2026-11-05T02:25:22.000Z",
+        "paidAt": "2026-11-05T02:25:22.000Z",
         "storeName": "Kilimani Paints & Tools"
       },
       {
@@ -6283,8 +6303,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED100",
         "failureReason": null,
-        "createdAt": "2026-11-04T11:22:00.000Z",
-        "paidAt": "2026-11-04T11:22:00.000Z",
+        "createdAt": "2026-11-05T02:25:22.000Z",
+        "paidAt": "2026-11-05T02:25:22.000Z",
         "storeName": "Mwamba Hardware"
       },
       {
@@ -6299,8 +6319,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED164",
         "failureReason": null,
-        "createdAt": "2026-11-04T10:22:00.000Z",
-        "paidAt": "2026-11-04T10:22:00.000Z",
+        "createdAt": "2026-11-05T01:25:22.000Z",
+        "paidAt": "2026-11-05T01:25:22.000Z",
         "storeName": "Coast Steel Mart"
       },
       {
@@ -6315,8 +6335,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED59",
         "failureReason": null,
-        "createdAt": "2026-11-04T10:22:00.000Z",
-        "paidAt": "2026-11-04T10:22:00.000Z",
+        "createdAt": "2026-11-05T01:25:22.000Z",
+        "paidAt": "2026-11-05T01:25:22.000Z",
         "storeName": "Mjengo Hardware"
       },
       {
@@ -6331,8 +6351,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED134",
         "failureReason": null,
-        "createdAt": "2026-11-03T18:22:00.000Z",
-        "paidAt": "2026-11-03T18:22:00.000Z",
+        "createdAt": "2026-11-04T09:25:22.000Z",
+        "paidAt": "2026-11-04T09:25:22.000Z",
         "storeName": "Baraka Builders Centre"
       },
       {
@@ -6347,8 +6367,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED162",
         "failureReason": null,
-        "createdAt": "2026-11-03T13:22:00.000Z",
-        "paidAt": "2026-11-03T13:22:00.000Z",
+        "createdAt": "2026-11-04T04:25:22.000Z",
+        "paidAt": "2026-11-04T04:25:22.000Z",
         "storeName": "Coast Steel Mart"
       },
       {
@@ -6363,8 +6383,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED55",
         "failureReason": null,
-        "createdAt": "2026-11-03T10:22:00.000Z",
-        "paidAt": "2026-11-03T10:22:00.000Z",
+        "createdAt": "2026-11-04T01:25:22.000Z",
+        "paidAt": "2026-11-04T01:25:22.000Z",
         "storeName": "Mjengo Hardware"
       },
       {
@@ -6379,8 +6399,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED53",
         "failureReason": null,
-        "createdAt": "2026-11-02T19:22:00.000Z",
-        "paidAt": "2026-11-02T19:22:00.000Z",
+        "createdAt": "2026-11-03T10:25:22.000Z",
+        "paidAt": "2026-11-03T10:25:22.000Z",
         "storeName": "Mjengo Hardware"
       },
       {
@@ -6395,8 +6415,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED234",
         "failureReason": null,
-        "createdAt": "2026-11-02T18:22:00.000Z",
-        "paidAt": "2026-11-02T18:22:00.000Z",
+        "createdAt": "2026-11-03T09:25:22.000Z",
+        "paidAt": "2026-11-03T09:25:22.000Z",
         "storeName": "Rift Timber Yard"
       },
       {
@@ -6411,8 +6431,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED96",
         "failureReason": null,
-        "createdAt": "2026-11-02T15:22:00.000Z",
-        "paidAt": "2026-11-02T15:22:00.000Z",
+        "createdAt": "2026-11-03T06:25:22.000Z",
+        "paidAt": "2026-11-03T06:25:22.000Z",
         "storeName": "Mwamba Hardware"
       },
       {
@@ -6427,8 +6447,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED95",
         "failureReason": null,
-        "createdAt": "2026-11-02T15:22:00.000Z",
-        "paidAt": "2026-11-02T15:22:00.000Z",
+        "createdAt": "2026-11-03T06:25:22.000Z",
+        "paidAt": "2026-11-03T06:25:22.000Z",
         "storeName": "Mwamba Hardware"
       },
       {
@@ -6443,8 +6463,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED132",
         "failureReason": null,
-        "createdAt": "2026-11-02T13:22:00.000Z",
-        "paidAt": "2026-11-02T13:22:00.000Z",
+        "createdAt": "2026-11-03T04:25:22.000Z",
+        "paidAt": "2026-11-03T04:25:22.000Z",
         "storeName": "Baraka Builders Centre"
       },
       {
@@ -6459,8 +6479,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED93",
         "failureReason": null,
-        "createdAt": "2026-11-02T13:22:00.000Z",
-        "paidAt": "2026-11-02T13:22:00.000Z",
+        "createdAt": "2026-11-03T04:25:22.000Z",
+        "paidAt": "2026-11-03T04:25:22.000Z",
         "storeName": "Mwamba Hardware"
       },
       {
@@ -6475,8 +6495,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED131",
         "failureReason": null,
-        "createdAt": "2026-11-01T18:22:00.000Z",
-        "paidAt": "2026-11-01T18:22:00.000Z",
+        "createdAt": "2026-11-02T09:25:22.000Z",
+        "paidAt": "2026-11-02T09:25:22.000Z",
         "storeName": "Baraka Builders Centre"
       },
       {
@@ -6491,8 +6511,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED130",
         "failureReason": null,
-        "createdAt": "2026-11-01T17:22:00.000Z",
-        "paidAt": "2026-11-01T17:22:00.000Z",
+        "createdAt": "2026-11-02T08:25:22.000Z",
+        "paidAt": "2026-11-02T08:25:22.000Z",
         "storeName": "Baraka Builders Centre"
       },
       {
@@ -6507,8 +6527,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED229",
         "failureReason": null,
-        "createdAt": "2026-11-01T16:22:00.000Z",
-        "paidAt": "2026-11-01T16:22:00.000Z",
+        "createdAt": "2026-11-02T07:25:22.000Z",
+        "paidAt": "2026-11-02T07:25:22.000Z",
         "storeName": "Rift Timber Yard"
       },
       {
@@ -6523,8 +6543,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED159",
         "failureReason": null,
-        "createdAt": "2026-11-01T12:22:00.000Z",
-        "paidAt": "2026-11-01T12:22:00.000Z",
+        "createdAt": "2026-11-02T03:25:22.000Z",
+        "paidAt": "2026-11-02T03:25:22.000Z",
         "storeName": "Coast Steel Mart"
       },
       {
@@ -6539,8 +6559,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED50",
         "failureReason": null,
-        "createdAt": "2026-11-01T12:22:00.000Z",
-        "paidAt": "2026-11-01T12:22:00.000Z",
+        "createdAt": "2026-11-02T03:25:22.000Z",
+        "paidAt": "2026-11-02T03:25:22.000Z",
         "storeName": "Mjengo Hardware"
       },
       {
@@ -6555,8 +6575,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED47",
         "failureReason": null,
-        "createdAt": "2026-10-31T14:22:00.000Z",
-        "paidAt": "2026-10-31T14:22:00.000Z",
+        "createdAt": "2026-11-01T05:25:22.000Z",
+        "paidAt": "2026-11-01T05:25:22.000Z",
         "storeName": "Mjengo Hardware"
       },
       {
@@ -6571,8 +6591,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED185",
         "failureReason": null,
-        "createdAt": "2026-10-31T12:22:00.000Z",
-        "paidAt": "2026-10-31T12:22:00.000Z",
+        "createdAt": "2026-11-01T03:25:22.000Z",
+        "paidAt": "2026-11-01T03:25:22.000Z",
         "storeName": "Kilimani Paints & Tools"
       },
       {
@@ -6587,8 +6607,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED128",
         "failureReason": null,
-        "createdAt": "2026-10-31T12:22:00.000Z",
-        "paidAt": "2026-10-31T12:22:00.000Z",
+        "createdAt": "2026-11-01T03:25:22.000Z",
+        "paidAt": "2026-11-01T03:25:22.000Z",
         "storeName": "Baraka Builders Centre"
       },
       {
@@ -6603,8 +6623,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED225",
         "failureReason": null,
-        "createdAt": "2026-10-31T11:22:00.000Z",
-        "paidAt": "2026-10-31T11:22:00.000Z",
+        "createdAt": "2026-11-01T02:25:22.000Z",
+        "paidAt": "2026-11-01T02:25:22.000Z",
         "storeName": "Rift Timber Yard"
       },
       {
@@ -6619,8 +6639,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED155",
         "failureReason": null,
-        "createdAt": "2026-10-31T11:22:00.000Z",
-        "paidAt": "2026-10-31T11:22:00.000Z",
+        "createdAt": "2026-11-01T02:25:22.000Z",
+        "paidAt": "2026-11-01T02:25:22.000Z",
         "storeName": "Coast Steel Mart"
       },
       {
@@ -6635,8 +6655,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED224",
         "failureReason": null,
-        "createdAt": "2026-10-31T10:22:00.000Z",
-        "paidAt": "2026-10-31T10:22:00.000Z",
+        "createdAt": "2026-11-01T01:25:22.000Z",
+        "paidAt": "2026-11-01T01:25:22.000Z",
         "storeName": "Rift Timber Yard"
       },
       {
@@ -6651,8 +6671,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED183",
         "failureReason": null,
-        "createdAt": "2026-10-31T10:22:00.000Z",
-        "paidAt": "2026-10-31T10:22:00.000Z",
+        "createdAt": "2026-11-01T01:25:22.000Z",
+        "paidAt": "2026-11-01T01:25:22.000Z",
         "storeName": "Kilimani Paints & Tools"
       },
       {
@@ -6667,8 +6687,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED126",
         "failureReason": null,
-        "createdAt": "2026-10-30T18:22:00.000Z",
-        "paidAt": "2026-10-30T18:22:00.000Z",
+        "createdAt": "2026-10-31T09:25:22.000Z",
+        "paidAt": "2026-10-31T09:25:22.000Z",
         "storeName": "Baraka Builders Centre"
       },
       {
@@ -6683,8 +6703,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED88",
         "failureReason": null,
-        "createdAt": "2026-10-30T18:22:00.000Z",
-        "paidAt": "2026-10-30T18:22:00.000Z",
+        "createdAt": "2026-10-31T09:25:22.000Z",
+        "paidAt": "2026-10-31T09:25:22.000Z",
         "storeName": "Mwamba Hardware"
       },
       {
@@ -6699,8 +6719,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED45",
         "failureReason": null,
-        "createdAt": "2026-10-30T17:22:00.000Z",
-        "paidAt": "2026-10-30T17:22:00.000Z",
+        "createdAt": "2026-10-31T08:25:22.000Z",
+        "paidAt": "2026-10-31T08:25:22.000Z",
         "storeName": "Mjengo Hardware"
       },
       {
@@ -6715,8 +6735,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED43",
         "failureReason": null,
-        "createdAt": "2026-10-30T14:22:00.000Z",
-        "paidAt": "2026-10-30T14:22:00.000Z",
+        "createdAt": "2026-10-31T05:25:22.000Z",
+        "paidAt": "2026-10-31T05:25:22.000Z",
         "storeName": "Mjengo Hardware"
       },
       {
@@ -6731,8 +6751,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED42",
         "failureReason": null,
-        "createdAt": "2026-10-30T13:22:00.000Z",
-        "paidAt": "2026-10-30T13:22:00.000Z",
+        "createdAt": "2026-10-31T04:25:22.000Z",
+        "paidAt": "2026-10-31T04:25:22.000Z",
         "storeName": "Mjengo Hardware"
       },
       {
@@ -6747,8 +6767,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED125",
         "failureReason": null,
-        "createdAt": "2026-10-30T12:22:00.000Z",
-        "paidAt": "2026-10-30T12:22:00.000Z",
+        "createdAt": "2026-10-31T03:25:22.000Z",
+        "paidAt": "2026-10-31T03:25:22.000Z",
         "storeName": "Baraka Builders Centre"
       },
       {
@@ -6763,8 +6783,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED221",
         "failureReason": null,
-        "createdAt": "2026-10-30T11:22:00.000Z",
-        "paidAt": "2026-10-30T11:22:00.000Z",
+        "createdAt": "2026-10-31T02:25:22.000Z",
+        "paidAt": "2026-10-31T02:25:22.000Z",
         "storeName": "Rift Timber Yard"
       },
       {
@@ -6779,8 +6799,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED38",
         "failureReason": null,
-        "createdAt": "2026-10-29T19:22:00.000Z",
-        "paidAt": "2026-10-29T19:22:00.000Z",
+        "createdAt": "2026-10-30T10:25:22.000Z",
+        "paidAt": "2026-10-30T10:25:22.000Z",
         "storeName": "Mjengo Hardware"
       },
       {
@@ -6795,8 +6815,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED123",
         "failureReason": null,
-        "createdAt": "2026-10-29T18:22:00.000Z",
-        "paidAt": "2026-10-29T18:22:00.000Z",
+        "createdAt": "2026-10-30T09:25:22.000Z",
+        "paidAt": "2026-10-30T09:25:22.000Z",
         "storeName": "Baraka Builders Centre"
       },
       {
@@ -6811,8 +6831,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED85",
         "failureReason": null,
-        "createdAt": "2026-10-29T16:22:00.000Z",
-        "paidAt": "2026-10-29T16:22:00.000Z",
+        "createdAt": "2026-10-30T07:25:22.000Z",
+        "paidAt": "2026-10-30T07:25:22.000Z",
         "storeName": "Mwamba Hardware"
       },
       {
@@ -6827,8 +6847,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED36",
         "failureReason": null,
-        "createdAt": "2026-10-29T16:22:00.000Z",
-        "paidAt": "2026-10-29T16:22:00.000Z",
+        "createdAt": "2026-10-30T07:25:22.000Z",
+        "paidAt": "2026-10-30T07:25:22.000Z",
         "storeName": "Mjengo Hardware"
       },
       {
@@ -6843,8 +6863,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED181",
         "failureReason": null,
-        "createdAt": "2026-10-29T15:22:00.000Z",
-        "paidAt": "2026-10-29T15:22:00.000Z",
+        "createdAt": "2026-10-30T06:25:22.000Z",
+        "paidAt": "2026-10-30T06:25:22.000Z",
         "storeName": "Kilimani Paints & Tools"
       },
       {
@@ -6859,8 +6879,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED35",
         "failureReason": null,
-        "createdAt": "2026-10-29T15:22:00.000Z",
-        "paidAt": "2026-10-29T15:22:00.000Z",
+        "createdAt": "2026-10-30T06:25:22.000Z",
+        "paidAt": "2026-10-30T06:25:22.000Z",
         "storeName": "Mjengo Hardware"
       },
       {
@@ -6875,8 +6895,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED121",
         "failureReason": null,
-        "createdAt": "2026-10-29T10:22:00.000Z",
-        "paidAt": "2026-10-29T10:22:00.000Z",
+        "createdAt": "2026-10-30T01:25:22.000Z",
+        "paidAt": "2026-10-30T01:25:22.000Z",
         "storeName": "Baraka Builders Centre"
       },
       {
@@ -6891,8 +6911,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED218",
         "failureReason": null,
-        "createdAt": "2026-10-28T19:22:00.000Z",
-        "paidAt": "2026-10-28T19:22:00.000Z",
+        "createdAt": "2026-10-29T10:25:22.000Z",
+        "paidAt": "2026-10-29T10:25:22.000Z",
         "storeName": "Rift Timber Yard"
       },
       {
@@ -6907,8 +6927,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED217",
         "failureReason": null,
-        "createdAt": "2026-10-28T19:22:00.000Z",
-        "paidAt": "2026-10-28T19:22:00.000Z",
+        "createdAt": "2026-10-29T10:25:22.000Z",
+        "paidAt": "2026-10-29T10:25:22.000Z",
         "storeName": "Rift Timber Yard"
       },
       {
@@ -6923,8 +6943,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED119",
         "failureReason": null,
-        "createdAt": "2026-10-28T12:22:00.000Z",
-        "paidAt": "2026-10-28T12:22:00.000Z",
+        "createdAt": "2026-10-29T03:25:22.000Z",
+        "paidAt": "2026-10-29T03:25:22.000Z",
         "storeName": "Baraka Builders Centre"
       },
       {
@@ -6939,8 +6959,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED31",
         "failureReason": null,
-        "createdAt": "2026-10-28T12:22:00.000Z",
-        "paidAt": "2026-10-28T12:22:00.000Z",
+        "createdAt": "2026-10-29T03:25:22.000Z",
+        "paidAt": "2026-10-29T03:25:22.000Z",
         "storeName": "Mjengo Hardware"
       },
       {
@@ -6955,8 +6975,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED178",
         "failureReason": null,
-        "createdAt": "2026-10-28T11:22:00.000Z",
-        "paidAt": "2026-10-28T11:22:00.000Z",
+        "createdAt": "2026-10-29T02:25:22.000Z",
+        "paidAt": "2026-10-29T02:25:22.000Z",
         "storeName": "Kilimani Paints & Tools"
       },
       {
@@ -6971,8 +6991,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED30",
         "failureReason": null,
-        "createdAt": "2026-10-28T11:22:00.000Z",
-        "paidAt": "2026-10-28T11:22:00.000Z",
+        "createdAt": "2026-10-29T02:25:22.000Z",
+        "paidAt": "2026-10-29T02:25:22.000Z",
         "storeName": "Mjengo Hardware"
       },
       {
@@ -6987,8 +7007,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED29",
         "failureReason": null,
-        "createdAt": "2026-10-28T10:22:00.000Z",
-        "paidAt": "2026-10-28T10:22:00.000Z",
+        "createdAt": "2026-10-29T01:25:22.000Z",
+        "paidAt": "2026-10-29T01:25:22.000Z",
         "storeName": "Mjengo Hardware"
       },
       {
@@ -7003,8 +7023,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED177",
         "failureReason": null,
-        "createdAt": "2026-10-27T17:22:00.000Z",
-        "paidAt": "2026-10-27T17:22:00.000Z",
+        "createdAt": "2026-10-28T08:25:22.000Z",
+        "paidAt": "2026-10-28T08:25:22.000Z",
         "storeName": "Kilimani Paints & Tools"
       },
       {
@@ -7019,8 +7039,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED116",
         "failureReason": null,
-        "createdAt": "2026-10-27T14:22:00.000Z",
-        "paidAt": "2026-10-27T14:22:00.000Z",
+        "createdAt": "2026-10-28T05:25:22.000Z",
+        "paidAt": "2026-10-28T05:25:22.000Z",
         "storeName": "Baraka Builders Centre"
       },
       {
@@ -7035,8 +7055,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED78",
         "failureReason": null,
-        "createdAt": "2026-10-27T13:22:00.000Z",
-        "paidAt": "2026-10-27T13:22:00.000Z",
+        "createdAt": "2026-10-28T04:25:22.000Z",
+        "paidAt": "2026-10-28T04:25:22.000Z",
         "storeName": "Mwamba Hardware"
       },
       {
@@ -7051,8 +7071,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED175",
         "failureReason": null,
-        "createdAt": "2026-10-26T13:22:00.000Z",
-        "paidAt": "2026-10-26T13:22:00.000Z",
+        "createdAt": "2026-10-27T04:25:22.000Z",
+        "paidAt": "2026-10-27T04:25:22.000Z",
         "storeName": "Kilimani Paints & Tools"
       },
       {
@@ -7067,8 +7087,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED25",
         "failureReason": null,
-        "createdAt": "2026-10-26T13:22:00.000Z",
-        "paidAt": "2026-10-26T13:22:00.000Z",
+        "createdAt": "2026-10-27T04:25:22.000Z",
+        "paidAt": "2026-10-27T04:25:22.000Z",
         "storeName": "Mjengo Hardware"
       },
       {
@@ -7083,8 +7103,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED75",
         "failureReason": null,
-        "createdAt": "2026-10-26T11:22:00.000Z",
-        "paidAt": "2026-10-26T11:22:00.000Z",
+        "createdAt": "2026-10-27T02:25:22.000Z",
+        "paidAt": "2026-10-27T02:25:22.000Z",
         "storeName": "Mwamba Hardware"
       },
       {
@@ -7099,8 +7119,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED23",
         "failureReason": null,
-        "createdAt": "2026-10-26T11:22:00.000Z",
-        "paidAt": "2026-10-26T11:22:00.000Z",
+        "createdAt": "2026-10-27T02:25:22.000Z",
+        "paidAt": "2026-10-27T02:25:22.000Z",
         "storeName": "Mjengo Hardware"
       },
       {
@@ -7115,8 +7135,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED74",
         "failureReason": null,
-        "createdAt": "2026-10-26T10:22:00.000Z",
-        "paidAt": "2026-10-26T10:22:00.000Z",
+        "createdAt": "2026-10-27T01:25:22.000Z",
+        "paidAt": "2026-10-27T01:25:22.000Z",
         "storeName": "Mwamba Hardware"
       },
       {
@@ -7131,8 +7151,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED22",
         "failureReason": null,
-        "createdAt": "2026-10-26T10:22:00.000Z",
-        "paidAt": "2026-10-26T10:22:00.000Z",
+        "createdAt": "2026-10-27T01:25:22.000Z",
+        "paidAt": "2026-10-27T01:25:22.000Z",
         "storeName": "Mjengo Hardware"
       },
       {
@@ -7147,8 +7167,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED112",
         "failureReason": null,
-        "createdAt": "2026-10-25T17:22:00.000Z",
-        "paidAt": "2026-10-25T17:22:00.000Z",
+        "createdAt": "2026-10-26T08:25:22.000Z",
+        "paidAt": "2026-10-26T08:25:22.000Z",
         "storeName": "Baraka Builders Centre"
       },
       {
@@ -7163,8 +7183,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED21",
         "failureReason": null,
-        "createdAt": "2026-10-25T16:22:00.000Z",
-        "paidAt": "2026-10-25T16:22:00.000Z",
+        "createdAt": "2026-10-26T07:25:22.000Z",
+        "paidAt": "2026-10-26T07:25:22.000Z",
         "storeName": "Mjengo Hardware"
       },
       {
@@ -7179,8 +7199,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED108",
         "failureReason": null,
-        "createdAt": "2026-10-25T13:22:00.000Z",
-        "paidAt": "2026-10-25T13:22:00.000Z",
+        "createdAt": "2026-10-26T04:25:22.000Z",
+        "paidAt": "2026-10-26T04:25:22.000Z",
         "storeName": "Baraka Builders Centre"
       },
       {
@@ -7195,8 +7215,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED211",
         "failureReason": null,
-        "createdAt": "2026-10-25T11:22:00.000Z",
-        "paidAt": "2026-10-25T11:22:00.000Z",
+        "createdAt": "2026-10-26T02:25:22.000Z",
+        "paidAt": "2026-10-26T02:25:22.000Z",
         "storeName": "Rift Timber Yard"
       },
       {
@@ -7211,8 +7231,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED174",
         "failureReason": null,
-        "createdAt": "2026-10-25T11:22:00.000Z",
-        "paidAt": "2026-10-25T11:22:00.000Z",
+        "createdAt": "2026-10-26T02:25:22.000Z",
+        "paidAt": "2026-10-26T02:25:22.000Z",
         "storeName": "Kilimani Paints & Tools"
       },
       {
@@ -7227,8 +7247,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED19",
         "failureReason": null,
-        "createdAt": "2026-10-24T19:22:00.000Z",
-        "paidAt": "2026-10-24T19:22:00.000Z",
+        "createdAt": "2026-10-25T10:25:22.000Z",
+        "paidAt": "2026-10-25T10:25:22.000Z",
         "storeName": "Mjengo Hardware"
       },
       {
@@ -7243,8 +7263,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED142",
         "failureReason": null,
-        "createdAt": "2026-10-24T16:22:00.000Z",
-        "paidAt": "2026-10-24T16:22:00.000Z",
+        "createdAt": "2026-10-25T07:25:22.000Z",
+        "paidAt": "2026-10-25T07:25:22.000Z",
         "storeName": "Coast Steel Mart"
       },
       {
@@ -7259,8 +7279,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED17",
         "failureReason": null,
-        "createdAt": "2026-10-24T15:22:00.000Z",
-        "paidAt": "2026-10-24T15:22:00.000Z",
+        "createdAt": "2026-10-25T06:25:22.000Z",
+        "paidAt": "2026-10-25T06:25:22.000Z",
         "storeName": "Mjengo Hardware"
       },
       {
@@ -7275,8 +7295,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED207",
         "failureReason": null,
-        "createdAt": "2026-10-24T12:22:00.000Z",
-        "paidAt": "2026-10-24T12:22:00.000Z",
+        "createdAt": "2026-10-25T03:25:22.000Z",
+        "paidAt": "2026-10-25T03:25:22.000Z",
         "storeName": "Rift Timber Yard"
       },
       {
@@ -7291,8 +7311,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED141",
         "failureReason": null,
-        "createdAt": "2026-10-24T12:22:00.000Z",
-        "paidAt": "2026-10-24T12:22:00.000Z",
+        "createdAt": "2026-10-25T03:25:22.000Z",
+        "paidAt": "2026-10-25T03:25:22.000Z",
         "storeName": "Coast Steel Mart"
       },
       {
@@ -7307,8 +7327,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED139",
         "failureReason": null,
-        "createdAt": "2026-10-24T12:22:00.000Z",
-        "paidAt": "2026-10-24T12:22:00.000Z",
+        "createdAt": "2026-10-25T03:25:22.000Z",
+        "paidAt": "2026-10-25T03:25:22.000Z",
         "storeName": "Coast Steel Mart"
       },
       {
@@ -7323,8 +7343,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED105",
         "failureReason": null,
-        "createdAt": "2026-10-24T10:22:00.000Z",
-        "paidAt": "2026-10-24T10:22:00.000Z",
+        "createdAt": "2026-10-25T01:25:22.000Z",
+        "paidAt": "2026-10-25T01:25:22.000Z",
         "storeName": "Baraka Builders Centre"
       },
       {
@@ -7339,8 +7359,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED10",
         "failureReason": null,
-        "createdAt": "2026-10-23T15:22:00.000Z",
-        "paidAt": "2026-10-23T15:22:00.000Z",
+        "createdAt": "2026-10-24T06:25:22.000Z",
+        "paidAt": "2026-10-24T06:25:22.000Z",
         "storeName": "Mjengo Hardware"
       },
       {
@@ -7355,8 +7375,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED138",
         "failureReason": null,
-        "createdAt": "2026-10-23T11:22:00.000Z",
-        "paidAt": "2026-10-23T11:22:00.000Z",
+        "createdAt": "2026-10-24T02:25:22.000Z",
+        "paidAt": "2026-10-24T02:25:22.000Z",
         "storeName": "Coast Steel Mart"
       },
       {
@@ -7371,8 +7391,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED68",
         "failureReason": null,
-        "createdAt": "2026-10-22T19:22:00.000Z",
-        "paidAt": "2026-10-22T19:22:00.000Z",
+        "createdAt": "2026-10-23T10:25:22.000Z",
+        "paidAt": "2026-10-23T10:25:22.000Z",
         "storeName": "Mwamba Hardware"
       },
       {
@@ -7387,8 +7407,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED6",
         "failureReason": null,
-        "createdAt": "2026-10-22T18:22:00.000Z",
-        "paidAt": "2026-10-22T18:22:00.000Z",
+        "createdAt": "2026-10-23T09:25:22.000Z",
+        "paidAt": "2026-10-23T09:25:22.000Z",
         "storeName": "Mjengo Hardware"
       },
       {
@@ -7403,8 +7423,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED3",
         "failureReason": null,
-        "createdAt": "2026-10-22T14:22:00.000Z",
-        "paidAt": "2026-10-22T14:22:00.000Z",
+        "createdAt": "2026-10-23T05:25:22.000Z",
+        "paidAt": "2026-10-23T05:25:22.000Z",
         "storeName": "Mjengo Hardware"
       },
       {
@@ -7419,8 +7439,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED2",
         "failureReason": null,
-        "createdAt": "2026-10-22T14:22:00.000Z",
-        "paidAt": "2026-10-22T14:22:00.000Z",
+        "createdAt": "2026-10-23T05:25:22.000Z",
+        "paidAt": "2026-10-23T05:25:22.000Z",
         "storeName": "Mjengo Hardware"
       },
       {
@@ -7435,8 +7455,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED202",
         "failureReason": null,
-        "createdAt": "2026-10-22T12:22:00.000Z",
-        "paidAt": "2026-10-22T12:22:00.000Z",
+        "createdAt": "2026-10-23T03:25:22.000Z",
+        "paidAt": "2026-10-23T03:25:22.000Z",
         "storeName": "Rift Timber Yard"
       },
       {
@@ -7451,8 +7471,8 @@
         "status": "paid",
         "providerRef": "TRF_SEED1",
         "failureReason": null,
-        "createdAt": "2026-10-22T11:22:00.000Z",
-        "paidAt": "2026-10-22T11:22:00.000Z",
+        "createdAt": "2026-10-23T02:25:22.000Z",
+        "paidAt": "2026-10-23T02:25:22.000Z",
         "storeName": "Mjengo Hardware"
       }
     ],
@@ -7477,38 +7497,38 @@
         "kind": "password_changed",
         "summary": "Peter Kamau changed their password",
         "actor": "Peter Kamau",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": "Mjengo Hardware",
         "data": [],
-        "createdAt": "2026-11-04T19:22:00.000Z"
+        "createdAt": "2026-11-05T10:25:23.000Z"
       },
       {
         "id": 260,
         "kind": "order_status",
         "summary": "S-239: awaiting confirmation → new",
         "actor": "Peter Kamau",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": "Mjengo Hardware",
         "data": {
           "order": "S-239",
           "before": "awaiting_confirmation",
           "after": "new"
         },
-        "createdAt": "2026-11-04T19:22:00.000Z"
+        "createdAt": "2026-11-05T10:25:23.000Z"
       },
       {
         "id": 259,
         "kind": "counter_sale",
         "summary": "Counter sale S-240: 1 × Claw hammer, 16 oz — KSh 650 (cash)",
         "actor": "Peter Kamau",
-        "storeId": "st_K5Npfjr3lZOH",
+        "storeId": "st_YywAJ-0ZKexE",
         "storeName": "Mjengo Hardware",
         "data": {
           "sale": "S-240",
           "total": 650,
           "method": "cash"
         },
-        "createdAt": "2026-11-04T19:22:00.000Z"
+        "createdAt": "2026-11-05T10:25:23.000Z"
       }
     ],
     "note": ""
@@ -7521,7 +7541,7 @@
     "auth": true,
     "status": 200,
     "response": {
-      "id": "st_FwoYatPw4bey",
+      "id": "st_LWyFeTJq3i1l",
       "slug": "rift-timber",
       "name": "Rift Timber Yard",
       "tagline": "Timber and boards, cut to size",
@@ -7534,6 +7554,7 @@
       "hours": "Mon–Sat 7:00–17:00",
       "accent": "#0B3A6E",
       "cover": "timber",
+      "branch": null,
       "delivery": {
         "enabled": true,
         "mode": "quote",
@@ -7561,8 +7582,8 @@
       },
       "customDomain": null,
       "domainStatus": null,
-      "createdAt": "2026-06-07T19:22:00.000Z",
-      "nextBillingAt": "2026-10-06T19:22:00.000Z"
+      "createdAt": "2026-06-08T10:25:22.000Z",
+      "nextBillingAt": "2026-10-07T10:25:22.000Z"
     },
     "note": ""
   },
@@ -7572,7 +7593,7 @@
     "auth": true,
     "status": 200,
     "response": {
-      "temporaryPassword": "qxQNSrbbZw",
+      "temporaryPassword": "D9q2wTjFjV",
       "owner": "Peter Kamau"
     },
     "note": "owner must change it at next login"
@@ -7641,7 +7662,7 @@
     "status": 200,
     "response": {
       "id": 1,
-      "reference": "PO_SEED_1",
+      "reference": "PO_2AA9AEAB6090B417",
       "orderId": "S-1",
       "gross": 10330,
       "commission": 0,
@@ -7649,10 +7670,10 @@
       "method": "paybill",
       "destination": "Paybill 247247, account MJENGO",
       "status": "paid",
-      "providerRef": "TRF_D5CBB992",
+      "providerRef": "TRF_EE221034",
       "failureReason": null,
-      "createdAt": "2026-10-22T11:22:00.000Z",
-      "paidAt": "2026-11-04T19:22:01.000Z"
+      "createdAt": "2026-10-23T02:25:22.000Z",
+      "paidAt": "2026-11-05T10:25:23.000Z"
     },
     "note": ""
   },

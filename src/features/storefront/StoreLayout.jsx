@@ -12,7 +12,7 @@ import { getUser, setActingStore } from '@/services/session'
 export async function loader({ params }) {
   const slug = params.slug ?? getTenantSlugFromHost()
   try {
-    return await api.getStorefront(slug)
+    return await api.getStorefront(slug, params.branch)
   } catch (e) {
     throw data({ message: e.message }, { status: e.status ?? 500 })
   }
@@ -20,11 +20,12 @@ export async function loader({ params }) {
 
 // Store data rarely changes while browsing; don't refetch on every in-store click.
 export function shouldRevalidate({ currentParams, nextParams }) {
-  return currentParams.slug !== nextParams.slug
+  return currentParams.slug !== nextParams.slug || currentParams.branch !== nextParams.branch
 }
 
 function StoreLayout() {
   const { store } = useStore()
+  const cartKey = store.branch ? `${store.slug}-${store.branch.slug}` : store.slug
   const navigation = useNavigation()
 
   if (store.status === 'suspended' || store.status === 'draft') return <ClosedStore store={store} />
@@ -33,10 +34,11 @@ function StoreLayout() {
     // Re-theme this subtree with the vendor's accent colour: Tailwind v4
     // utilities read --color-amber, so overriding the variable is enough.
     <div style={{ '--color-amber': store.accent }} className="flex min-h-dvh flex-col bg-concrete">
-      <title>{`${store.name} — ${store.town}`}</title>
+      <title>{`${store.name}${store.branch ? ` ${store.branch.name}` : ''} — ${store.town}`}</title>
       <meta name="description" content={store.tagline || `Building materials and hardware in ${store.town}.`} />
       <NavProgress active={navigation.state === 'loading'} />
-      <CartProvider key={store.slug} slug={store.slug}>
+      {/* Each branch has its own stock, so its own cart. */}
+      <CartProvider key={cartKey} slug={cartKey}>
         <StoreHeader />
         <main className="flex-1">
           <Outlet />
@@ -63,7 +65,7 @@ function StoreHeader() {
           )}
           <span className="min-w-0">
             <span className="block truncate font-bold leading-tight">{store.name}</span>
-            <span className="block truncate text-xs text-mist">{store.town}, {store.county}</span>
+            <span className="block truncate text-xs text-mist">{store.branch ? `${store.branch.name} branch` : `${store.town}, ${store.county}`}</span>
           </span>
         </Link>
         <div className="ml-auto flex items-center gap-1 sm:gap-2">
@@ -113,7 +115,7 @@ function ManageShopLink({ store }) {
 }
 
 function StoreFooter() {
-  const { store } = useStore()
+  const { store, branches, home } = useStore()
   return (
     <footer className="mt-16 border-t border-line bg-white">
       <div className="mx-auto grid max-w-6xl gap-8 px-5 py-10 text-sm sm:grid-cols-3">
@@ -125,6 +127,20 @@ function StoreFooter() {
           <li className="flex gap-2"><MapPin className="size-4 shrink-0 text-steel" />{[store.address, store.town, store.county].filter(Boolean).join(', ')}</li>
           {store.hours && <li className="flex gap-2"><Clock className="size-4 shrink-0 text-steel" />{store.hours}</li>}
           {store.phone && <li className="flex gap-2"><Phone className="size-4 shrink-0 text-steel" /><a href={`tel:${store.phone.replace(/\s/g, '')}`} className="hover:text-ink">{store.phone}</a></li>}
+          {branches?.length > 0 && (
+            <li className="pt-2">
+              <p className="font-medium text-ink">Our branches</p>
+              <ul className="mt-1 space-y-1">
+                {branches.map((b) => (
+                  <li key={b.slug ?? 'main'}>
+                    <Link to={b.slug ? `${home}/${b.slug}` : home || '/'} className={(store.branch?.slug ?? null) === b.slug ? 'font-medium text-ink' : 'hover:text-ink hover:underline'}>
+                      {b.name}{b.location ? `, ${b.location}` : ''}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </li>
+          )}
         </ul>
         <div className="sm:text-right">
           <p className="text-muted">Online store by</p>

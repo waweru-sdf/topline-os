@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Payment;
+use App\Models\Branch;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Models\SaleItem;
@@ -29,7 +30,8 @@ class Orders
     public const MPESA_CODE = '/^[A-Z0-9]{8,12}$/';
 
     /** @return array{0: Sale, 1: ?Payment} */
-    public static function place(Store $store, array $customer, mixed $items, ?array $delivery, string $paymentMode = Sale::PAY_PROMPT, mixed $mpesaCode = null): array
+    /** $branch: the branch whose store page the order came from (default: main); its stock is held. */
+    public static function place(Store $store, array $customer, mixed $items, ?array $delivery, string $paymentMode = Sale::PAY_PROMPT, mixed $mpesaCode = null, ?Branch $branch = null): array
     {
         if (! $store->isOpen()) {
             throw new ApiError("{$store->name} isn't taking online orders right now.", 409);
@@ -62,7 +64,7 @@ class Orders
         $delivery ??= [];
 
         // Create the order and hold its stock in one transaction: all items or none.
-        $order = DB::transaction(function () use ($store, $paymentMode, $name, $phone, $deliveryType, $zone, $delivery, $lines, $products, $subtotal, $fee, $code) {
+        $order = DB::transaction(function () use ($store, $paymentMode, $name, $phone, $deliveryType, $zone, $delivery, $lines, $products, $subtotal, $fee, $code, $branch) {
             $order = Sale::create([
                 'store_id' => $store->id,
                 'channel' => Sale::ONLINE,
@@ -79,12 +81,13 @@ class Orders
                 'delivery_fee' => $fee,
                 'total' => $subtotal + $fee,
                 'mpesa_ref' => $code,
+                'branch_id' => $branch?->id,
             ]);
             foreach ($lines as $line) {
                 $order->items()->create($line);
             }
             foreach ($products as $i => $product) {
-                Stock::reserve($product, $lines[$i]['qty'], $order->code);
+                Stock::reserve($product, $lines[$i]['qty'], $order->code, $branch);
             }
             $how = $paymentMode === Sale::PAY_DIRECT ? 'paid to shop directly, waiting for check' : 'waiting for M-PESA';
             Activity::record('order_placed', "{$name} ordered ".self::itemsText($lines).' — '.Text::kes($order->total)." ({$how})",
@@ -202,9 +205,10 @@ class Orders
 
     private static function releaseStock(Sale $order, string $reason): void
     {
+        $branch = $order->branch_id ? Branch::find($order->branch_id) : null;
         foreach ($order->items as $line) {
             if ($line->product_id && ($product = Product::find($line->product_id))) {
-                Stock::release($product, $line->qty, $order->code, $reason);
+                Stock::release($product, $line->qty, $order->code, $reason, $branch);
             }
         }
     }

@@ -84,8 +84,8 @@ export const api = {
   listPublicSuppliers: () => http('GET', '/suppliers'),
 
   // storefront (public, per store)
-  getStorefront: (slug) => http('GET', `/storefront/${slug}`),
-  getStoreProduct: (slug, p) => http('GET', `/storefront/${slug}/products/${p}`),
+  getStorefront: (slug, branch) => http('GET', `/storefront/${slug}${q({ branch })}`),
+  getStoreProduct: (slug, p, branch) => http('GET', `/storefront/${slug}/products/${p}${q({ branch })}`),
   placeOrder: (slug, body) => http('POST', `/storefront/${slug}/orders`, body),
   getOrderPayment: (slug, id) => http('GET', `/storefront/${slug}/orders/${id}/payment`),
   requestQuote: (slug, body) => http('POST', `/storefront/${slug}/quotes`, body),
@@ -139,7 +139,6 @@ export const api = {
   addBranch: (id, body) => http('POST', `${v(id)}/branches`, body),
   updateBranch: (id, branchId, body) => http('PATCH', `${v(id)}/branches/${branchId}`, body),
   removeBranch: (id, branchId) => http('DELETE', `${v(id)}/branches/${branchId}`),
-  setDomain: (id, domain) => http('PUT', `${v(id)}/domain`, { domain }),
 
   // shop admin: supplier balances
   listSupplierAccounts: (id) => http('GET', `${v(id)}/supplier-accounts`),
@@ -176,7 +175,7 @@ export const api = {
   getOverview: () => http('GET', '/admin/overview'),
   listAllStores: () => http('GET', '/admin/stores'),
   setStoreStatus: (id, status) => http('PATCH', `/admin/stores/${id}`, { status }),
-  setStoreDomainStatus: (id, domainStatus) => http('PATCH', `/admin/stores/${id}`, { domainStatus }),
+  setStoreDomain: (id, body) => http('PATCH', `/admin/stores/${id}`, body), // {customDomain?, domainStatus?}
   resetOwnerPassword: (id) => http('POST', `/admin/stores/${id}/reset-password`),
   listActivity: (params) => http('GET', `/admin/activity${q(params)}`),
   listPayments: () => http('GET', '/admin/payments'),

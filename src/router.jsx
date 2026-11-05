@@ -17,12 +17,14 @@ function Root() {
   )
 }
 
-const storefrontRoutes = [
+const storePages = [
   { index: true, lazy: () => import('@/features/storefront/StoreHome') },
   { path: 'p/:productSlug', lazy: () => import('@/features/storefront/ProductPage') },
   { path: 'cart', lazy: () => import('@/features/storefront/CartPage') },
   { path: 'checkout', lazy: () => import('@/features/storefront/Checkout') },
 ]
+// The shop's address is the main branch's page; /<branch> is another branch's page (same pages, its stock).
+const storefrontRoutes = [...storePages, { path: ':branch', children: storePages }]
 
 const storefront = (path) => ({
   path,

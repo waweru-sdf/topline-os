@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useSearchParams } from 'react-router'
+import { Link, useSearchParams } from 'react-router'
 import { Clock, FileText, MapPin, MessageCircle, Search, Truck } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { Img } from '@/components/ui/Img'
@@ -10,7 +10,7 @@ import { QuoteDialog } from './QuoteDialog'
 import { useStore } from './useStore'
 
 function StoreHome() {
-  const { store, categories, products, base } = useStore()
+  const { store, categories, products, base, branches, home } = useStore()
   const [params, setParams] = useSearchParams()
   const [quoteOpen, setQuoteOpen] = useState(false)
   const category = params.get('c') ?? ''
@@ -39,12 +39,26 @@ function StoreHome() {
         <Img name={store.cover} alt="" w={1600} h={600} priority className="absolute inset-0 size-full opacity-35" />
         <div className="relative mx-auto max-w-6xl px-5 py-12 sm:py-16">
           <h1 className="max-w-2xl text-3xl font-bold tracking-tight sm:text-5xl">{store.name}</h1>
+          {store.branch && <p className="mt-2 text-xl font-medium text-amber">{store.branch.name} branch</p>}
           {store.tagline && <p className="mt-3 max-w-xl text-lg text-mist">{store.tagline}</p>}
           <ul className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-mist">
             <li className="flex items-center gap-2"><MapPin className="size-4 text-amber" />{store.address || store.town}</li>
             {store.hours && <li className="flex items-center gap-2"><Clock className="size-4 text-amber" />{store.hours}</li>}
             {store.delivery?.enabled && <li className="flex items-center gap-2"><Truck className="size-4 text-amber" />Delivery available</li>}
           </ul>
+          {branches?.length > 0 && (
+            <nav aria-label="Branches" className="mt-5 flex flex-wrap gap-2">
+              {branches.map((b) => {
+                const here = (store.branch?.slug ?? null) === b.slug
+                return (
+                  <Link key={b.slug ?? 'main'} to={b.slug ? `${home}/${b.slug}` : home || '/'} aria-current={here ? 'page' : undefined}
+                    className={cn('rounded-full px-3 py-1 text-sm', here ? 'bg-amber font-medium text-navy-deep' : 'bg-white/10 text-white hover:bg-white/20')}>
+                    {b.name}
+                  </Link>
+                )
+              })}
+            </nav>
+          )}
           <div className="mt-7 flex flex-wrap gap-3">
             <Button onClick={() => setQuoteOpen(true)}><FileText className="size-4" />Request a quote</Button>
             {store.whatsapp && (

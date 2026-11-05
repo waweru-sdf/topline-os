@@ -48,6 +48,7 @@ function Checkout() {
         delivery: { type, zoneId, address: fd.get('address') || null, notes: fd.get('notes') || null },
         paymentMode: payMode,
         mpesaCode: fd.get('mpesaCode') || null,
+        branch: store.branch?.slug, // a branch's page: the goods come from that branch
       })
       if (placed.payment) {
         setOrder(placed)

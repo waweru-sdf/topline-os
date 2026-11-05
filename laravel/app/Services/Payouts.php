@@ -83,8 +83,9 @@ class Payouts
     {
         $payout->method = $store->payout_method;
         $payout->destination = self::destination($store);
+        $payout->reference = Text::reference('PO'); // a fresh reference, so the webhook finds this attempt
         try {
-            $result = Gateways::get()->transfer(new TransferRequest(Text::reference('PO'), $payout->amount, $store->payout_method,
+            $result = Gateways::get()->transfer(new TransferRequest($payout->reference, $payout->amount, $store->payout_method,
                 $store->payout_number, (string) $store->payout_account, $store->payout_name ?: $store->name, "{$store->name} payout retry"));
         } catch (PaystackException $e) {
             $payout->failure_reason = mb_substr($e->getMessage(), 0, 200);

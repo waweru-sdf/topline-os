@@ -1,11 +1,13 @@
 import { useParams, useRouteLoaderData } from 'react-router'
 
 /**
- * Store data loaded by StoreLayout, plus `base`: the path prefix for in-store
- * links ("/s/mjengo" on the main site, "" on mjengo.toplinehub.co.ke).
+ * Store data loaded by StoreLayout, plus `base`: the path prefix for in-store links
+ * ("/s/mjengo" on the main site, "" on the shop's own address, plus "/kitsuru" on a branch's page),
+ * and `home`: the shop's (main branch's) page, for switching branches.
  */
 export function useStore() {
   const data = useRouteLoaderData('store')
-  const { slug } = useParams()
-  return { ...data, base: slug ? `/s/${slug}` : '' }
+  const { slug, branch } = useParams()
+  const home = slug ? `/s/${slug}` : ''
+  return { ...data, home, base: branch ? `${home}/${branch}` : home }
 }
