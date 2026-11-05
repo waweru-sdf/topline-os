@@ -3,7 +3,7 @@ import { useRevalidator } from 'react-router'
 import { CircleCheck, Clock, Globe, Plus, Trash2 } from 'lucide-react'
 import { api } from '@/services/api'
 import { COUNTIES } from '@/lib/counties'
-import { storeHost } from '@/lib/tenant'
+import { storeHost, toplineSubdomain } from '@/lib/tenant'
 import { cn } from '@/lib/cn'
 import { displayPhone, formatKES } from '@/lib/format'
 import { PAYOUT_METHODS, payoutMethod } from '@/lib/payments'
@@ -200,16 +200,17 @@ function OwnDomain({ store }) {
   if (!store.limits?.customDomain && !store.customDomain) {
     return (
       <section className="rounded-card bg-white p-5 ring-1 ring-line sm:p-6">
-        <h2 className="flex items-center gap-2 font-bold"><Globe className="size-5" />Your own domain</h2>
-        <p className="mt-2 text-sm text-muted">Use an address like yourshop.co.ke for your store. Your plan doesn’t include it; see Plan & billing.</p>
+        <h2 className="flex items-center gap-2 font-bold"><Globe className="size-5" />Your own address</h2>
+        <p className="mt-2 text-sm text-muted">Use {toplineSubdomain(store.slug)} or a domain like yourshop.co.ke for your store. Your plan doesn’t include it; see Plan & billing.</p>
       </section>
     )
   }
-  async function save(e) {
+  const subdomain = toplineSubdomain(store.slug)
+  async function save(e, value = domain) {
     e.preventDefault()
     setStatus({ saving: true })
     try {
-      const saved = await api.setDomain(store.id, domain)
+      const saved = await api.setDomain(store.id, value)
       setDomain(saved.customDomain ?? '')
       setStatus({ saved: true })
       revalidator.revalidate()
@@ -219,7 +220,15 @@ function OwnDomain({ store }) {
   }
   return (
     <form onSubmit={save} className="rounded-card bg-white p-5 ring-1 ring-line sm:p-6">
-      <h2 className="flex items-center gap-2 font-bold"><Globe className="size-5" />Your own domain</h2>
+      <h2 className="flex items-center gap-2 font-bold"><Globe className="size-5" />Your own address</h2>
+      <div className="mt-3 rounded-lg border border-line p-4">
+        <p className="font-medium">Quickest: {subdomain}</p>
+        <p className="mt-1 text-sm text-muted">A short Topline address with your shop’s name. Nothing to buy or set up; Topline connects it, usually within one working day.</p>
+        {store.customDomain !== subdomain && (
+          <Button type="button" variant="outline" size="sm" className="mt-3" onClick={(e) => { setDomain(subdomain); save(e, subdomain) }}>Use {subdomain}</Button>
+        )}
+      </div>
+      <p className="mt-5 font-medium">Or a domain you own</p>
       <ol className="mt-2 list-decimal space-y-1 pl-5 text-sm text-muted">
         <li>Buy a domain (e.g. from a .co.ke registrar) if you don’t have one.</li>
         <li>WhatsApp Topline for the server address, and ask your registrar to point the domain (both <em>@</em> and <em>www</em>) to it.</li>

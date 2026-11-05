@@ -112,7 +112,9 @@ class PlanFeaturesTest extends TestCase
 
         $pro = $this->login('0733 444 555'); // Mwamba, Pro
         $base = $this->base($pro);
-        $this->putJson("{$base}/domain", ['domain' => 'shop.toplinehub.co.ke'], $pro['headers'])->assertStatus(422);
+        $this->putJson("{$base}/domain", ['domain' => 'baraka.toplinehub.co.ke'], $pro['headers'])->assertStatus(422); // another shop's name
+        $this->putJson("{$base}/domain", ['domain' => 'www.toplinehub.co.ke'], $pro['headers'])->assertStatus(422);
+        $this->putJson("{$base}/domain", ['domain' => 'a.mwamba.toplinehub.co.ke'], $pro['headers'])->assertStatus(422);
         $this->putJson("{$base}/domain", ['domain' => 'not a domain'], $pro['headers'])->assertStatus(422);
         $this->putJson("{$base}/domain", ['domain' => 'https://www.MwambaHardware.co.ke/'], $pro['headers'])->assertOk()
             ->assertJson(['customDomain' => 'mwambahardware.co.ke', 'domainStatus' => 'pending']);
@@ -125,6 +127,16 @@ class PlanFeaturesTest extends TestCase
         $this->getJson('/api/domains/resolve?host=mwambahardware.co.ke')->assertOk()->assertExactJson(['slug' => 'mwamba']);
         $this->getJson('/api/domains/resolve?host=www.mwambahardware.co.ke')->assertOk()->assertJson(['slug' => 'mwamba']);
         $this->getJson('/api/domains/resolve?host=elsewhere.co.ke')->assertStatus(404);
+
+        // Or a Topline subdomain named after the shop.
+        $this->putJson("{$base}/domain", ['domain' => 'mwamba.toplinehub.co.ke'], $pro['headers'])->assertOk()->assertJson(['customDomain' => 'mwamba.toplinehub.co.ke', 'domainStatus' => 'pending']);
+        $this->getJson('/api/domains/resolve?host=mwambahardware.co.ke')->assertStatus(404); // the old one stopped
+        $this->getJson('/api/domains/resolve?host=mwamba.toplinehub.co.ke')->assertStatus(404);
+        $this->patchJson("/api/admin/stores/{$mwamba->id}", ['domainStatus' => 'connected'], $admin['headers'])->assertOk();
+        $this->getJson('/api/domains/resolve?host=mwamba.toplinehub.co.ke')->assertOk()->assertExactJson(['slug' => 'mwamba']);
+        $this->getJson('/api/domains/resolve?host=new.toplinehub.co.ke')->assertStatus(404); // a test site stays the main site
+        $this->putJson("{$base}/domain", ['domain' => 'mwambahardware.co.ke'], $pro['headers'])->assertOk();
+        $this->patchJson("/api/admin/stores/{$mwamba->id}", ['domainStatus' => 'connected'], $admin['headers'])->assertOk();
 
         $other = $this->login('0722 118 404'); // Baraka, also Pro
         $this->putJson($this->base($other).'/domain', ['domain' => 'mwambahardware.co.ke'], $other['headers'])->assertStatus(422); // taken

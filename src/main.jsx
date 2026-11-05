@@ -2,7 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { RouterProvider } from 'react-router/dom'
 import { api } from './services/api'
-import { isOtherDomain, setOwnDomainSlug } from './lib/tenant'
+import { mayBeShopAddress, setOwnDomainSlug } from './lib/tenant'
 import './styles/index.css'
 
 // Crashes in customers' browsers show up in Topline admin > System health.
@@ -13,8 +13,8 @@ if (import.meta.env.PROD) {
 }
 
 async function start() {
-  // On a shop's own domain the shop *is* the site: find out which shop before building the routes.
-  if (isOtherDomain()) {
+  // On a shop's own address the shop *is* the site: find out which shop before building the routes.
+  if (mayBeShopAddress()) {
     const found = await api.resolveDomain(location.hostname).catch(() => null)
     if (found?.slug) setOwnDomainSlug(found.slug)
   }

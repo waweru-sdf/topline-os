@@ -23,12 +23,23 @@ const STORE_LINKS = import.meta.env.VITE_STORE_LINKS === 'path' ? 'path' : 'subd
 let ownDomainSlug = null
 export const setOwnDomainSlug = (slug) => { ownDomainSlug = slug }
 
-/** True on a domain that isn't Topline's, a local address or an IP: maybe a shop's own domain. */
-export function isOtherDomain(hostname = window.location.hostname) {
+/**
+ * True when this address may be a shop's own: a domain that isn't Topline's, or (with path links)
+ * a subdomain like kamandes.toplinehub.co.ke that Topline set up for a shop. The server decides.
+ */
+export function mayBeShopAddress(hostname = window.location.hostname) {
   const host = hostname.toLowerCase()
   if (host === 'localhost' || host.endsWith('.localhost') || /^[\d.]+$/.test(host) || host.includes(':')) return false
-  return host !== ROOT_DOMAIN && !host.endsWith(`.${ROOT_DOMAIN}`)
+  if (host === ROOT_DOMAIN) return false
+  if (host.endsWith(`.${ROOT_DOMAIN}`)) {
+    const sub = host.slice(0, -(ROOT_DOMAIN.length + 1))
+    return STORE_LINKS === 'path' && !sub.includes('.') && !RESERVED.has(sub)
+  }
+  return true
 }
+
+/** The shop's Topline subdomain, offered as its own address: kamandes.toplinehub.co.ke */
+export const toplineSubdomain = (slug) => `${slug}.${ROOT_DOMAIN}`
 
 export function getTenantSlugFromHost(hostname = window.location.hostname) {
   if (ownDomainSlug && hostname === window.location.hostname) return ownDomainSlug
