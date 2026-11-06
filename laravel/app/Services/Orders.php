@@ -9,6 +9,7 @@ use App\Models\Sale;
 use App\Models\SaleItem;
 use App\Models\Store;
 use App\Models\User;
+use App\Services\Payments\Gateways;
 use App\Support\ApiError;
 use App\Support\Phone;
 use App\Support\Text;
@@ -18,15 +19,27 @@ use Throwable;
 /**
  * Online orders from a storefront.
  * 1. place(): checks and HOLDS stock (atomically, see Stock::reserve), adds the delivery fee, then either
- *    - "prompt": one M-PESA prompt for the exact total (goods + delivery), or
+ *    - "prompt": one M-PESA prompt for the exact total (goods + delivery), when Topline collects orders, or
  *    - "direct": the customer paid the shop's own till/paybill/Pochi/number and gives the M-PESA code;
- *      the shop confirms it received the money.
+ *      the shop confirms it received the money, or
+ *    - "later": the customer pays at pickup or on delivery; the shop confirms the order (when Topline
+ *      doesn't collect orders, e.g. plans paid into a till).
  * 2. Paid (prompt) or confirmed (direct) -> "new" in the shop's admin, shop notified, money sent to the shop.
  * 3. Declined / unanswered / cancelled -> the held stock goes back on the shelf.
  */
 class Orders
 {
     public const MAX_LINES = 50;
+
+    /** How customers can pay this shop at checkout. */
+    public static function paymentModes(Store $store): array
+    {
+        return array_values(array_filter([
+            Gateways::collectsOrders() ? Sale::PAY_PROMPT : null,
+            $store->acceptsDirect() ? Sale::PAY_DIRECT : null,
+            Gateways::collectsOrders() ? null : Sale::PAY_LATER,
+        ]));
+    }
     public const MPESA_CODE = '/^[A-Z0-9]{8,12}$/';
 
     /** @return array{0: Sale, 1: ?Payment} */
@@ -44,14 +57,11 @@ class Orders
         if (! $phone) {
             throw ApiError::invalid('Enter an M-PESA number like 0712 345 678.', 'phone');
         }
-        if (! in_array($paymentMode, [Sale::PAY_PROMPT, Sale::PAY_DIRECT], true)) {
-            throw ApiError::invalid('Choose how to pay.', 'paymentMode');
+        if (! in_array($paymentMode, self::paymentModes($store), true)) {
+            throw ApiError::invalid('Choose one of the ways to pay shown.', 'paymentMode');
         }
         $code = null;
         if ($paymentMode === Sale::PAY_DIRECT) {
-            if (! ($store->accepts_direct_payment && $store->canReceivePayouts())) {
-                throw ApiError::invalid("{$store->name} only takes payment by M-PESA prompt.", 'paymentMode');
-            }
             $code = strtoupper(trim((string) ($mpesaCode ?? '')));
             if (! preg_match(self::MPESA_CODE, $code)) {
                 throw ApiError::invalid('Enter the M-PESA code from your confirmation SMS, e.g. TJK4H2PQ9X.', 'mpesaCode');
@@ -89,7 +99,11 @@ class Orders
             foreach ($products as $i => $product) {
                 Stock::reserve($product, $lines[$i]['qty'], $order->code, $branch);
             }
-            $how = $paymentMode === Sale::PAY_DIRECT ? 'paid to shop directly, waiting for check' : 'waiting for M-PESA';
+            $how = match ($paymentMode) {
+                Sale::PAY_DIRECT => 'paid to shop directly, waiting for check',
+                Sale::PAY_LATER => 'pays at pickup or delivery, waiting for the shop',
+                default => 'waiting for M-PESA',
+            };
             Activity::record('order_placed', "{$name} ordered ".self::itemsText($lines).' — '.Text::kes($order->total)." ({$how})",
                 $store->id, "Customer {$name}", ['order' => $order->code, 'total' => $order->total]);
 
@@ -97,7 +111,7 @@ class Orders
         });
         $order->load('items');
 
-        if ($paymentMode === Sale::PAY_DIRECT) {
+        if ($paymentMode !== Sale::PAY_PROMPT) {
             Notifications::newOrderForShop($store, $order);
 
             return [$order, null];
@@ -187,8 +201,11 @@ class Orders
             throw ApiError::invalid("An order that is '{$order->status}' can't be moved to '".(is_scalar($newStatus) ? $newStatus : '')."'.", 'status');
         }
         DB::transaction(function () use ($order, $newStatus, $store, $user) {
-            if ($newStatus === Sale::NEW && $order->status === Sale::AWAITING_CONFIRMATION) {
+            if ($newStatus === Sale::NEW && $order->status === Sale::AWAITING_CONFIRMATION && $order->payment_mode === Sale::PAY_DIRECT) {
                 $order->paid_at = now(); // the shop confirmed the direct M-PESA payment arrived
+            }
+            if ($newStatus === Sale::COMPLETED && ! $order->paid_at) {
+                $order->paid_at = now(); // paid at pickup or on delivery
             }
             if ($newStatus === Sale::CANCELLED) {
                 self::releaseStock($order, 'cancelled');

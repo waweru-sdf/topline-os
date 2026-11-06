@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Payment;
 use App\Models\Sale;
 use App\Models\Store;
 use App\Models\Supplier;
@@ -35,6 +36,14 @@ class Notifications
             "New Topline order {$order->reference} from {$store->name} ({$store->town}): {$lines}. Call ".Phone::display($order->contact_phone).'. Details in your Topline supplier account.');
     }
 
+    public static function tillCodeReviewed(Payment $payment): void
+    {
+        $text = $payment->status === Payment::PAID
+            ? "Topline: payment {$payment->provider_ref} confirmed. Your plan is active. Thank you!"
+            : "Topline: we couldn't confirm M-PESA code {$payment->provider_ref}: {$payment->failure_reason} Pay again from Plan & billing, or WhatsApp us.";
+        self::send($payment->phone, $text);
+    }
+
     public static function supplierReviewed(Supplier $supplier): void
     {
         $text = $supplier->status === Supplier::APPROVED
@@ -46,7 +55,11 @@ class Notifications
     public static function newOrderForShop(Store $store, Sale $order): void
     {
         $lines = $order->items->take(3)->map(fn ($i) => "{$i->qty} {$i->name}")->implode(', ');
-        $how = $order->status === Sale::AWAITING_CONFIRMATION ? 'pay on delivery check needed' : 'paid by M-PESA';
+        $how = match ($order->payment_mode) {
+            Sale::PAY_DIRECT => "customer paid your number, code {$order->mpesa_ref}: check it",
+            Sale::PAY_LATER => 'customer pays at pickup or on delivery',
+            default => 'paid by M-PESA',
+        };
         self::send($store->whatsapp ?: $store->owner()?->phone,
             "New order {$order->code} on Topline: {$lines}. ".Text::kes($order->total)." ({$how}). Open your admin to confirm.");
     }

@@ -91,7 +91,9 @@ export const api = {
   requestQuote: (slug, body) => http('POST', `/storefront/${slug}/quotes`, body),
 
   // payments
+  getBillingOptions: () => http('GET', '/billing/options'), // {till, tillName, prompt, simulated}
   paySubscription: (body) => http('POST', '/billing/subscription/pay', body),
+  submitTillCode: (body) => http('POST', '/billing/subscription/till-code', body), // {planId, period, phone, mpesaCode}
   getSubscriptionPayment: (ref) => http('GET', `/billing/payments/${ref}`),
   answerSimulatedPrompt: (ref, action, pin) => http('POST', `/simulator/payments/${ref}`, { action, pin }),
 
@@ -178,7 +180,8 @@ export const api = {
   setStoreDomain: (id, body) => http('PATCH', `/admin/stores/${id}`, body), // {customDomain?, domainStatus?}
   resetOwnerPassword: (id) => http('POST', `/admin/stores/${id}/reset-password`),
   listActivity: (params) => http('GET', `/admin/activity${q(params)}`),
-  listPayments: () => http('GET', '/admin/payments'),
+  listPayments: (params) => http('GET', `/admin/payments${q(params)}`),
+  reviewPayment: (ref, action, note) => http('POST', `/admin/payments/${ref}/review`, { action, note }),
   listAllPayouts: (params) => http('GET', `/admin/payouts${q(params)}`),
   retryPayout: (id) => http('POST', `/admin/payouts/${id}/retry`),
   updateSite: (data) => http('PUT', '/admin/site', data),

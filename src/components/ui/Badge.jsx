@@ -17,7 +17,7 @@ export function Badge({ tone = 'neutral', className, children }) {
 }
 
 const ORDER_STATUS = {
-  awaiting_confirmation: ['Check payment', 'amber'],
+  awaiting_confirmation: ['To confirm', 'amber'],
   new: ['New', 'amber'],
   confirmed: ['Confirmed', 'navy'],
   dispatched: ['On the way', 'navy'],

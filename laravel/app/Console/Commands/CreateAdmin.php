@@ -24,10 +24,10 @@ class CreateAdmin extends Command
 
             return self::FAILURE;
         }
-        $password = $this->option('password') ?? $this->secret('Password (at least 8 characters)');
+        $password = $this->option('password') ?? $this->secret('Password (8+ characters, letters and numbers)');
         try {
             $email = Passwords::normalizeEmail($this->option('email'));
-            Passwords::checkNew($password);
+            Passwords::checkNew($password, 'password', $phone);
         } catch (ApiError $e) {
             $this->error($e->getMessage());
 

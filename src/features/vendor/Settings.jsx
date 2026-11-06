@@ -34,6 +34,7 @@ function Settings() {
   const setPay = (patch) => setForm((f) => ({ ...f, payments: { ...f.payments, ...patch } }))
   const setDel = (patch) => setForm((f) => ({ ...f, delivery: { ...f.delivery, ...patch } }))
   const err = (field) => (status?.field === field ? status.error : undefined)
+  const promptOrders = store.payments.modes?.includes('prompt') // Topline collects order money and pays it out
 
   async function save(e) {
     e.preventDefault()
@@ -71,7 +72,11 @@ function Settings() {
 
       <section className="rounded-card bg-white p-5 ring-1 ring-line sm:p-6">
         <h2 className="font-bold">Getting paid</h2>
-        <p className="mt-1 text-sm text-muted">Money from online orders paid by M-PESA prompt is sent here automatically.</p>
+        <p className="mt-1 text-sm text-muted">
+          {promptOrders
+            ? 'Money from online orders paid by M-PESA prompt is sent here automatically.'
+            : 'Online customers pay you here directly from their M-PESA menu and enter the code, or pay at pickup or on delivery. You confirm each order in Online orders.'}
+        </p>
         <fieldset className="mt-4">
           <legend className="sr-only">How you receive money</legend>
           <div className="grid gap-2 sm:grid-cols-2">
@@ -91,13 +96,13 @@ function Settings() {
           )}
           <Field label="Name customers see on M-PESA" value={form.payments.name} onChange={(e) => setPay({ name: e.target.value })} hint="So they can check before paying." />
         </div>
-        <label className="mt-5 flex items-start gap-3">
+        {promptOrders && <label className="mt-5 flex items-start gap-3">
           <input type="checkbox" checked={form.payments.acceptsDirect} onChange={(e) => setPay({ acceptsDirect: e.target.checked })} className="mt-1 size-4.5 accent-navy" />
           <span>
             <span className="block">Let customers pay my {method.short} directly</span>
             <span className="block text-sm text-muted">They pay from their M-PESA menu and enter the code. You confirm each payment in Online orders.</span>
           </span>
-        </label>
+        </label>}
       </section>
 
       <section className="rounded-card bg-white p-5 ring-1 ring-line sm:p-6">

@@ -1,4 +1,4 @@
-import { useActionState } from 'react'
+import { useActionState, useState } from 'react'
 import { redirect, useNavigate } from 'react-router'
 import { ArrowLeft } from 'lucide-react'
 import { api } from '@/services/api'
@@ -6,6 +6,8 @@ import { clearSession, getSession, getUser, setSession } from '@/services/sessio
 import { Button } from '@/components/ui/Button'
 import { Logo } from '@/components/ui/Logo'
 import { PasswordField } from '@/components/ui/PasswordField'
+import { NewPasswordField } from '@/components/ui/NewPasswordField'
+import { passwordProblem } from '@/lib/password'
 
 export function loader() {
   return getUser() ? null : redirect('/login')
@@ -16,10 +18,13 @@ function ChangePassword() {
   const navigate = useNavigate()
   const user = getUser()
   const forced = Boolean(user?.mustChangePassword)
+  const [next, setNext] = useState('')
   const home = user?.role === 'platform_admin' ? '/admin' : user?.role === 'supplier' ? '/supplier' : '/dashboard'
 
   const [state, save, pending] = useActionState(async (_prev, fd) => {
     const next = fd.get('newPassword')
+    const problem = passwordProblem(next, user?.phone ?? '')
+    if (problem) return { field: 'newPassword', error: problem }
     if (next !== fd.get('confirm')) return { field: 'confirm', error: 'The two passwords don’t match.' }
     try {
       const { user: updated, token } = await api.changePassword(fd.get('currentPassword') ?? '', next)
@@ -52,7 +57,7 @@ function ChangePassword() {
           {!forced && (
             <PasswordField className="mt-6" name="currentPassword" label="Current password" autoComplete="current-password" error={err('currentPassword')} required />
           )}
-          <PasswordField className={forced ? 'mt-6' : 'mt-4'} name="newPassword" label="New password" autoComplete="new-password" minLength={8} hint="At least 8 characters." error={err('newPassword')} required />
+          <NewPasswordField className={forced ? 'mt-6' : 'mt-4'} name="newPassword" label="New password" value={next} onChange={(e) => setNext(e.target.value)} phone={user?.phone ?? ''} error={err('newPassword')} required />
           <PasswordField className="mt-4" name="confirm" label="Type it again" autoComplete="new-password" error={err('confirm')} required />
           {state?.error && !['currentPassword', 'newPassword', 'confirm'].includes(state.field) && (
             <p className="mt-4 text-sm text-bad" role="alert">{state.error}</p>

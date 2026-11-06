@@ -38,7 +38,7 @@ toplinehub.co.ke
 - **Wrong password and unknown account** give the same `401 {"message": "Wrong phone/email or password.", "field": "password"}`.
 - **Lockout:** 5 wrong passwords in a row lock that account for 15 minutes: `429 "Too many wrong attempts. Try again in N minutes."`, field `password`.
 - **Switched-off account** (`is_active = false`): `403 "This account is switched off. Contact Topline."`
-- **Passwords:** at least 8 characters, at most 128; refuse all-same-digit passwords like `11111111`. Hash with bcrypt (Laravel `Hash::make`).
+- **Passwords (new ones):** 8–128 characters, letters and numbers, not a common password, not containing the phone number, at least 4 different characters (`Passwords::checkNew`, mirrored in `src/lib/password.js`). Hash with bcrypt (Laravel `Hash::make`).
 - **Change password:** `POST /auth/password {currentPassword, newPassword}`. After an admin reset, `currentPassword` isn't required. The new password must differ from the old one. **Every other token for that user stops working** (delete them). Returns a fresh `{user, token}`.
 - **Admin reset:** `POST /admin/stores/{id}/reset-password` returns `{temporaryPassword, owner}`.
   - Temporary password: 10 characters from `abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789`.
@@ -105,7 +105,17 @@ Set by the owner in Settings → Getting paid. `payments` JSON: `{method, number
 | `pochi` | Kenyan phone | – | ✓ | ✓ |
 | `send_money` | Kenyan phone | – | ✓ | ✓ |
 
-**Prompt payments** go through Topline's Paystack account. After the payment is confirmed, the backend **transfers** the money (minus `PLATFORM_COMMISSION_PERCENT`, default 0) to the shop's till, paybill or phone. Each transfer is a `payouts` row with status pending, paid or failed, and admins can retry failed ones.
+**Online orders by `PAYMENTS_MODE`.** `store.payments.modes` lists what checkout may offer: `prompt` (simulation/paystack: Topline collects), `direct` (customer pays the shop's number and gives the code; in `mpesa` mode whenever the shop has a number), `later` (`mpesa` mode: pays at pickup or on delivery; order starts `awaiting_confirmation`, `paidAt` is set when completed). Any other `paymentMode` → 422.
+
+**Plan payments into Topline's Till (`mpesa` mode).**
+- `GET /billing/options` → `{till, tillName, prompt, simulated}`; `prompt` is true only when Daraja keys are set (otherwise `/billing/subscription/pay` → 503).
+- Sign-up by code: `POST /stores` with `billing: {period, mpesaCode, phone}` → store created as `draft`, payment `{provider: "till", method: "till_code", status: "checking"}`.
+- Renewal / plan change by code (logged-in owner): `POST /billing/subscription/till-code {planId?, period?, phone, mpesaCode}` → `201` checking payment. One code being checked at a time; codes are 10 A–Z/0–9 and single-use (422, field `mpesaCode`).
+- `store.billing.tillCode` (owner's store) → latest code `{code, amount, planId, period, status: checking|failed, reason, sentAt}` from the last 14 days, null once paid.
+- Admin: `GET /admin/payments?status=checking`; `POST /admin/payments/{reference}/review {action: approve|reject, note}`; `/admin/badges.paymentChecks`.
+- Daraja callback: `POST /webhooks/mpesa/{token}` (token from `php artisan topline:mpesa-callback`; wrong token → 404). The result is confirmed with an STK query before anything is marked paid.
+
+**Prompt payments (paystack mode)** go through Topline's Paystack account. After the payment is confirmed, the backend **transfers** the money (minus `PLATFORM_COMMISSION_PERCENT`, default 0) to the shop's till, paybill or phone. Each transfer is a `payouts` row with status pending, paid or failed, and admins can retry failed ones.
 
 ### Payment gateway (Paystack, simulated until keys are added)
 

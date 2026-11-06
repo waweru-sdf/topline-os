@@ -50,13 +50,13 @@ class PaystackGateway implements Gateway
             $res = $method === 'GET' ? $client->get(self::BASE_URL.$path) : $client->post(self::BASE_URL.$path, $json);
             $payload = $res->json();
         } catch (ConnectionException $e) {
-            throw new PaystackException("Couldn't reach Paystack: ".$e->getMessage(), 0, $e);
+            throw new ProviderException("Couldn't reach Paystack: ".$e->getMessage(), 0, $e);
         }
         if (! is_array($payload)) {
-            throw new PaystackException('Paystack error '.$res->status());
+            throw new ProviderException('Paystack error '.$res->status());
         }
         if (empty($payload['status'])) {
-            throw new PaystackException($payload['message'] ?? 'Paystack error '.$res->status());
+            throw new ProviderException($payload['message'] ?? 'Paystack error '.$res->status());
         }
 
         return $payload['data'] ?? [];
@@ -80,7 +80,7 @@ class PaystackGateway implements Gateway
     {
         try {
             $data = $this->request('GET', '/transaction/verify/'.rawurlencode($payment->reference));
-        } catch (PaystackException $e) {
+        } catch (ProviderException $e) {
             // A charge still waiting for the PIN may not be a full transaction yet.
             Log::info("verify {$payment->reference}: {$e->getMessage()}");
 

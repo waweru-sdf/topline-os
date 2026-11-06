@@ -6,40 +6,54 @@ import { displayPhone, formatDate, formatKES } from '@/lib/format'
 import { cn } from '@/lib/cn'
 import { PageHeader } from '@/components/layout/AppShell'
 import { PaymentPrompt } from '@/components/PaymentPrompt'
+import { TillCodeStatus, TillPay } from '@/components/TillPay'
 import { Button } from '@/components/ui/Button'
-import { Field } from '@/components/ui/Field'
 import { StoreStatus } from '@/components/ui/Badge'
 import { useVendor } from './VendorLayout'
 import { requireStoreId } from './guard'
 
 export async function loader() {
   requireStoreId()
-  return { plans: await api.getPlans() }
+  const [plans, options] = await Promise.all([api.getPlans(), api.getBillingOptions()])
+  return { plans, options }
 }
 
 function Billing() {
-  const { plans } = useLoaderData()
+  const { plans, options } = useLoaderData()
   const { store, user } = useVendor()
   const revalidator = useRevalidator()
   const plan = plans.find((p) => p.id === store.planId)
   const period = store.billing?.period ?? 'monthly'
   const priceOf = (p) => (period === 'yearly' ? p.priceYearly : p.priceMonthly)
   const [phone, setPhone] = useState(displayPhone(user.phone))
+  const [how, setHow] = useState(options.prompt ? 'prompt' : 'till')
+  const [code, setCode] = useState('')
+  const [planId, setPlanId] = useState(store.planId) // plan being paid for
   const [payment, setPayment] = useState(null) // the prompt being waited on
   const [paid, setPaid] = useState(null)
   const [error, setError] = useState(null)
-  const [sending, setSending] = useState(null) // plan id being paid for
+  const [sending, setSending] = useState(false)
+  const tillCode = store.billing?.tillCode
+  const checking = tillCode?.status === 'checking'
+  const chosen = plans.find((p) => p.id === planId) ?? plan
 
-  async function pay(planId) {
+  async function pay(e) {
+    e.preventDefault()
     setError(null)
     setPaid(null)
-    setSending(planId)
+    setSending(true)
     try {
-      setPayment(await api.paySubscription({ phone, planId, period }))
+      if (how === 'till') {
+        await api.submitTillCode({ phone, planId, period, mpesaCode: code })
+        setCode('')
+        revalidator.revalidate()
+      } else {
+        setPayment(await api.paySubscription({ phone, planId, period }))
+      }
     } catch (err) {
-      setError(err.message)
+      setError(err)
     } finally {
-      setSending(null)
+      setSending(false)
     }
   }
 
@@ -66,18 +80,23 @@ function Billing() {
           )}
         </div>
         <div>
+          {store.status === 'draft' && !tillCode && <p className="text-sm text-muted">Your store opens to customers once the first payment is confirmed.</p>}
+          <TillCodeStatus tillCode={tillCode} className="mb-3" />
           {payment ? (
             <PaymentPrompt payment={payment} poll={() => api.getSubscriptionPayment(payment.reference)} onPaid={onPaid} onRetry={() => setPayment(null)} />
           ) : paid ? (
             <p className="flex items-start gap-2 text-good"><CircleCheck className="mt-0.5 size-5 shrink-0" />Paid. M-PESA ref {paid.mpesaRef}. Next payment due {formatDate(paid.nextBillingAt)}.</p>
-          ) : (
-            <div className="space-y-3">
-              <Field label="M-PESA number to pay from" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} error={error} />
-              <Button className="w-full" pending={sending === plan.id} onClick={() => pay(plan.id)}>
-                Pay {formatKES(priceOf(plan))} now
+          ) : !checking && (
+            <form onSubmit={pay} className="space-y-3">
+              {planId !== plan.id && (
+                <p className="text-sm">Paying for <span className="font-bold">{chosen.name}</span> · <button type="button" className="text-navy hover:underline" onClick={() => setPlanId(plan.id)}>keep {plan.name}</button></p>
+              )}
+              <TillPay options={options} amount={priceOf(chosen)} how={how} setHow={setHow} phone={phone} setPhone={setPhone} code={code} setCode={setCode} error={error} />
+              <Button type="submit" className="w-full" pending={sending}>
+                {how === 'till' ? 'Send M-PESA code' : `Pay ${formatKES(priceOf(chosen))} now`}
               </Button>
-              <p className="text-xs text-muted">You’ll get a prompt for exactly {formatKES(priceOf(plan))} to TOPLINE. Paying early adds to your remaining time.</p>
-            </div>
+              <p className="text-xs text-muted">Paying early adds to your remaining time.</p>
+            </form>
           )}
         </div>
       </section>
@@ -96,15 +115,16 @@ function Billing() {
               {current ? (
                 <p className="mt-4 text-sm font-medium text-navy">Your current plan</p>
               ) : (
-                <Button variant="outline" className="mt-4 w-full" pending={sending === p.id} disabled={!!payment} onClick={() => pay(p.id)}>
-                  Switch to {p.name} ({formatKES(priceOf(p))})
+                <Button variant="outline" className="mt-4 w-full" disabled={!!payment || checking || planId === p.id}
+                  onClick={() => { setPlanId(p.id); setError(null); window.scrollTo({ top: 0, behavior: 'smooth' }) }}>
+                  {planId === p.id ? `Paying for ${p.name} above` : `Switch to ${p.name} (${formatKES(priceOf(p))})`}
                 </Button>
               )}
             </article>
           )
         })}
       </div>
-      <p className="mt-4 text-sm text-muted">Switching sends an M-PESA prompt for the new plan’s price. Card payments and automatic renewal come with Paystack.</p>
+      <p className="mt-4 text-sm text-muted">To switch, pick the plan and pay its price above. The new plan starts as soon as the payment is confirmed. All plans pay into Topline’s Till {options.till}.</p>
     </div>
   )
 }

@@ -83,7 +83,11 @@ cd laravel && vendor/bin/phpunit   # 97 backend tests
 
 ## Payments, delivery and photos
 
-**Paying Topline for a plan (sign-up and renewals).** The owner enters an M-PESA number and gets a prompt on that phone for the exact plan price, payable to TOPLINE. The page waits and shows the result. In simulation a test phone appears on screen: enter any 4-digit PIN and press Send, or Cancel to test a decline. Numbers ending in 999 always fail.
+**Paying Topline for a plan (sign-up and renewals).** All plan money goes to Topline's M-PESA **Till 987715** (`PAYMENTS_MODE=mpesa`, `MPESA_TILL`).
+
+- **From the M-PESA menu (works now):** the page shows the steps (Lipa na M-PESA → Buy Goods → Till 987715 → exact amount). The owner types the M-PESA code from the SMS. A new shop is set up straight away but stays closed to customers; the code shows under **Topline admin → Payments → Codes to check** (with a badge). Look the code up in the till's M-PESA statement, then **Confirm** (the store goes live, or the renewal/plan change applies, and the owner gets an SMS) or **Not in the till** (with a reason, sent by SMS; the owner can send another code). Codes must be 10 letters/numbers and can't be used twice.
+- **M-PESA prompt (once Safaricom gives Daraja keys):** the owner gets a prompt for the exact amount, payable to the till; the store opens as soon as M-PESA confirms. Both options then show side by side.
+- In simulation (`PAYMENTS_MODE=simulation`, demos and tests) a test phone appears on screen: enter any 4-digit PIN and press Send, or Cancel to test a decline. Numbers ending in 999 always fail.
 
 **How customers pay a shop.** Each shop picks how it receives money in Settings → Getting paid:
 
@@ -94,7 +98,9 @@ cd laravel && vendor/bin/phpunit   # 97 backend tests
 | Pochi la Biashara | Paying the Pochi number themselves |
 | Send money | Sending to the phone number themselves |
 
-- **Prompt:** Topline collects through Paystack, the order is confirmed automatically, and the money is sent on to the shop's till, paybill or phone (minus `PLATFORM_COMMISSION_PERCENT`, default 0). The shop sees each transfer under **Money received**.
+With plans paid into a till (`mpesa` mode), Topline doesn't hold customers' money, so checkout offers **paying the shop directly** (whenever the shop has a number) and **pay at pickup / on delivery**. Pay-later orders wait as **To confirm** until the shop taps **Accept order**; they count as paid when marked picked up or delivered. "Money received" is hidden, since there are no transfers.
+
+- **Prompt (paystack mode only):** Topline collects through Paystack, the order is confirmed automatically, and the money is sent on to the shop's till, paybill or phone (minus `PLATFORM_COMMISSION_PERCENT`, default 0). The shop sees each transfer under **Money received**.
 - **Paying directly:** the checkout shows step-by-step M-PESA instructions with the shop's number and the exact amount. The customer types the M-PESA code from their SMS. The order waits as **Check payment** until the shop taps **Payment received** (or cancels it, which puts the stock back).
 - Stock is held the moment an order is placed, so two people can't buy the last bag. If a prompt isn't approved within `PAYMENT_TIMEOUT_MINUTES` (10), the order is cancelled and the stock released.
 
@@ -107,7 +113,15 @@ cd laravel && vendor/bin/phpunit   # 97 backend tests
 
 **Photos.** Shop owners upload their own product photos, logo and cover from their phone or computer (JPG, PNG or WebP, up to 5 MB). Topline admins upload the main site pictures in Site content. Files are checked and saved in `laravel/storage/app/uploads` on the server (kept across deploys), or in MySQL with `UPLOAD_STORAGE=database`.
 
-### Going live with Paystack
+### Turning on M-PESA prompts to the Till (Daraja)
+
+Without these keys everything works with codes checked by an admin. To add prompts:
+
+1. On developer.safaricom.co.ke, create an app with **M-PESA Express**, then **Go Live** for Till 987715 (Safaricom asks for the till's store/head-office number and the business documents). They send the **passkey**.
+2. In the site's `.env` (never in GitHub): `MPESA_CONSUMER_KEY`, `MPESA_CONSUMER_SECRET`, `MPESA_SHORTCODE` (the store number), `MPESA_PASSKEY`, `MPESA_ENV=production`.
+3. Run `php artisan topline:mpesa-callback` on the server: it prints the callback URL (it contains a secret made from `APP_KEY`) and whether the keys are picked up. Safaricom calls it after each prompt; payments are only marked paid after asking Daraja again, and a callback with the wrong amount is logged under System health.
+
+### Going live with Paystack (kept for later)
 
 The Paystack integration is fully written (`laravel/app/Services/Payments/PaystackGateway.php`): M-PESA charges, payment checks, transfers to shops and webhooks. To switch it on:
 
@@ -306,7 +320,8 @@ On the website's dashboard ("Connected with GitHub"), set **Branch: `hostinger`*
 - **`.env` and photos** stay on the server across deploys; they're never in Git.
 - **Forgotten passwords:** Topline admin → Stores → ⋯ → Reset owner's password. Add more admins from the terminal (`php artisan topline:create-admin "Name" 07XXXXXXXX`) or with the `FIRST_ADMIN_*` lines while no admin exists.
 - **Errors:** System health in the admin, and `public_html/storage/logs/` in File Manager.
-- **Start over with an empty platform** (deletes every shop, owner, product, sale, payment, supplier order, credit request, expense, shop review, branch, staff login and supplier balance; keeps Topline admins, plans, site content and supplier partners): on the server, in `public_html`, run `php artisan topline:clear-data` and type `CLEAR`.
+- **Start over with an empty platform** (deletes every shop, owner, product, sale, payment, supplier order, credit request, expense, shop review, branch, staff login and supplier balance; keeps Topline admins, plans, site content and supplier partners): on the server, in `public_html`, run `php artisan topline:clear-data` and type `CLEAR`. Add `--suppliers` to delete the supplier partners too, so only the Topline admins, plans and site content remain.
+- **Passwords** people choose (sign-up, supplier sign-up, change password, admin accounts) need 8+ characters, letters and numbers, and mustn't be a common password or contain the phone number. The screens tick the rules off as they type.
 - The `hostinger` branch is generated; don't edit it by hand.
 
 ## Known gaps

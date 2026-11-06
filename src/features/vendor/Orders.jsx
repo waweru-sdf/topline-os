@@ -71,7 +71,8 @@ function Orders() {
 function OrderRow({ order }) {
   const fetcher = useFetcher()
   const status = fetcher.formData?.get('status') ?? order.status // optimistic
-  const actions = NEXT[status] ?? []
+  const later = order.paymentMode === 'later' // pays at pickup or on delivery
+  const actions = later && status === 'awaiting_confirmation' ? [['new', 'Accept order'], ['cancelled', 'Decline']] : NEXT[status] ?? []
 
   return (
     <li className="rounded-card bg-white p-5 ring-1 ring-line">
@@ -82,7 +83,12 @@ function OrderRow({ order }) {
         </div>
         <p className="text-xl font-bold tabular">{formatKES(order.total)}</p>
       </div>
-      {status === 'awaiting_confirmation' && (
+      {status === 'awaiting_confirmation' && later && (
+        <p className="mt-3 rounded-lg bg-amber-tint px-3 py-2 text-sm text-[#5c3b00]">
+          The customer will pay {formatKES(order.total)} {order.delivery?.type === 'delivery' ? 'on delivery' : 'at pickup'}. Call them to confirm before accepting.
+        </p>
+      )}
+      {status === 'awaiting_confirmation' && !later && (
         <p className="mt-3 rounded-lg bg-amber-tint px-3 py-2 text-sm text-[#5c3b00]">
           The customer says they paid {formatKES(order.total)} to your number with M-PESA code <span className="font-bold">{order.mpesaRef}</span>.
           Check your M-PESA messages before confirming.
@@ -98,7 +104,7 @@ function OrderRow({ order }) {
         ) : (
           <span className="flex items-center gap-1.5"><Store className="size-4" />Pickup at the shop</span>
         )}
-        <span className="flex items-center gap-1.5"><Smartphone className="size-4" />{order.paymentMode === 'direct' ? 'Paid to your number' : `M-PESA ${order.mpesaRef ?? ''}`}</span>
+        <span className="flex items-center gap-1.5"><Smartphone className="size-4" />{later ? (order.paidAt ? 'Paid on handover' : 'Pays on handover') : order.paymentMode === 'direct' ? 'Paid to your number' : `M-PESA ${order.mpesaRef ?? ''}`}</span>
         {order.customerPhone && <a href={`tel:+${order.customerPhone}`} className="flex items-center gap-1.5 hover:text-ink"><Phone className="size-4" />Call customer</a>}
       </div>
       {actions.length > 0 && (

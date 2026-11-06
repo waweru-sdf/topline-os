@@ -1,7 +1,8 @@
 import { useActionState, useEffect, useState } from 'react'
 import { Link, useLoaderData, useNavigate } from 'react-router'
-import { ArrowLeft, Check, CircleCheck, ExternalLink, LayoutDashboard, Link2, LoaderCircle, Smartphone, X } from 'lucide-react'
+import { ArrowLeft, Check, CircleCheck, ExternalLink, LayoutDashboard, Link2, LoaderCircle, X } from 'lucide-react'
 import { PaymentPrompt } from '@/components/PaymentPrompt'
+import { TillCodeStatus, TillPay } from '@/components/TillPay'
 import { PAYOUT_METHODS, payoutMethod } from '@/lib/payments'
 import { api } from '@/services/api'
 import { setSession } from '@/services/session'
@@ -14,12 +15,16 @@ import { Field } from '@/components/ui/Field'
 import { Img } from '@/components/ui/Img'
 import { Logo } from '@/components/ui/Logo'
 import { PasswordField } from '@/components/ui/PasswordField'
+import { NewPasswordField } from '@/components/ui/NewPasswordField'
+import { passwordProblem } from '@/lib/password'
 
 export async function loader({ request }) {
   const url = new URL(request.url)
+  const [plans, site, payOptions] = await Promise.all([api.getPlans(), api.getSite(), api.getBillingOptions()])
   return {
-    plans: await api.getPlans(),
-    site: await api.getSite(),
+    plans,
+    site,
+    payOptions,
     initial: {
       shopName: url.searchParams.get('name') ?? '',
       planId: url.searchParams.get('plan') ?? 'business',
@@ -31,7 +36,7 @@ export async function loader({ request }) {
 const STEPS = ['You', 'Your shop', 'Your link', 'Plan & payment']
 
 function Onboarding() {
-  const { plans, initial, site } = useLoaderData()
+  const { plans, initial, site, payOptions } = useLoaderData()
   const [step, setStep] = useState(0)
   const [form, setForm] = useState({
     ownerName: '',
@@ -77,7 +82,7 @@ function Onboarding() {
           {step === 1 && <ShopStep form={form} update={update} onBack={() => setStep(0)} onNext={() => setStep(2)} />}
           {step === 2 && <LinkStep form={form} update={update} onBack={() => setStep(1)} onNext={() => setStep(3)} />}
           {step === 3 && (
-            <PayStep form={form} update={update} plans={plans} onBack={() => setStep(2)} paid={paid} setPaid={setPaid} onDetailsProblem={detailsProblem} />
+            <PayStep form={form} update={update} plans={plans} options={payOptions} onBack={() => setStep(2)} paid={paid} setPaid={setPaid} onDetailsProblem={detailsProblem} />
           )}
         </div>
       </div>
@@ -140,7 +145,8 @@ function OwnerStep({ form, update, onNext, serverErrors }) {
     if (!form.ownerName.trim()) next.ownerName = 'Enter your name.'
     if (!normalizePhone(form.ownerPhone)) next.ownerPhone = 'Enter a mobile number like 0712 345 678.'
     if (form.ownerEmail.trim() && !EMAIL.test(form.ownerEmail.trim())) next.ownerEmail = 'Enter a valid email address, or leave it empty.'
-    if (form.ownerPassword.length < 8) next.ownerPassword = 'Use at least 8 characters.'
+    const weak = passwordProblem(form.ownerPassword, form.ownerPhone)
+    if (weak) next.ownerPassword = weak
     else if (form.ownerPassword !== form.ownerPassword2) next.ownerPassword2 = 'The two passwords don’t match.'
     setErrors(next)
     if (!Object.keys(next).length) onNext()
@@ -152,7 +158,7 @@ function OwnerStep({ form, update, onNext, serverErrors }) {
         <Field label="Your full name" value={form.ownerName} onChange={(e) => update({ ownerName: e.target.value })} autoComplete="name" error={errors.ownerName} />
         <Field label="Mobile number" type="tel" inputMode="tel" placeholder="0712 345 678" value={form.ownerPhone} onChange={(e) => update({ ownerPhone: e.target.value })} autoComplete="tel" error={errors.ownerPhone} />
         <Field label="Email (optional)" type="email" placeholder="you@example.com" value={form.ownerEmail} onChange={(e) => update({ ownerEmail: e.target.value })} autoComplete="email" error={errors.ownerEmail} hint="You can log in with it too." />
-        <PasswordField label="Choose a password" value={form.ownerPassword} onChange={(e) => update({ ownerPassword: e.target.value })} autoComplete="new-password" error={errors.ownerPassword} hint="At least 8 characters. Don’t use your M-PESA PIN." />
+        <NewPasswordField label="Choose a password" value={form.ownerPassword} phone={form.ownerPhone} onChange={(e) => update({ ownerPassword: e.target.value })} error={errors.ownerPassword} hint="Don’t use your M-PESA PIN." />
         <PasswordField label="Type the password again" value={form.ownerPassword2} onChange={(e) => update({ ownerPassword2: e.target.value })} autoComplete="new-password" error={errors.ownerPassword2} />
       </div>
       <StepNav />
@@ -257,31 +263,38 @@ function LinkStep({ form, update, onBack, onNext }) {
   )
 }
 
-function PayStep({ form, update, plans, onBack, paid, setPaid, onDetailsProblem }) {
+function PayStep({ form, update, plans, options, onBack, paid, setPaid, onDetailsProblem }) {
   const navigate = useNavigate()
   const plan = plans.find((p) => p.id === form.planId) ?? plans[0]
   const amount = form.billing === 'yearly' ? plan.priceYearly : plan.priceMonthly
   const [payPhone, setPayPhone] = useState(form.ownerPhone)
+  const [how, setHow] = useState(options.prompt ? 'prompt' : 'till')
+  const [code, setCode] = useState('')
   const [payment, setPayment] = useState(null)
   const [done, setDone] = useState(null)
-  const [error, setError] = useState(null)
+  const [error, setError] = useState(null) // {message, field}
 
-  // Step 1: send the M-PESA prompt for exactly the plan price.
-  const [, sendPrompt, sending] = useActionState(async () => {
+  // Prompt: send it for exactly the plan price, then open the store once M-PESA confirms.
+  // Till: open the store straight away with the M-PESA code; it goes live once Topline confirms the code.
+  const [, submit, sending] = useActionState(async () => {
     setError(null)
+    if (how === 'till') {
+      await openStore({ mpesaCode: code })
+      return null
+    }
     try {
       setPayment(await api.paySubscription({ phone: payPhone, planId: plan.id, period: form.billing, signup: true }))
     } catch (err) {
-      setError(err.message)
+      setError(err)
     }
     return null
   }, null)
 
-  // Step 2: once M-PESA confirms, open the store with that payment.
   const [opening, setOpening] = useState(false)
   async function openStore(confirmed) {
-    const receipt = { reference: confirmed.reference ?? payment?.reference, mpesaRef: confirmed.mpesaRef }
-    setPaid(receipt)
+    const byCode = !!confirmed.mpesaCode
+    const receipt = byCode ? null : { reference: confirmed.reference ?? payment?.reference, mpesaRef: confirmed.mpesaRef }
+    if (receipt) setPaid(receipt)
     setOpening(true)
     try {
       const result = await api.createStore({
@@ -292,16 +305,18 @@ function PayStep({ form, update, plans, onBack, paid, setPaid, onDetailsProblem 
         },
         planId: plan.id,
         slug: form.slug,
-        billing: { period: form.billing, paymentReference: receipt.reference, lastRef: receipt.mpesaRef },
+        billing: byCode
+          ? { period: form.billing, mpesaCode: confirmed.mpesaCode, phone: payPhone }
+          : { period: form.billing, paymentReference: receipt.reference, lastRef: receipt.mpesaRef },
       })
       setSession({ user: result.user, token: result.token })
       setPaid(null)
-      setDone({ store: result.store, ref: receipt.mpesaRef })
+      setDone({ store: result.store, ref: receipt?.mpesaRef, tillCode: result.store.billing?.tillCode })
     } catch (err) {
       setPayment(null)
       setOpening(false)
       if (err.field && (err.field.startsWith('owner') || err.field === 'slug')) return onDetailsProblem(err.field, err.message)
-      setError(err.message)
+      setError(err)
     }
   }
 
@@ -309,10 +324,16 @@ function PayStep({ form, update, plans, onBack, paid, setPaid, onDetailsProblem 
     return (
       <div className="animate-rise">
         <CircleCheck className="size-12 text-good" aria-hidden />
-        <h1 className="mt-4 text-3xl font-bold tracking-tight text-navy">Your store is live</h1>
-        <p className="mt-2 text-muted">Payment received (M-PESA ref {done.ref}). Customers can now visit:</p>
+        <h1 className="mt-4 text-3xl font-bold tracking-tight text-navy">{done.tillCode ? 'Your store is set up' : 'Your store is live'}</h1>
+        {done.tillCode ? (
+          <TillCodeStatus tillCode={done.tillCode} className="mt-3" />
+        ) : (
+          <p className="mt-2 text-muted">Payment received (M-PESA ref {done.ref}). Customers can now visit:</p>
+        )}
         <p className="mt-4 rounded-lg bg-concrete px-4 py-3 font-medium break-all text-navy">{storeHost(done.store.slug)}</p>
-        <p className="mt-6 text-sm text-muted">You’re logged in. Your shop admin is where you add stock, see orders and get paid.</p>
+        <p className="mt-6 text-sm text-muted">
+          You’re logged in. {done.tillCode ? 'Add your products now; the store opens to customers as soon as the payment is confirmed.' : 'Your shop admin is where you add stock, see orders and get paid.'}
+        </p>
         <div className="mt-4 flex flex-wrap gap-3">
           <Button variant="navy" size="lg" onClick={() => navigate('/dashboard')}>
             <LayoutDashboard className="size-5" /> Go to my shop admin
@@ -330,7 +351,7 @@ function PayStep({ form, update, plans, onBack, paid, setPaid, onDetailsProblem 
     return (
       <div>
         <StepHeader title="Payment received">Your plan payment went through{paid.mpesaRef ? ` (M-PESA ref ${paid.mpesaRef})` : ''}. You won’t be charged again.</StepHeader>
-        {error && <p className="mb-4 rounded-lg bg-bad-tint px-4 py-3 text-sm text-bad" role="alert">{error}</p>}
+        {error && <p className="mb-4 rounded-lg bg-bad-tint px-4 py-3 text-sm text-bad" role="alert">{error.message}</p>}
         <div className="flex items-center justify-between gap-3">
           <Button variant="ghost" onClick={onBack} disabled={opening}><ArrowLeft className="size-4" /> Back</Button>
           <Button variant="navy" pending={opening} onClick={() => openStore(paid)}>Open my store</Button>
@@ -354,7 +375,7 @@ function PayStep({ form, update, plans, onBack, paid, setPaid, onDetailsProblem 
   }
 
   return (
-    <form action={sendPrompt}>
+    <form action={submit}>
       <StepHeader title="Pick a plan">You can switch plans at any time. Your store goes live when the payment comes through.</StepHeader>
 
       <fieldset>
@@ -389,21 +410,12 @@ function PayStep({ form, update, plans, onBack, paid, setPaid, onDetailsProblem 
         Pay yearly and get 2 months free
       </label>
 
-      <div className="mt-8 rounded-card border border-line p-5">
-        <div className="flex items-center gap-3">
-          <Smartphone aria-hidden className="size-5 text-good" />
-          <h2 className="font-bold">Pay {formatKES(amount)} with M-PESA</h2>
-        </div>
-        <Field className="mt-4" label="M-PESA number to pay from" type="tel" value={payPhone} onChange={(e) => setPayPhone(e.target.value)} error={error} />
-        <p className="mt-3 text-sm text-muted">
-          You’ll get an M-PESA prompt on <span className="font-medium text-ink">{payPhone || 'this number'}</span> to pay exactly{' '}
-          <span className="font-medium text-ink">{formatKES(amount)}</span> to <span className="font-medium text-ink">TOPLINE</span> for the {plan.name} plan ({form.billing}).
-        </p>
-      </div>
+      <h2 className="mt-8 mb-3 font-bold">Pay {formatKES(amount)} with M-PESA</h2>
+      <TillPay options={options} amount={amount} how={how} setHow={setHow} phone={payPhone} setPhone={setPayPhone} code={code} setCode={setCode} error={error} />
 
       <div className="mt-10 flex items-center justify-between gap-3">
         <Button variant="ghost" onClick={onBack} disabled={sending}><ArrowLeft className="size-4" /> Back</Button>
-        <Button type="submit" pending={sending}>Send M-PESA prompt for {formatKES(amount)}</Button>
+        <Button type="submit" pending={sending}>{how === 'till' ? 'Send code and open my store' : `Send M-PESA prompt for ${formatKES(amount)}`}</Button>
       </div>
     </form>
   )

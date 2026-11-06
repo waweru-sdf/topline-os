@@ -52,7 +52,7 @@ class Site
         'step3Text' => 'Add what you sell with prices per unit, then share your link with customers and fundis.',
 
         'pricingTitle' => 'Pricing',
-        'pricingText' => 'Pay monthly or yearly by M-PESA or card. No setup fee, and you can change plan at any time.',
+        'pricingText' => 'Pay monthly or yearly by M-PESA. No setup fee, and you can change plan at any time.',
         'pricingNote' => 'Prices are placeholders until Topline confirms final pricing.',
 
         'faqTitle' => 'Questions shop owners ask',

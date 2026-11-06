@@ -34,6 +34,19 @@ class ClearDataTest extends TestCase
         $this->assertCount(0, $this->getJson('/api/admin/stores', $this->admin()['headers'])->json());
     }
 
+    public function test_suppliers_option_leaves_only_admins_plans_and_site(): void
+    {
+        $admins = User::where('role', User::PLATFORM_ADMIN)->count();
+        $this->artisan('topline:clear-data', ['--suppliers' => true, '--force' => true])->assertSuccessful();
+
+        $this->assertSame(0, Store::count() + \App\Models\Supplier::count() + DB::table('supplier_products')->count());
+        $this->assertSame($admins, User::count());
+        $this->postJson('/api/auth/login', ['login' => '0700 111 222', 'password' => self::PASSWORD])->assertStatus(401);
+        $this->assertSame([], $this->getJson('/api/suppliers')->json());
+        $this->assertSame(3, Plan::count());
+        $this->admin();
+    }
+
     public function test_wrong_answer_deletes_nothing(): void
     {
         $this->artisan('topline:clear-data')->expectsQuestion('Type CLEAR to continue', 'no')->assertFailed();

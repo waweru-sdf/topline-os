@@ -125,4 +125,14 @@ class AuthTest extends TestCase
         $this->getJson("/api/vendor/stores/{$this->store()->id}")->assertStatus(401);
         $this->getJson('/api/admin/stores')->assertStatus(401);
     }
+
+    public function test_new_passwords_must_be_strong(): void
+    {
+        $owner = $this->owner();
+        foreach (['abcdefgh', '12345678', 'password1', 'aaaa1111', '0712345678x', 'x712345678'] as $weak) {
+            $this->postJson('/api/auth/password', ['currentPassword' => self::PASSWORD, 'newPassword' => $weak], $owner['headers'])
+                ->assertStatus(422)->assertJson(['field' => 'newPassword']);
+        }
+        $this->postJson('/api/auth/password', ['currentPassword' => self::PASSWORD, 'newPassword' => 'duka-yangu-24'], $owner['headers'])->assertOk();
+    }
 }

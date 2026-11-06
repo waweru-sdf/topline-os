@@ -7,7 +7,7 @@ use App\Models\Sale;
 use App\Models\Store;
 use App\Services\Payments\ChargeResult;
 use App\Services\Payments\Gateways;
-use App\Services\Payments\PaystackException;
+use App\Services\Payments\ProviderException;
 use App\Services\Payments\TransferRequest;
 use App\Support\Phone;
 use App\Support\Text;
@@ -49,7 +49,7 @@ class Payouts
         try {
             $result = Gateways::get()->transfer(new TransferRequest($payout->reference, $payout->amount, $store->payout_method,
                 $store->payout_number, (string) $store->payout_account, $store->payout_name ?: $store->name, "{$store->name} order {$sale->code}"));
-        } catch (PaystackException $e) {
+        } catch (ProviderException $e) {
             $payout->update(['status' => 'failed', 'failure_reason' => mb_substr($e->getMessage(), 0, 200)]);
             Monitoring::recordIncident('payout', "Payout to {$store->name} failed", $e->getMessage());
             self::log($store, $sale, $payout);
@@ -87,7 +87,7 @@ class Payouts
         try {
             $result = Gateways::get()->transfer(new TransferRequest($payout->reference, $payout->amount, $store->payout_method,
                 $store->payout_number, (string) $store->payout_account, $store->payout_name ?: $store->name, "{$store->name} payout retry"));
-        } catch (PaystackException $e) {
+        } catch (ProviderException $e) {
             $payout->failure_reason = mb_substr($e->getMessage(), 0, 200);
             $payout->save();
 

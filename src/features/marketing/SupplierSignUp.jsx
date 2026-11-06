@@ -6,7 +6,8 @@ import { SUPPLIER_PAYMENT_OPTIONS } from '@/lib/labels'
 import { cn } from '@/lib/cn'
 import { Button } from '@/components/ui/Button'
 import { Field } from '@/components/ui/Field'
-import { PasswordField } from '@/components/ui/PasswordField'
+import { NewPasswordField } from '@/components/ui/NewPasswordField'
+import { passwordProblem } from '@/lib/password'
 
 const EMPTY = { name: '', contactName: '', phone: '', email: '', location: '', categories: '', description: '', paymentOptions: [], password: '' }
 
@@ -22,6 +23,8 @@ function SupplierSignUp() {
 
   async function submit(e) {
     e.preventDefault()
+    const problem = passwordProblem(form.password, form.phone)
+    if (problem) return setError({ message: problem, field: 'password' })
     setBusy(true)
     setError(null)
     try {
@@ -80,8 +83,7 @@ function SupplierSignUp() {
                 </div>
                 {err('paymentOptions') && <p className="mt-1 text-sm text-bad">{err('paymentOptions')}</p>}
               </fieldset>
-              <PasswordField label="Choose a password" value={form.password} onChange={(e) => update({ password: e.target.value })} error={err('password')}
-                hint="At least 8 characters." autoComplete="new-password" required />
+              <NewPasswordField label="Choose a password" value={form.password} phone={form.phone} onChange={(e) => update({ password: e.target.value })} error={err('password')} required />
               {error && !['name', 'contactName', 'phone', 'email', 'location', 'description', 'categories', 'paymentOptions', 'password'].includes(error.field) && (
                 <p className="text-sm text-bad" role="alert">{error.message}</p>
               )}

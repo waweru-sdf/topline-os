@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Payment;
 use App\Services\Payments\ChargeRequest;
-use App\Services\Payments\PaystackException;
+use App\Services\Payments\ProviderException;
 use App\Services\Payments\PaystackGateway;
 use App\Services\Payments\TransferRequest;
 use Illuminate\Http\Client\Request;
@@ -77,7 +77,7 @@ class PaystackAdapterTest extends TestCase
     public function test_paystack_errors_are_raised_cleanly(): void
     {
         Http::fake(['*' => Http::response(['status' => false, 'message' => 'Invalid key'], 401)]);
-        $this->expectException(PaystackException::class);
+        $this->expectException(ProviderException::class);
         $this->expectExceptionMessage('Invalid key');
         (new PaystackGateway)->chargeMpesa(new ChargeRequest('X', 1, '254711222333'));
     }

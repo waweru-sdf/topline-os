@@ -21,6 +21,7 @@ class Sale extends Model
     public const PAYMENT_METHODS = ['mpesa', 'cash', 'bank', 'credit'];
     public const PAY_PROMPT = 'prompt';
     public const PAY_DIRECT = 'direct';
+    public const PAY_LATER = 'later';   // pays at pickup or on delivery (when Topline doesn't collect orders)
 
     public const ORDER_TRANSITIONS = [
         self::AWAITING_CONFIRMATION => [self::NEW, self::CANCELLED],

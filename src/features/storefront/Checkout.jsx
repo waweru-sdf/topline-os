@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Navigate } from 'react-router'
-import { CircleCheck, Smartphone, Store as StoreIcon, Truck } from 'lucide-react'
+import { CircleCheck, HandCoins, Smartphone, Store as StoreIcon, Truck } from 'lucide-react'
 import { api } from '@/services/api'
 import { formatKES } from '@/lib/format'
 import { directPaySteps, payoutMethod } from '@/lib/payments'
@@ -26,7 +26,8 @@ function Checkout() {
   const canDeliver = delivery?.enabled && (delivery.mode === 'quote' || delivery.zones?.length)
   const [type, setType] = useState(canDeliver ? 'delivery' : 'pickup')
   const [zoneId, setZoneId] = useState(delivery?.zones?.[0]?.id ?? '')
-  const [payMode, setPayMode] = useState('prompt')
+  const modes = store.payments?.modes ?? ['prompt'] // prompt | direct | later, set by the server
+  const [payMode, setPayMode] = useState(modes[0])
   const [order, setOrder] = useState(null) // placed, waiting for the prompt
   const [done, setDone] = useState(null)
   const [error, setError] = useState(null)
@@ -34,7 +35,6 @@ function Checkout() {
 
   const fee = deliveryFee(delivery ?? { zones: [] }, type, zoneId, subtotal)
   const total = subtotal + fee
-  const direct = store.payments?.acceptsDirect
 
   async function submit(e) {
     e.preventDefault()
@@ -54,7 +54,7 @@ function Checkout() {
         setOrder(placed)
       } else {
         clear()
-        setDone({ order: placed, direct: true })
+        setDone({ order: placed, mode: payMode })
       }
     } catch (err) {
       setError(err)
@@ -88,7 +88,7 @@ function Checkout() {
           <fieldset className="space-y-4 rounded-card bg-white p-5 ring-1 ring-line">
             <legend className="sr-only">Your details</legend>
             <Field name="name" label="Your name" autoComplete="name" required />
-            <Field name="phone" label="Your M-PESA number" type="tel" inputMode="tel" autoComplete="tel" placeholder="0712 345 678" required
+            <Field name="phone" label={payMode === 'prompt' ? 'Your M-PESA number' : 'Your phone number'} type="tel" inputMode="tel" autoComplete="tel" placeholder="0712 345 678" required
                    error={error?.field === 'phone' ? error.message : undefined} />
           </fieldset>
 
@@ -122,14 +122,20 @@ function Checkout() {
           <fieldset className="rounded-card bg-white p-5 ring-1 ring-line">
             <legend className="float-left mb-3 font-bold">How do you want to pay?</legend>
             <div className="clear-both grid gap-3 sm:grid-cols-2">
-              <Choice checked={payMode === 'prompt'} onChange={() => setPayMode('prompt')} name="pay" icon={Smartphone} title="M-PESA prompt"
-                      note={`We send a prompt for exactly ${formatKES(total)} to your phone.`} />
-              {direct && (
+              {modes.includes('prompt') && (
+                <Choice checked={payMode === 'prompt'} onChange={() => setPayMode('prompt')} name="pay" icon={Smartphone} title="M-PESA prompt"
+                        note={`We send a prompt for exactly ${formatKES(total)} to your phone.`} />
+              )}
+              {modes.includes('direct') && (
                 <Choice checked={payMode === 'direct'} onChange={() => setPayMode('direct')} name="pay" icon={StoreIcon}
-                        title={`Pay the shop’s ${payoutMethod(store.payments.method).short}`} note="Pay from your M-PESA menu, then enter the code." />
+                        title={`Pay the shop’s ${payoutMethod(store.payments.method).short} now`} note="Pay from your M-PESA menu, then enter the code." />
+              )}
+              {modes.includes('later') && (
+                <Choice checked={payMode === 'later'} onChange={() => setPayMode('later')} name="pay" icon={HandCoins}
+                        title={type === 'delivery' ? 'Pay on delivery' : 'Pay at pickup'} note="The shop calls to confirm your order first." />
               )}
             </div>
-            {payMode === 'direct' && direct && (
+            {payMode === 'direct' && (
               <div className="mt-4 rounded-lg bg-concrete p-4">
                 <p className="text-sm font-medium">Pay {formatKES(total)} to {store.payments.name}:</p>
                 <ol className="mt-2 list-decimal space-y-1 pl-5 text-sm">
@@ -185,14 +191,17 @@ function Choice({ checked, onChange, name, icon: Icon, title, note }) {
   )
 }
 
-function OrderPlaced({ store, base, order, direct }) {
+function OrderPlaced({ store, base, order, mode }) {
+  const direct = mode !== 'prompt'
   return (
     <div className="mx-auto max-w-xl px-5 py-16">
       <title>{`Order placed — ${store.name}`}</title>
       <CircleCheck className="size-12 text-good" aria-hidden />
       <h1 className="mt-4 text-3xl font-bold tracking-tight text-navy">{direct ? 'Order sent to the shop' : 'Order placed'}</h1>
       <p className="mt-2 text-muted">
-        {direct
+        {mode === 'later'
+          ? `${store.name} will call you to confirm order ${order.id}. You pay ${order.delivery?.type === 'delivery' ? 'on delivery' : 'when you pick it up'}.`
+          : mode === 'direct'
           ? `${store.name} will check your M-PESA payment and call you to confirm order ${order.id}.`
           : `${store.name} has your order ${order.id} and will call you to confirm ${order.delivery?.type === 'delivery' ? 'delivery' : 'when it’s ready to pick up'}.`}
       </p>
@@ -200,7 +209,7 @@ function OrderPlaced({ store, base, order, direct }) {
         <dt className="text-muted">Items</dt><dd className="text-right tabular">{formatKES(order.subtotal)}</dd>
         <dt className="text-muted">Delivery</dt><dd className="text-right tabular">{order.delivery?.type === 'delivery' ? (order.delivery.zone === 'Agreed with the shop' ? 'Agreed by phone' : formatKES(order.deliveryFee)) : 'Pickup'}</dd>
         <dt className="font-bold">{direct ? 'To pay' : 'Paid'}</dt><dd className="text-right font-bold tabular">{formatKES(order.total)}</dd>
-        <dt className="text-muted">M-PESA ref</dt><dd className="text-right font-medium">{order.mpesaRef}</dd>
+        {order.mpesaRef && <><dt className="text-muted">M-PESA ref</dt><dd className="text-right font-medium">{order.mpesaRef}</dd></>}
       </dl>
       <Button to={base || '/'} variant="navy" className="mt-8">Back to the store</Button>
     </div>

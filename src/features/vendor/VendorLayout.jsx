@@ -39,7 +39,7 @@ const NAV = [
   { to: '/dashboard/quotations', label: 'Quotations', icon: FileText, perm: 'manage_orders' },
   { to: '/dashboard/products', label: 'Products & stock', icon: Package, perm: 'view_products' },
   { to: '/dashboard/customers', label: 'Customers & credit', icon: Users, perm: 'view_customers' },
-  { to: '/dashboard/money', label: 'Money received', icon: Wallet, perm: 'manage_settings' },
+  { to: '/dashboard/money', label: 'Money received', icon: Wallet, perm: 'manage_settings', payouts: true },
   { to: '/dashboard/suppliers', label: 'Suppliers', icon: Factory, perm: 'buy_stock' },
   { to: '/dashboard/supplier-balances', label: 'Supplier balances', icon: BookOpenText, perm: 'buy_stock' },
   { to: '/dashboard/accounting', label: 'Accounting', icon: Calculator, perm: 'manage_accounts' },
@@ -52,7 +52,8 @@ const NAV = [
 
 function VendorLayout() {
   const { user, store } = useVendor()
-  const nav = NAV.filter((item) => store.permissions?.includes(item.perm))
+  // "Money received" lists Topline's payouts to the shop, which only happen when Topline collects order money.
+  const nav = NAV.filter((item) => store.permissions?.includes(item.perm) && (!item.payouts || store.payments?.modes?.includes('prompt')))
 
   return (
     <AppShell

@@ -18,7 +18,7 @@ function AdminLayout() {
     { to: '/admin', label: 'Overview', icon: LayoutDashboard, end: true },
     { to: '/admin/stores', label: 'Stores', icon: Store, badge: badges.pendingDomains || null },
     { to: '/admin/activity', label: 'Activity', icon: History },
-    { to: '/admin/payments', label: 'Payments', icon: CreditCard },
+    { to: '/admin/payments', label: 'Payments', icon: CreditCard, badge: badges.paymentChecks || null },
     { to: '/admin/suppliers', label: 'Suppliers', icon: Factory, badge: badges.pendingSignUps || null },
     { to: '/admin/credit', label: 'Credit requests', icon: HandCoins, badge: badges.openCredit || null },
     { to: '/admin/reviews', label: 'Reviews', icon: MessageSquareText, badge: badges.newReviews || null },

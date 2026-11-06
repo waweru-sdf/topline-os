@@ -6,7 +6,7 @@ use App\Models\Payment;
 use App\Services\Payments\ChargeRequest;
 use App\Services\Payments\ChargeResult;
 use App\Services\Payments\Gateways;
-use App\Services\Payments\PaystackException;
+use App\Services\Payments\ProviderException;
 use App\Support\ApiError;
 use App\Support\Text;
 use Illuminate\Support\Facades\DB;
@@ -32,10 +32,13 @@ class PaymentRecords
             $result = $gateway->chargeMpesa(new ChargeRequest($payment->reference, $amount, $phone,
                 $phone.'@'.config('topline.root_domain'),
                 ['kind' => $kind, 'payee' => $payee, ...array_filter($links, fn ($v) => $v !== null)]));
-        } catch (PaystackException $e) {
+        } catch (ProviderException $e) {
             $payment->delete();
             Monitoring::recordIncident('payment', 'M-PESA prompt could not be sent', $e->getMessage());
             throw new ApiError("We couldn't send the M-PESA prompt. Try again in a minute.", 502, 'phone');
+        }
+        if ($result->requestId) {
+            $payment->update(['request_id' => $result->requestId]);
         }
         self::apply($payment, $result);
 
@@ -49,8 +52,8 @@ class PaymentRecords
             return $payment;
         }
         try {
-            $result = Gateways::get()->verify($payment);
-        } catch (PaystackException $e) {
+            $result = Gateways::named($payment->provider)->verify($payment);
+        } catch (ProviderException $e) {
             Log::warning("verify {$payment->reference} failed: {$e->getMessage()}");
             $result = new ChargeResult(ChargeResult::PENDING);
         }
