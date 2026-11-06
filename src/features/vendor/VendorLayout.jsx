@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate, useRevalidator, useRouteLoaderData } from 'react-router'
+import { Link, useLocation, useNavigate, useRevalidator, useRouteLoaderData } from 'react-router'
 import { ArrowLeft, BookOpenText, Calculator, Check, Copy, CreditCard, ExternalLink, Factory, FileText, HandCoins, History, KeyRound, LayoutDashboard, LogOut, MapPin, Package, Receipt, Settings, ShoppingBag, UserCog, Users, Wallet } from 'lucide-react'
 import { api } from '@/services/api'
 import { clearSession, getBranchId, getUser, setActingStore, setBranchId } from '@/services/session'
@@ -57,6 +57,7 @@ function VendorLayout() {
 
   return (
     <AppShell
+      notice={<PlanNotice store={store} />}
       nav={nav}
       homeTo={store.permissions?.includes('view_dashboard') ? '/dashboard' : '/dashboard/sell'}
       top={<StoreBar store={store} asAdmin={user.role === 'platform_admin'} />}
@@ -123,6 +124,31 @@ function StoreBar({ store, asAdmin }) {
           <span className="hidden md:inline">View store</span>
         </a>
       </div>
+    </div>
+  )
+}
+
+/**
+ * Why the store isn't (or soon won't be) open to customers, and where to fix it. Shown on every page
+ * to whoever manages billing: unpaid sign-ups, codes being checked or turned down, overdue and suspended plans.
+ */
+function PlanNotice({ store }) {
+  const { pathname } = useLocation()
+  if (!store.permissions?.includes('manage_billing') || pathname === '/dashboard/billing') return null
+  const code = store.billing?.tillCode
+  const message =
+    code?.status === 'checking' ? `Topline is checking your M-PESA code ${code.code}. ${store.status === 'draft' ? 'Your store opens to customers once it’s confirmed.' : 'You’ll get an SMS once it’s confirmed.'}`
+    : code?.status === 'failed' ? `Your M-PESA code ${code.code} wasn’t confirmed. ${code.reason ?? ''} Send the right code to ${store.status === 'draft' ? 'open your store' : 'keep your plan'}.`
+    : store.status === 'draft' ? 'Your store isn’t open to customers yet: the plan hasn’t been paid.'
+    : store.status === 'suspended' ? 'Your store is closed to customers because the plan wasn’t paid. Pay to open it again; your records are safe.'
+    : store.status === 'past_due' ? 'Your plan payment is overdue. Pay now to keep your store open.'
+    : null
+  if (!message) return null
+  const tone = code?.status === 'checking' ? 'bg-amber-tint text-[#5c3b00]' : 'bg-bad-tint text-bad'
+  return (
+    <div role="status" className={`mb-6 flex flex-wrap items-center justify-between gap-3 rounded-card px-4 py-3 text-sm ${tone}`}>
+      <span>{message}</span>
+      {code?.status !== 'checking' && <Link to="/dashboard/billing" className="shrink-0 rounded-lg bg-white px-3 py-1.5 font-medium text-navy ring-1 ring-line hover:bg-concrete">Go to Plan &amp; billing</Link>}
     </div>
   )
 }

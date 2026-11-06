@@ -9,7 +9,7 @@ import { NavProgress } from '@/components/PageLoader'
  * Shared shell for the vendor admin and the Topline admin: navy sidebar on
  * desktop, slide-down menu on phones (most shop owners will be on a phone).
  */
-export function AppShell({ nav, top, footer, homeTo }) {
+export function AppShell({ nav, top, footer, homeTo, notice }) {
   const [open, setOpen] = useState(false)
   const navigation = useNavigation()
 
@@ -70,6 +70,7 @@ export function AppShell({ nav, top, footer, homeTo }) {
           )}
         </header>
         <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8">
+          {notice}
           <Outlet />
         </main>
       </div>

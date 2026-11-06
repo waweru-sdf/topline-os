@@ -129,7 +129,14 @@ function StoreRow({ store }) {
         <span className="block text-xs text-muted">{store.town}, {store.county}</span>
       </td>
       <td className="px-3 py-3">{store.plan?.name}</td>
-      <td className="px-3 py-3"><StoreStatus status={status} /></td>
+      <td className="px-3 py-3">
+        <StoreStatus status={status} />
+        {store.billing?.tillCode && (
+          <Link to="/admin/payments" className={cn('mt-1 block text-xs hover:underline', store.billing.tillCode.status === 'checking' ? 'font-medium text-[#7a4f00]' : 'text-bad')}>
+            {store.billing.tillCode.status === 'checking' ? `Code ${store.billing.tillCode.code} to check` : `Code ${store.billing.tillCode.code} turned down`}
+          </Link>
+        )}
+      </td>
       <td className="px-3 py-3 text-muted">{store.nextBillingAt ? formatDate(store.nextBillingAt) : '—'}</td>
       <td className="px-3 py-3 text-right tabular">{store.products}</td>
       <td className="px-3 py-3 text-right font-medium tabular">{formatKES(store.gmv30)}</td>
@@ -165,7 +172,9 @@ function StoreRow({ store }) {
           </details>
           {status === 'suspended' ? (
             <button name="status" value="active" className="rounded-lg px-3 py-1.5 font-medium text-navy hover:bg-concrete">Reactivate</button>
-          ) : status === 'draft' ? null : (
+          ) : status === 'draft' ? (
+            <span className="px-3 py-1.5 text-xs whitespace-nowrap text-muted" title="Unpaid sign-ups are already closed to customers. They open when you confirm their M-PESA code.">Closed until paid</span>
+          ) : (
             <button
               name="status"
               value="suspended"

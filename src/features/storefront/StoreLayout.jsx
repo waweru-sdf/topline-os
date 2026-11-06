@@ -158,9 +158,9 @@ function StoreFooter() {
 function ClosedStore({ store }) {
   return (
     <main className="flex min-h-dvh flex-col items-center justify-center bg-concrete px-6 text-center">
-      <title>{`${store.name} — temporarily closed`}</title>
+      <title>{`${store.name} — ${store.status === 'draft' ? 'opening soon' : 'temporarily closed'}`}</title>
       <Store className="size-10 text-steel" aria-hidden />
-      <h1 className="mt-4 text-2xl font-bold text-navy">{store.name} is closed online for now</h1>
+      <h1 className="mt-4 text-2xl font-bold text-navy">{store.status === 'draft' ? `${store.name} is opening soon` : `${store.name} is closed online for now`}</h1>
       <p className="mt-2 max-w-sm text-muted">
         You can still reach the shop directly{store.owner?.phone ? ` on ${store.owner.phone}` : ''}.
       </p>
