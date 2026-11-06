@@ -34,7 +34,18 @@ class Passwords
         return $email;
     }
 
-    public static function checkNew(mixed $password, string $field = 'password'): string
+    /** The most-guessed passwords (lower case, after removing spaces): rejected outright. */
+    private const COMMON = ['password', 'password1', 'password123', 'passw0rd', 'qwerty123', 'qwertyuiop', 'abc12345', 'abcd1234',
+        'asdf1234', 'admin123', 'admin1234', 'welcome1', 'welcome123', 'iloveyou1', 'kenya254', 'kenya123', 'nairobi1', 'nairobi123',
+        'mpesa123', 'topline1', 'topline12', 'toplinehub', 'letmein1', 'changeme1', 'football1', 'monkey123', 'jesus123', 'god12345',
+        'a1b2c3d4', '1q2w3e4r', '1qaz2wsx', 'zaq12wsx', 'q1w2e3r4', 'hardware1', 'mabati123', 'cement123'];
+
+    /**
+     * Rules for every password a person chooses (the screens show the same checklist):
+     * at least 8 characters, letters AND numbers, not a common password, not the phone number,
+     * and not one character or a simple run repeated.
+     */
+    public static function checkNew(mixed $password, string $field = 'password', ?string $phone = null): string
     {
         $password = (string) ($password ?? '');
         if (mb_strlen($password) < self::MIN_LENGTH) {
@@ -43,8 +54,15 @@ class Passwords
         if (mb_strlen($password) > 128) {
             throw ApiError::invalid('That password is too long.', $field);
         }
-        if (ctype_digit($password) && count(array_unique(str_split($password))) <= 2) {
-            throw ApiError::invalid('That password is too easy to guess.', $field);
+        if (! preg_match('/\pL/u', $password) || ! preg_match('/\d/', $password)) {
+            throw ApiError::invalid('Use both letters and numbers, e.g. duka-yangu-24.', $field);
+        }
+        $plain = strtolower(preg_replace('/\s+/', '', $password));
+        $digits = preg_replace('/\D/', '', $password);
+        $local = $phone ? substr(preg_replace('/\D/', '', $phone), -9) : '';
+        if (in_array($plain, self::COMMON, true) || count(array_unique(mb_str_split($plain))) < 4
+            || ($local !== '' && str_contains($digits, $local))) {
+            throw ApiError::invalid('That password is too easy to guess. Mix words and numbers that aren’t your phone number.', $field);
         }
 
         return $password;
@@ -113,7 +131,7 @@ class Passwords
         if (! $user->must_change_password && ! Hash::check((string) ($current ?? ''), (string) $user->password)) {
             throw ApiError::invalid('Your current password is wrong.', 'currentPassword');
         }
-        $new = self::checkNew($new, 'newPassword');
+        $new = self::checkNew($new, 'newPassword', $user->phone);
         if ($user->password && Hash::check($new, $user->password)) {
             throw ApiError::invalid('Choose a password different from the old one.', 'newPassword');
         }

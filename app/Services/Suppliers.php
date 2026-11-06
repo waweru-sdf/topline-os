@@ -55,7 +55,7 @@ class Suppliers
         if ($email && User::where('email', $email)->exists()) {
             throw ApiError::invalid('That email already has a Topline login.', 'email');
         }
-        $password = Passwords::checkNew($data['password'] ?? null);
+        $password = Passwords::checkNew($data['password'] ?? null, 'password', $profile['phone']);
 
         $supplier = DB::transaction(function () use ($profile, $contact, $email, $password) {
             $user = new User(['name' => $contact, 'phone' => $profile['phone'], 'email' => $email, 'role' => User::SUPPLIER]);

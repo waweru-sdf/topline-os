@@ -121,17 +121,28 @@ class AdminController extends ApiController
         return $this->json($rows->map(fn ($a) => Json::activity($a, $names))->all());
     }
 
+    /** ?status=checking: M-PESA codes waiting for a Topline admin to check them against the Till statement. */
     public function payments(Request $request)
     {
         $names = Store::pluck('name', 'id')->all();
-        $rows = Payment::orderByDesc('created_at')->limit($this->limit($request))->get();
+        $rows = Payment::orderByDesc('created_at')->limit($this->limit($request))
+            ->when($request->query('status'), fn ($q, $status) => $q->where('status', $status))->get();
 
         return $this->json($rows->map(fn (Payment $p) => [
             'reference' => $p->reference, 'kind' => $p->kind, 'status' => $p->status, 'provider' => $p->provider, 'amount' => $p->amount,
             'phone' => $p->phone, 'payee' => $p->payee, 'storeId' => $p->store_id, 'storeName' => $names[$p->store_id] ?? null,
             'planId' => $p->plan_id, 'mpesaRef' => $p->provider_ref, 'createdAt' => Text::iso($p->created_at), 'paidAt' => Text::iso($p->paid_at),
-            'failureReason' => $p->failure_reason,
+            'failureReason' => $p->failure_reason, 'method' => $p->method, 'period' => $p->period,
         ])->all());
+    }
+
+    /** {action: approve|reject, note}: after looking the code up in the Till's M-PESA statement. */
+    public function reviewPayment(Request $request, string $reference)
+    {
+        $payment = Payment::find($reference) ?? throw ApiError::notFound('Payment not found.');
+        $data = $this->body($request);
+
+        return $this->json(Json::payment(Billing::reviewTillCode($payment, (string) ($data['action'] ?? ''), (string) ($data['note'] ?? ''), Access::currentUser())));
     }
 
     public function payouts(Request $request)
@@ -169,6 +180,7 @@ class AdminController extends ApiController
             'openCredit' => CreditRequest::whereIn('status', CreditRequest::OPEN)->count(),
             'newReviews' => Reviews::newCount(),
             'pendingDomains' => Domains::pendingCount(),
+            'paymentChecks' => Payment::where('status', Payment::CHECKING)->count(),
         ]);
     }
 

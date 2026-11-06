@@ -3,7 +3,7 @@
         'name' => 'topline/topline-os',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '1f3fc022cd12b18ced47eedaea3ab33fe26d8847',
+        'reference' => 'dc8149774cddd68932481140c8daf72c2e99e972',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -981,7 +981,7 @@
         'topline/topline-os' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '1f3fc022cd12b18ced47eedaea3ab33fe26d8847',
+            'reference' => 'dc8149774cddd68932481140c8daf72c2e99e972',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

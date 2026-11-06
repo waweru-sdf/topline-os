@@ -28,7 +28,9 @@ class Stores
     }
 
     /**
-     * Sign-up: owner + store, opened by the plan payment made just before.
+     * Sign-up: owner + store, opened by the plan payment made just before (a paid M-PESA prompt), or
+     * by an M-PESA code paid into Topline's Till: then the store waits ("not paid yet") until a Topline
+     * admin confirms the code; the owner can already log in and add products.
      * Everything about the owner is checked BEFORE the payment is used, so a typo never wastes it.
      *
      * @return array{0: Store, 1: User, 2: StoreMember}
@@ -55,7 +57,7 @@ class Stores
         if ($ownerEmail && User::where('email', $ownerEmail)->exists()) {
             throw ApiError::invalid('This email already has a Topline account. Log in instead.', 'ownerEmail');
         }
-        $ownerPassword = Passwords::checkNew($owner['password'] ?? null, 'ownerPassword');
+        $ownerPassword = Passwords::checkNew($owner['password'] ?? null, 'ownerPassword', $ownerPhone);
 
         $name = Input::text($business, 'name', required: true, maxLength: 120, message: 'Enter your shop name.');
         $slugCheck = self::checkSlug(($data['slug'] ?? null) ?: $name);
@@ -63,9 +65,10 @@ class Stores
             throw ApiError::invalid($slugCheck['reason'], 'slug');
         }
         $plan = Billing::plan($data['planId'] ?? null);
+        $tillCode = ($billingInfo['mpesaCode'] ?? '') !== '' ? Billing::tillCode($billingInfo['mpesaCode']) : null;
 
-        return DB::transaction(function () use ($owner, $business, $billingInfo, $ownerName, $ownerPhone, $ownerEmail, $ownerPassword, $name, $slugCheck, $plan) {
-            $payment = Billing::claimSignupPayment($billingInfo['paymentReference'] ?? null, $plan->id, $billingInfo['lastRef'] ?? null);
+        return DB::transaction(function () use ($owner, $business, $billingInfo, $ownerName, $ownerPhone, $ownerEmail, $ownerPassword, $name, $slugCheck, $plan, $tillCode) {
+            $payment = $tillCode ? null : Billing::claimSignupPayment($billingInfo['paymentReference'] ?? null, $plan->id, $billingInfo['lastRef'] ?? null);
             $whatsapp = Phone::normalize($business['whatsapp'] ?? null) ?? $ownerPhone;
             $store = Store::create([
                 'slug' => $slugCheck['slug'],
@@ -92,8 +95,12 @@ class Stores
                 self::updatePayments($store, $business['payments']);
                 $store->save();
             }
-            Billing::activate($store, $plan->id, $payment->period);
-            Activity::record('store_created', "{$ownerName} opened {$name} on the {$plan->name} plan", $store->id, $user,
+            if ($tillCode) {
+                $payment = Billing::submitTillCode($plan->id, ($billingInfo['period'] ?? null) ?: 'monthly', Phone::normalize($billingInfo['phone'] ?? null) ?? $ownerPhone, $tillCode, $store);
+            } else {
+                Billing::activate($store, $plan->id, $payment->period);
+            }
+            Activity::record('store_created', "{$ownerName} opened {$name} on the {$plan->name} plan".($tillCode ? ' (M-PESA code waiting for check)' : ''), $store->id, $user,
                 ['plan' => $plan->id, 'period' => $payment->period, 'amount' => $payment->amount]);
 
             return [$store->refresh(), $user, $membership];

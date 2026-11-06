@@ -12,5 +12,6 @@ class ChargeResult
         public readonly string $status,          // pending | paid | failed
         public readonly ?string $providerRef = null, // M-PESA receipt, e.g. "TJK4H2PQ9X"
         public readonly ?string $message = null,     // why it failed, in plain words
+        public readonly ?string $requestId = null,   // the provider's id for this prompt (M-PESA CheckoutRequestID)
     ) {}
 }

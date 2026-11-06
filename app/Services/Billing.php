@@ -5,14 +5,19 @@ namespace App\Services;
 use App\Models\Payment;
 use App\Models\Plan;
 use App\Models\Store;
+use App\Models\User;
 use App\Support\ApiError;
 use App\Support\Text;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 /**
- * Store subscriptions: paying for a plan, renewals, grace period and suspension.
- * Paying is two steps like any M-PESA prompt: pay() sends the prompt, the screen polls
- * /billing/payments/{ref}. For sign-up, the paid Payment is then claimed by POST /stores.
+ * Store subscriptions: paying for a plan, renewals, grace period and suspension. Plans are paid
+ * into Topline's own M-PESA Till, two ways:
+ *  - prompt: pay() sends an M-PESA prompt, the screen polls /billing/payments/{ref}; for sign-up the
+ *    paid Payment is then claimed by POST /stores.
+ *  - till code: the customer pays the Till from their M-PESA menu and enters the code; the payment
+ *    waits as "checking" until a Topline admin confirms it (reviewTillCode), then the plan starts.
  */
 class Billing
 {
@@ -38,6 +43,67 @@ class Billing
 
         return PaymentRecords::start('subscription', $plan->priceFor($period), $phone, 'SUB', 'TOPLINE',
             ['plan_id' => $plan->id, 'period' => $period, 'store_id' => $store?->id]);
+    }
+
+    /** An M-PESA transaction code, e.g. "SKL4ABC12Q": 10 letters and digits, not used before. */
+    public static function tillCode(mixed $code, string $field = 'mpesaCode'): string
+    {
+        $code = strtoupper(preg_replace('/\s+/', '', (string) ($code ?? '')));
+        if (! preg_match('/^[A-Z0-9]{10}$/', $code)) {
+            throw ApiError::invalid('Enter the 10-character M-PESA code from the confirmation SMS, e.g. SKL4ABC12Q.', $field);
+        }
+        if (Payment::where('provider_ref', $code)->where('status', '!=', Payment::FAILED)->exists()) {
+            throw ApiError::invalid('That M-PESA code has already been used.', $field);
+        }
+
+        return $code;
+    }
+
+    /** Paid into Topline's Till from the M-PESA menu: recorded for a Topline admin to check. */
+    public static function submitTillCode(mixed $planId, mixed $period, string $phone, mixed $code, ?Store $store = null): Payment
+    {
+        if (! is_string($period) || ! isset(self::PERIOD_DAYS[$period])) {
+            throw ApiError::invalid('Choose monthly or yearly billing.', 'period');
+        }
+        $plan = self::plan($planId);
+        $code = self::tillCode($code);
+        if ($store && Payment::where('store_id', $store->id)->where('status', Payment::CHECKING)->exists()) {
+            throw ApiError::invalid('Your last M-PESA code is still being checked. Wait for it, or contact Topline.', 'mpesaCode');
+        }
+        $payment = Payment::create(['reference' => Text::reference('SUB'), 'kind' => Payment::SUBSCRIPTION, 'provider' => 'till',
+            'method' => 'till_code', 'status' => Payment::CHECKING, 'amount' => $plan->priceFor($period), 'phone' => $phone,
+            'payee' => config('topline.mpesa.till_name'), 'plan_id' => $plan->id, 'period' => $period, 'store_id' => $store?->id,
+            'provider_ref' => $code]);
+        if ($store) {
+            Activity::record('plan_paid', "Sent M-PESA code {$code} for ".Text::kes($payment->amount).' ('.$plan->name.', '.$period.'): waiting for Topline to check', $store->id, 'System');
+        }
+
+        return $payment;
+    }
+
+    /** A Topline admin, after finding the code in the till's M-PESA statement (or not). */
+    public static function reviewTillCode(Payment $payment, string $action, string $note, User $admin): Payment
+    {
+        if ($payment->status !== Payment::CHECKING) {
+            throw ApiError::invalid('This payment has already been checked.', 'action');
+        }
+        if (! in_array($action, ['approve', 'reject'], true)) {
+            throw ApiError::invalid('Choose approve or reject.', 'action');
+        }
+        DB::transaction(function () use ($payment, $action, $note) {
+            $won = Payment::whereKey($payment->reference)->where('status', Payment::CHECKING)->update($action === 'approve'
+                ? ['status' => Payment::PAID, 'paid_at' => now()]
+                : ['status' => Payment::FAILED, 'failure_reason' => mb_substr(trim($note) ?: 'Topline couldn’t find this M-PESA payment.', 0, 200)]);
+            $payment->refresh();
+            if ($won && $action === 'approve' && $payment->store_id) {
+                self::applySubscriptionPayment($payment);
+            }
+        });
+        Activity::record('plan_paid', "{$admin->name} ".($action === 'approve' ? 'confirmed' : 'rejected')." M-PESA code {$payment->provider_ref} (".Text::kes($payment->amount).')',
+            $payment->store_id, $admin);
+        Notifications::tillCodeReviewed($payment);
+
+        return $payment;
     }
 
     /**

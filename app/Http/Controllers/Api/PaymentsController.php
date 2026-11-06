@@ -7,15 +7,19 @@ use App\Models\Payment;
 use App\Models\Payout;
 use App\Services\Billing;
 use App\Services\PaymentRecords;
+use App\Services\Monitoring;
 use App\Services\Payments\Gateways;
+use App\Services\Payments\MpesaGateway;
+use App\Services\Payments\PaystackGateway;
 use App\Services\Payouts;
 use App\Support\ApiError;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-/** The on-screen test phone (simulation), Paystack webhooks, and background jobs over HTTP. */
+/** The on-screen test phone (simulation), M-PESA and Paystack callbacks, and background jobs over HTTP. */
 class PaymentsController extends ApiController
 {
     /** Plays the customer's part of an M-PESA prompt while PAYMENTS_MODE=simulation. */
@@ -43,10 +47,38 @@ class PaymentsController extends ApiController
         return $this->json(Json::payment($payment));
     }
 
+    /**
+     * Safaricom's M-PESA Express callback for a prompt into Topline's Till. The URL carries a secret
+     * token; even so the result is only trusted after asking Daraja (STK query) about that prompt.
+     */
+    public function mpesaWebhook(Request $request, string $token)
+    {
+        $gateway = new MpesaGateway;
+        if (! $gateway->verifyWebhookSignature('', $token)) {
+            throw ApiError::notFound('Not found.');
+        }
+        $parsed = $gateway->parseWebhook(json_decode($request->getContent() ?: '{}', true) ?: []);
+        $payment = $parsed ? Payment::where('request_id', $parsed[1])->first() : null;
+        $info = $parsed[2] ?? [];
+        if ($payment && ($info['resultCode'] ?? '') === '0' && $info['amount'] !== null && $info['amount'] !== $payment->amount) {
+            Monitoring::recordIncident('payment', 'M-PESA amount mismatch', "{$payment->reference}: expected {$payment->amount}, got {$info['amount']}");
+        } elseif ($payment) {
+            if ($info['receipt'] && ! $payment->provider_ref) {
+                $payment->update(['provider_ref' => $info['receipt']]); // also when the waiting screen already settled it
+            }
+            if ($payment->status === Payment::PENDING) {
+                Cache::forget("mpesa:query:{$payment->reference}");
+                PaymentRecords::refresh($payment); // asks Daraja, then settles
+            }
+        }
+
+        return $this->json(['ResultCode' => 0, 'ResultDesc' => 'Accepted']);
+    }
+
     /** Paystack callbacks. Always answer 200 quickly so Paystack doesn't retry forever. */
     public function paystackWebhook(Request $request)
     {
-        $gateway = Gateways::get();
+        $gateway = Gateways::isSimulation() ? Gateways::named('simulation') : new PaystackGateway;
         if (! $gateway->verifyWebhookSignature($request->getContent(), (string) $request->header('x-paystack-signature', ''))) {
             throw ApiError::unauthorized('Bad signature.');
         }

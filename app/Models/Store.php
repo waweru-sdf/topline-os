@@ -63,6 +63,13 @@ class Store extends Model
         return in_array($this->status, [self::ACTIVE, self::PAST_DUE], true);
     }
 
+    /** Customers can pay this shop's own till/paybill/number at checkout and give the code. */
+    public function acceptsDirect(): bool
+    {
+        // When Topline can't collect orders (plans paid into a till), paying the shop directly is the way to pay online.
+        return $this->canReceivePayouts() && ($this->accepts_direct_payment || ! \App\Services\Payments\Gateways::collectsOrders());
+    }
+
     public function canReceivePayouts(): bool
     {
         if ($this->payout_method === self::PAYBILL) {

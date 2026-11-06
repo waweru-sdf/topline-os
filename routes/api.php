@@ -48,10 +48,13 @@ Route::middleware('topline.user')->group(function () {
 });
 
 // Paying for a plan; the test phone; Paystack; background jobs over HTTP
+Route::get('billing/options', [BillingController::class, 'options']);
 Route::post('billing/subscription/pay', [BillingController::class, 'pay']);
+Route::post('billing/subscription/till-code', [BillingController::class, 'tillCode']);
 Route::get('billing/payments/{reference}', [BillingController::class, 'status']);
 Route::post('simulator/payments/{reference}', [PaymentsController::class, 'simulate']);
 Route::post('webhooks/paystack', [PaymentsController::class, 'paystackWebhook']);
+Route::post('webhooks/mpesa/{token}', [PaymentsController::class, 'mpesaWebhook']);
 Route::match(['get', 'post'], 'cron/run', [PaymentsController::class, 'cron']);
 
 // Shop pages (no login)
@@ -138,6 +141,7 @@ Route::prefix('admin')->middleware(['topline.user', 'topline.admin'])->controlle
     Route::post('stores/{storeId}/reset-password', 'resetOwnerPassword');
     Route::get('activity', 'activity');
     Route::get('payments', 'payments');
+    Route::post('payments/{reference}/review', 'reviewPayment');
     Route::get('payouts', 'payouts');
     Route::post('payouts/{payoutId}/retry', 'retryPayout')->whereNumber('payoutId');
     Route::get('plans', 'plans');

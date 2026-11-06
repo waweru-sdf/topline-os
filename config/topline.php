@@ -10,8 +10,21 @@ return [
     // Shop days (dashboard grouping, daily billing check) follow Kenyan time.
     'timezone' => env('TOPLINE_TIMEZONE', 'Africa/Nairobi'),
 
-    // Payments: "simulation" until Paystack keys are added, then "paystack".
+    // Payments: "mpesa" (plans paid to Topline's own Till), "simulation" (no money moves; tests and demos)
+    // or "paystack" (kept for later: Topline collects online orders and pays shops out).
     'payments_mode' => env('PAYMENTS_MODE', 'simulation'),
+    // Topline's M-PESA Till: plan payments go here. With the Daraja keys below, customers get an M-PESA
+    // prompt (STK push); without them, they pay from their M-PESA menu and enter the code for an admin to check.
+    'mpesa' => [
+        'till' => env('MPESA_TILL', '987715'),
+        'till_name' => env('MPESA_TILL_NAME', 'Topline'),
+        // Safaricom Daraja (M-PESA Express) for this till, from developer.safaricom.co.ke after "Go Live":
+        'env' => env('MPESA_ENV', 'production'), // production | sandbox
+        'consumer_key' => env('MPESA_CONSUMER_KEY', ''),
+        'consumer_secret' => env('MPESA_CONSUMER_SECRET', ''),
+        'shortcode' => env('MPESA_SHORTCODE', ''), // the till's store (head office) number; often not the till number
+        'passkey' => env('MPESA_PASSKEY', ''),
+    ],
     'paystack_secret_key' => env('PAYSTACK_SECRET_KEY', ''),
     'paystack_public_key' => env('PAYSTACK_PUBLIC_KEY', ''),
     // Simulation: "prompt" waits for the on-screen test phone; "auto" approves after the delay.

@@ -180,6 +180,8 @@ class Json
             'mpesaRef' => $p->provider_ref,
             'failureReason' => $p->failure_reason,
             'simulated' => $p->provider === 'simulation',
+            'method' => $p->method ?? 'prompt',
+            'createdAt' => Text::iso($p->created_at),
         ];
     }
 
@@ -196,7 +198,8 @@ class Json
             'number' => $number,
             'account' => $store->payout_method === Store::PAYBILL ? $store->payout_account : '',
             'name' => $store->payout_name ?: $store->name,
-            'acceptsDirect' => (bool) ($store->accepts_direct_payment && $store->canReceivePayouts()),
+            'acceptsDirect' => $store->acceptsDirect(),
+            'modes' => \App\Services\Orders::paymentModes($store), // prompt | direct | later
             'mpesaTill' => $store->payout_method === Store::TILL ? $store->payout_number : '',
         ];
     }
@@ -235,6 +238,19 @@ class Json
         ];
     }
 
+    /** The owner's latest M-PESA code paid into Topline's till, while it's being checked or if it was turned down lately. */
+    private static function lastTillCode(Store $store): ?array
+    {
+        $p = Payment::where('store_id', $store->id)->where('method', 'till_code')->where('created_at', '>', now()->subDays(14))
+            ->latest('created_at')->first();
+        if (! $p || $p->status === Payment::PAID) {
+            return null;
+        }
+
+        return ['code' => $p->provider_ref, 'amount' => $p->amount, 'planId' => $p->plan_id, 'period' => $p->period,
+            'status' => $p->status, 'reason' => $p->failure_reason, 'sentAt' => Text::iso($p->created_at)];
+    }
+
     /** What the store's own staff and Topline admins see. */
     public static function storePrivate(Store $store): array
     {
@@ -242,7 +258,7 @@ class Json
             ...self::storePublic($store),
             'payments' => [...self::paymentsPublic($store), 'number' => $store->payout_number, 'canReceive' => $store->canReceivePayouts()],
             'planId' => $store->plan_id,
-            'billing' => ['period' => $store->billing_period],
+            'billing' => ['period' => $store->billing_period, 'tillCode' => self::lastTillCode($store)],
             'customDomain' => $store->custom_domain,
             'domainStatus' => $store->custom_domain ? ($store->domain_status ?: 'pending') : null,
             'createdAt' => Text::iso($store->created_at),
